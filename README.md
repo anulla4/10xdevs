@@ -1,94 +1,115 @@
-# 10x Astro Starter
+# Nature Log
 
-A modern, opinionated starter template for building fast, accessible, and AI-friendly web applications.
+> A simple and elegant web application for logging your nature observations.
+
+---
+
+## Table of Contents
+
+- [Project Description](#project-description)
+- [Tech Stack](#tech-stack)
+- [Getting Started Locally](#getting-started-locally)
+- [Available Scripts](#available-scripts)
+- [Project Scope](#project-scope)
+- [Project Status](#project-status)
+- [License](#license)
+
+## Project Description
+
+Nature Log is designed for nature enthusiasts who want a straightforward way to document their observations of plants, animals, and interesting locations. It solves the problem of scattered notes and context-less photos by providing an organized, map-based journal for all your findings. The MVP focuses on the core experience of creating, viewing, and managing your personal observation log.
 
 ## Tech Stack
 
-- [Astro](https://astro.build/) v5.5.5 - Modern web framework for building fast, content-focused websites
-- [React](https://react.dev/) v19.0.0 - UI library for building interactive components
-- [TypeScript](https://www.typescriptlang.org/) v5 - Type-safe JavaScript
-- [Tailwind CSS](https://tailwindcss.com/) v4.0.17 - Utility-first CSS framework
+The project is built with a modern, performant, and scalable tech stack:
 
-## Prerequisites
+- **Frontend**: [Astro](https://astro.build/) (for static site generation) with [React](https://react.dev/) (for interactive UI components, or "islands").
+- **Styling**: [Tailwind CSS](https://tailwindcss.com/) for a utility-first styling workflow.
+- **Language**: [TypeScript](https://www.typescriptlang.org/) for type safety and improved developer experience.
+- **Mapping**: [Leaflet](https://leafletjs.com/) for an interactive and lightweight map experience.
+- **Backend (BaaS)**: [Supabase](https://supabase.com/) for the PostgreSQL database, user authentication, and instant APIs.
+- **CI/CD & Hosting**: [GitHub Actions](https://github.com/features/actions) for continuous integration and deployment, with the application containerized using [Docker](https://www.docker.com/) and hosted on [DigitalOcean](https://www.digitalocean.com/).
 
-- Node.js v22.14.0 (as specified in `.nvmrc`)
-- npm (comes with Node.js)
+## Getting Started Locally
 
-## Getting Started
+To run a local copy of this project, follow these steps.
 
-1. Clone the repository:
+### Prerequisites
 
-```bash
-git clone https://github.com/przeprogramowani/10x-astro-starter.git
-cd 10x-astro-starter
-```
+- **Node.js**: It's recommended to use the latest LTS version. If a `.nvmrc` file is present, use `nvm use`.
+- **Package Manager**: This project uses `pnpm`. You can install it via `npm install -g pnpm`.
+- **Supabase Account**: You will need a free Supabase account to get your own database and API keys.
 
-2. Install dependencies:
+### Installation & Setup
 
-```bash
-npm install
-```
+1.  **Clone the repository:**
 
-3. Run the development server:
+    ```bash
+    git clone [https://github.com/your-username/nature-log.git](https://github.com/your-username/nature-log.git)
+    cd nature-log
+    ```
 
-```bash
-npm run dev
-```
+2.  **Install dependencies:**
 
-4. Build for production:
+    ```bash
+    pnpm install
+    ```
 
-```bash
-npm run build
-```
+3.  **Set up environment variables:**
+    Create a `.env` file in the root of the project by copying the example file:
+
+    ```bash
+    cp .env.example .env
+    ```
+
+    Then, fill in the required Supabase URL and Anon Key from your Supabase project dashboard.
+
+    ```env
+    PUBLIC_SUPABASE_URL="your-supabase-url"
+    PUBLIC_SUPABASE_ANON_KEY="your-supabase-anon-key"
+    ```
+
+4.  **Run the development server:**
+
+    ```bash
+    pnpm dev
+    ```
+
+    The application should now be running on `http://localhost:4321`.
 
 ## Available Scripts
 
-- `npm run dev` - Start development server
-- `npm run build` - Build for production
-- `npm run preview` - Preview production build
-- `npm run lint` - Run ESLint
-- `npm run lint:fix` - Fix ESLint issues
+In the project directory, you can run the following commands:
 
-## Project Structure
+- `pnpm dev`: Runs the app in development mode.
+- `pnpm build`: Builds the app for production to the `dist/` folder.
+- `pnpm preview`: Serves the production build locally for previewing.
+- `pnpm test`: Runs the test suite (if configured).
+- `pnpm lint`: Lints the codebase for errors and style issues.
 
-```md
-.
-├── src/
-│   ├── layouts/    # Astro layouts
-│   ├── pages/      # Astro pages
-│   │   └── api/    # API endpoints
-│   ├── components/ # UI components (Astro & React)
-│   └── assets/     # Static assets
-├── public/         # Public assets
-```
+## Project Scope
 
-## AI Development Support
+### In Scope (MVP)
 
-This project is configured with AI development tools to enhance the development experience, providing guidelines for:
+- User registration and authentication (email/password).
+- Full CRUD (Create, Read, Update, Delete) functionality for personal observations.
+- Adding an observation via a form, including name, description, date, and location selected from a map.
+- Viewing all personal observations on an interactive map and in a paginated list.
+- Simple filtering and sorting of the observation list.
 
-- Project structure
-- Coding practices
-- Frontend development
-- Styling with Tailwind
-- Accessibility best practices
-- Astro and React guidelines
+### Out of Scope (Future Features)
 
-### Cursor IDE
+- Uploading photos or other media.
+- Real-time GPS tracking.
+- Social features like sharing, commenting, or public profiles.
+- Expert verification of observations or AI-based species identification.
+- Native mobile application or offline functionality.
 
-The project includes AI rules in `.cursor/rules/` directory that help Cursor IDE understand the project structure and provide better code suggestions.
+## Project Status
 
-### GitHub Copilot
+**Status:** In Development 🏗️
 
-AI instructions for GitHub Copilot are available in `.github/copilot-instructions.md`
-
-### Windsurf
-
-The `.windsurfrules` file contains AI configuration for Windsurf.
-
-## Contributing
-
-Please follow the AI guidelines and coding practices defined in the AI configuration files when contributing to this project.
+This project is currently in the development phase for the Minimum Viable Product (MVP).
 
 ## License
 
-MIT
+This project is licensed under the MIT License. See the `LICENSE` file for more details.
