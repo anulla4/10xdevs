@@ -166,7 +166,31 @@ export type Database = {
       }
     }
     Views: {
-      [_ in never]: never
+      observations_read: {
+        Row: {
+          id: string
+          user_id: string
+          slug: string
+          name: string
+          description: string | null
+          observation_date: string
+          is_favorite: boolean
+          location_accuracy: number | null
+          location_source: string | null
+          lat: number
+          lng: number
+          category_id: string
+          created_at: string
+          updated_at: string
+        }
+        Insert: {
+          [_ in never]: never
+        }
+        Update: {
+          [_ in never]: never
+        }
+        Relationships: []
+      }
     }
     Functions: {
       [_ in never]: never

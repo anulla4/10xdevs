@@ -1,0 +1,662 @@
+openapi: 3.0.3
+info:
+  title: Nature Log API
+  description: |
+    REST API for Nature Log application - a platform for nature enthusiasts to record and browse observations of plants, animals, and places.
+    
+    ## Authentication
+    All endpoints require JWT authentication via `Authorization: Bearer <token>` header (except public endpoints).
+    
+    ## Error Responses
+    All errors follow a consistent format:
+    ```json
+    {
+      "error": {
+        "code": "ErrorCode",
+        "message": "Human-readable error message",
+        "details": {} // Optional additional details
+      }
+    }
+    ```
+    
+    ## Request Tracking
+    Each request receives a unique `X-Request-ID` header for debugging and support.
+  version: 1.0.0
+  contact:
+    name: API Support
+    email: support@naturelog.example.com
+
+servers:
+  - url: http://localhost:3000/api
+    description: Local development server
+  - url: https://api.naturelog.example.com/api
+    description: Production server
+
+tags:
+  - name: Observations
+    description: CRUD operations for nature observations
+  - name: Categories
+    description: Read-only access to observation categories
+  - name: Profile
+    description: User profile management
+  - name: Utilities
+    description: Utility endpoints (location sources, map markers)
+
+paths:
+  /observations:
+    get:
+      tags: [Observations]
+      summary: List observations
+      description: Get paginated list of user's observations with filtering, search, and sorting
+      parameters:
+        - name: page
+          in: query
+          schema:
+            type: integer
+            minimum: 1
+            default: 1
+        - name: limit
+          in: query
+          schema:
+            type: integer
+            minimum: 1
+            maximum: 100
+            default: 20
+        - name: q
+          in: query
+          description: Search in name and description
+          schema:
+            type: string
+        - name: favorite
+          in: query
+          schema:
+            type: boolean
+        - name: category_id
+          in: query
+          schema:
+            type: string
+            format: uuid
+        - name: sort
+          in: query
+          schema:
+            type: string
+            enum: [observation_date, name, created_at]
+            default: observation_date
+        - name: order
+          in: query
+          schema:
+            type: string
+            enum: [asc, desc]
+      responses:
+        '200':
+          description: Successful response
+          headers:
+            X-Total-Count:
+              schema:
+                type: integer
+            X-Page:
+              schema:
+                type: integer
+            X-Limit:
+              schema:
+                type: integer
+            X-Request-ID:
+              schema:
+                type: string
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  items:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/Observation'
+        '400':
+          $ref: '#/components/responses/ValidationError'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+    
+    post:
+      tags: [Observations]
+      summary: Create observation
+      description: Create a new observation with location data
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ObservationCreate'
+      responses:
+        '201':
+          description: Observation created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Observation'
+        '400':
+          $ref: '#/components/responses/ValidationError'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+
+  /observations/{id}:
+    parameters:
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
+    
+    get:
+      tags: [Observations]
+      summary: Get observation by ID
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Observation'
+        '404':
+          $ref: '#/components/responses/NotFound'
+    
+    patch:
+      tags: [Observations]
+      summary: Update observation
+      description: Partially update an observation
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ObservationUpdate'
+      responses:
+        '200':
+          description: Observation updated
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Observation'
+        '400':
+          $ref: '#/components/responses/ValidationError'
+        '404':
+          $ref: '#/components/responses/NotFound'
+    
+    delete:
+      tags: [Observations]
+      summary: Delete observation
+      responses:
+        '204':
+          description: Observation deleted
+        '404':
+          $ref: '#/components/responses/NotFound'
+
+  /observations/map:
+    get:
+      tags: [Utilities]
+      summary: Get map markers
+      description: Get lightweight markers for map display with optional bounding box filtering
+      parameters:
+        - name: min_lat
+          in: query
+          schema:
+            type: number
+            minimum: -90
+            maximum: 90
+        - name: max_lat
+          in: query
+          schema:
+            type: number
+            minimum: -90
+            maximum: 90
+        - name: min_lng
+          in: query
+          schema:
+            type: number
+            minimum: -180
+            maximum: 180
+        - name: max_lng
+          in: query
+          schema:
+            type: number
+            minimum: -180
+            maximum: 180
+        - name: category_id
+          in: query
+          schema:
+            type: string
+            format: uuid
+        - name: favorite
+          in: query
+          schema:
+            type: boolean
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  markers:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/ObservationMarker'
+
+  /categories:
+    get:
+      tags: [Categories]
+      summary: List categories
+      parameters:
+        - name: search
+          in: query
+          schema:
+            type: string
+        - name: sort
+          in: query
+          schema:
+            type: string
+            enum: [sort_order, name]
+            default: sort_order
+        - name: order
+          in: query
+          schema:
+            type: string
+            enum: [asc, desc]
+            default: asc
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  items:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/Category'
+
+  /categories/{id}:
+    get:
+      tags: [Categories]
+      summary: Get category by ID
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Category'
+        '404':
+          $ref: '#/components/responses/NotFound'
+
+  /location-sources:
+    get:
+      tags: [Utilities]
+      summary: List location sources
+      description: Get list of allowed location sources (manual, gps, etc.)
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  items:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        source:
+                          type: string
+
+  /profile/me:
+    get:
+      tags: [Profile]
+      summary: Get current user profile
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Profile'
+        '404':
+          $ref: '#/components/responses/NotFound'
+    
+    patch:
+      tags: [Profile]
+      summary: Update current user profile
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ProfileUpdate'
+      responses:
+        '200':
+          description: Profile updated
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Profile'
+        '400':
+          $ref: '#/components/responses/ValidationError'
+
+components:
+  schemas:
+    Observation:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        slug:
+          type: string
+          description: URL-friendly identifier (auto-generated)
+        name:
+          type: string
+          minLength: 1
+          maxLength: 100
+        description:
+          type: string
+          maxLength: 500
+          nullable: true
+        observation_date:
+          type: string
+          format: date-time
+        is_favorite:
+          type: boolean
+        category:
+          $ref: '#/components/schemas/CategoryRef'
+        location:
+          $ref: '#/components/schemas/Location'
+        created_at:
+          type: string
+          format: date-time
+        updated_at:
+          type: string
+          format: date-time
+      required:
+        - id
+        - slug
+        - name
+        - observation_date
+        - is_favorite
+        - category
+        - location
+        - created_at
+        - updated_at
+
+    ObservationCreate:
+      type: object
+      properties:
+        name:
+          type: string
+          minLength: 1
+          maxLength: 100
+        description:
+          type: string
+          maxLength: 500
+          nullable: true
+        category_id:
+          type: string
+          format: uuid
+        observation_date:
+          type: string
+          format: date-time
+        location:
+          $ref: '#/components/schemas/GeoPoint'
+        location_source:
+          type: string
+          nullable: true
+        location_accuracy:
+          type: number
+          minimum: 0
+          maximum: 999.99
+          nullable: true
+        is_favorite:
+          type: boolean
+          default: false
+      required:
+        - name
+        - category_id
+        - observation_date
+        - location
+
+    ObservationUpdate:
+      type: object
+      properties:
+        name:
+          type: string
+          minLength: 1
+          maxLength: 100
+        description:
+          type: string
+          maxLength: 500
+          nullable: true
+        category_id:
+          type: string
+          format: uuid
+        observation_date:
+          type: string
+          format: date-time
+        location:
+          $ref: '#/components/schemas/GeoPoint'
+        location_source:
+          type: string
+          nullable: true
+        location_accuracy:
+          type: number
+          minimum: 0
+          maximum: 999.99
+          nullable: true
+        is_favorite:
+          type: boolean
+
+    ObservationMarker:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        name:
+          type: string
+        observation_date:
+          type: string
+          format: date-time
+        lat:
+          type: number
+        lng:
+          type: number
+      required:
+        - id
+        - name
+        - observation_date
+        - lat
+        - lng
+
+    Category:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        name:
+          type: string
+        icon:
+          type: string
+        color:
+          type: string
+          pattern: '^#[0-9a-fA-F]{6}$'
+        sort_order:
+          type: integer
+      required:
+        - id
+        - name
+        - icon
+        - color
+        - sort_order
+
+    CategoryRef:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        name:
+          type: string
+        icon:
+          type: string
+        color:
+          type: string
+      required:
+        - id
+        - name
+        - icon
+        - color
+
+    Location:
+      type: object
+      properties:
+        lat:
+          type: number
+          minimum: -90
+          maximum: 90
+        lng:
+          type: number
+          minimum: -180
+          maximum: 180
+        accuracy:
+          type: number
+          nullable: true
+        source:
+          type: string
+          nullable: true
+      required:
+        - lat
+        - lng
+
+    GeoPoint:
+      type: object
+      properties:
+        lat:
+          type: number
+          minimum: -90
+          maximum: 90
+        lng:
+          type: number
+          minimum: -180
+          maximum: 180
+      required:
+        - lat
+        - lng
+
+    Profile:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        display_name:
+          type: string
+          maxLength: 60
+        avatar_url:
+          type: string
+          format: uri
+          nullable: true
+        created_at:
+          type: string
+          format: date-time
+        updated_at:
+          type: string
+          format: date-time
+      required:
+        - id
+        - display_name
+        - created_at
+        - updated_at
+
+    ProfileUpdate:
+      type: object
+      properties:
+        display_name:
+          type: string
+          minLength: 1
+          maxLength: 60
+        avatar_url:
+          type: string
+          format: uri
+          nullable: true
+
+    Error:
+      type: object
+      properties:
+        error:
+          type: object
+          properties:
+            code:
+              type: string
+            message:
+              type: string
+            details:
+              type: object
+          required:
+            - code
+            - message
+
+  responses:
+    ValidationError:
+      description: Validation error
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
+          example:
+            error:
+              code: ValidationError
+              message: Invalid request body
+              details:
+                fieldErrors:
+                  name: ["Required"]
+
+    Unauthorized:
+      description: Unauthorized
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
+          example:
+            error:
+              code: Unauthorized
+              message: Missing or invalid authentication
+
+    NotFound:
+      description: Resource not found
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
+          example:
+            error:
+              code: NotFound
+              message: Resource not found
+
+  securitySchemes:
+    BearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+
+security:
+  - BearerAuth: []
