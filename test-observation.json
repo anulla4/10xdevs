@@ -1,0 +1,13 @@
+{
+  "name": "Brzoza brodawkowata",
+  "description": "Piękna brzoza przy jeziorze",
+  "category_id": "e104717e-4043-47f5-aa43-b3c51b7b7480",
+  "observation_date": "2025-10-15T14:00:00Z",
+  "location": {
+    "lat": 52.25,
+    "lng": 21.02
+  },
+  "location_source": "gps",
+  "location_accuracy": 5.5,
+  "is_favorite": true
+}
