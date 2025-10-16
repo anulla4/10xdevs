@@ -328,10 +328,10 @@ export async function getObservationMarkers(
     favorite?: boolean;
   },
   supabase: SupabaseClient
-): Promise<{ markers: Array<{ id: string; name: string; observation_date: string; lat: number; lng: number }> }> {
+): Promise<{ markers: Array<{ id: string; name: string; observation_date: string; lat: number; lng: number; category_name: string; category_color: string }> }> {
   let query = supabase
     .from("observations_read")
-    .select("id, name, observation_date, lat, lng");
+    .select("id, name, observation_date, lat, lng, category_name, category_color");
 
   // Apply filters
   if (params.category_id) {
@@ -364,6 +364,8 @@ export async function getObservationMarkers(
     observation_date: row.observation_date,
     lat: row.lat,
     lng: row.lng,
+    category_name: row.category_name,
+    category_color: row.category_color,
   }));
 
   return { markers };

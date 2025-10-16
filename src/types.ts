@@ -46,6 +46,8 @@ export type ObservationMarkerDto = {
   observation_date: ObservationRow['observation_date']
   lat: number
   lng: number
+  category_name: string
+  category_color: string
 }
 
 // Commands (write models)
