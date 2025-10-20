@@ -7,10 +7,6 @@ import { WelcomePage } from '../components/layout/WelcomePage'
 if (Astro.locals.user) {
   return Astro.redirect('/panel')
 }
-
-// This should never be reached due to middleware protection,
-// but kept as a safety fallback
-return Astro.redirect('/auth/login')
 ---
 
 <Layout title="Nature Log - Twoje obserwacje przyrody">

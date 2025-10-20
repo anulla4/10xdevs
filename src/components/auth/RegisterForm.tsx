@@ -110,7 +110,7 @@ export function RegisterForm({ redirectTo = "/panel" }: RegisterFormProps) {
         // Auto-login successful, redirect
         window.location.href = redirectTo;
       }
-    } catch (error) {
+    } catch {
       setApiError("Brak połączenia z serwerem. Sprawdź połączenie internetowe.");
     } finally {
       setIsLoading(false);

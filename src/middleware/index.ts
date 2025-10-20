@@ -5,6 +5,7 @@ import { generateRequestId } from "../lib/logger.ts";
 
 // Public paths that don't require authentication
 const PUBLIC_PATHS = [
+  "/",
   // Auth pages
   "/auth/login",
   "/auth/register",

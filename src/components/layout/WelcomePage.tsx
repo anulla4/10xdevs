@@ -17,14 +17,14 @@ export function WelcomePage() {
             Twoje obserwacje przyrody w jednym miejscu
           </p>
           <p className="text-lg text-gray-500 dark:text-gray-400 mb-12">
-            Dokumentuj spotkania z przyrodą, zapisuj lokalizacje i twórz własną kolekcję obserwacji roślin, zwierząt i miejsc.
+            Dokumentuj spotkania z przyrodą, zapisuj lokalizacje i twórz własną kolekcję obserwacji roślin, zwierząt i skał.
           </p>
 
           {/* CTA Buttons */}
           <div className="flex flex-col sm:flex-row gap-4 justify-center">
             <Button size="lg" asChild>
               <a href="/auth/register" className="text-lg px-8">
-                Rozpocznij za darmo
+                Wypróbuj Nature Log
               </a>
             </Button>
             <Button size="lg" variant="outline" asChild>
@@ -48,7 +48,7 @@ export function WelcomePage() {
               Kataloguj obserwacje
             </h3>
             <p className="text-gray-600 dark:text-gray-400 text-sm">
-              Zapisuj szczegóły swoich spotkań z przyrodą - rośliny, zwierzęta i miejsca.
+              Zapisuj szczegóły swoich spotkań z przyrodą – rośliny, zwierzęta i skały.
             </p>
           </div>
 
