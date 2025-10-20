@@ -17,6 +17,10 @@
 ## AI / ML (opcjonalnie, poza MVP)
 - **Openrouter.ai** – brokera API do wielu modeli (OpenAI, Anthropic, Google); pozwala ustawić limity kosztów i wybrać najtańszy model per request.
 
+## Testing
+- **Vitest**: Nowoczesny i szybki framework do testów jednostkowych i integracyjnych, z natywną integracją z Vite.
+- **Playwright**: Narzędzie do testów End-to-End (E2E) od Microsoftu, zapewniające niezawodne testowanie w różnych przeglądarkach.
+
 ## CI/CD & Hosting
 - **GitHub Actions** – pipeline: lint → test → build → docker image → deploy.
 - **Docker** – budowanie i pakowanie aplikacji (Astro static + Supabase client).

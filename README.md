@@ -28,6 +28,7 @@ The project is built with a modern, performant, and scalable tech stack:
 - **Mapping**: [Leaflet](https://leafletjs.com/) for an interactive and lightweight map experience.
 - **Backend (BaaS)**: [Supabase](https://supabase.com/) for the PostgreSQL database, user authentication, and instant APIs.
 - **CI/CD & Hosting**: [GitHub Actions](https://github.com/features/actions) for continuous integration and deployment, with the application containerized using [Docker](https://www.docker.com/) and hosted on [DigitalOcean](https://www.digitalocean.com/).
+- **Testing**: [Vitest](https://vitest.dev/) for unit/integration tests and [Playwright](https://playwright.dev/) for end-to-end tests.
 
 ## Getting Started Locally
 
