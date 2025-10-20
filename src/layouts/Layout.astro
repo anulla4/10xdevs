@@ -1,12 +1,18 @@
 ---
 import "leaflet/dist/leaflet.css";
 import "../styles/global.css";
+import { Header } from "../components/layout/Header";
 
 interface Props {
   title?: string;
+  showHeader?: boolean;
 }
 
-const { title = "10x Astro Starter" } = Astro.props;
+const { title = "10x Astro Starter", showHeader = true } = Astro.props;
+
+// Get authentication state from middleware
+const isAuthenticated = !!Astro.locals.user;
+const user = Astro.locals.user;
 ---
 
 <!doctype html>
@@ -19,6 +25,7 @@ const { title = "10x Astro Starter" } = Astro.props;
     <title>{title}</title>
   </head>
   <body>
+    {showHeader && <Header client:load isAuthenticated={isAuthenticated} user={user} />}
     <slot />
   </body>
 </html>

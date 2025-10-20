@@ -1,0 +1,15 @@
+---
+import { createSupabaseServerInstance } from "../../db/supabase.client";
+
+// Create Supabase server instance
+const supabase = createSupabaseServerInstance({
+  cookies: Astro.cookies,
+  headers: Astro.request.headers,
+});
+
+// Sign out
+await supabase.auth.signOut();
+
+// Redirect to login
+return Astro.redirect("/auth/login");
+---

@@ -1,0 +1,30 @@
+---
+import Layout from "../../layouts/Layout.astro";
+import { RegisterForm } from "../../components/auth/RegisterForm";
+
+// Redirect to panel if already logged in
+if (Astro.locals.user) {
+  return Astro.redirect("/panel");
+}
+
+const redirectTo = Astro.url.searchParams.get("redirectTo") || "/panel";
+---
+
+<Layout title="Rejestracja - Nature Log">
+  <div class="min-h-screen flex items-center justify-center bg-gradient-to-br from-green-50 to-blue-50 dark:from-gray-900 dark:to-gray-800 px-4 py-12">
+    <div class="w-full max-w-md">
+      <div class="text-center mb-8">
+        <h1 class="text-3xl font-bold text-gray-900 dark:text-white mb-2">
+          Utwórz konto
+        </h1>
+        <p class="text-muted-foreground">
+          Dołącz do społeczności miłośników przyrody
+        </p>
+      </div>
+
+      <div class="bg-white dark:bg-gray-950 rounded-lg shadow-lg p-8 border border-gray-200 dark:border-gray-800">
+        <RegisterForm client:load redirectTo={redirectTo} />
+      </div>
+    </div>
+  </div>
+</Layout>

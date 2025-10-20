@@ -1,22 +1,15 @@
-<!-- ---
+---
 import Layout from '../layouts/Layout.astro'
 import { PanelPage } from '../components/panel/PanelPage'
 
-// Auth guard - TEMPORARILY DISABLED FOR TESTING
-// TODO: Enable auth guard and create login page
-const supabase = Astro.locals.supabase
-const {
-  data: { session },
-} = await supabase.auth.getSession()
+// Auth guard - require authentication
+if (!Astro.locals.user) {
+  return Astro.redirect('/auth/login?redirectTo=/panel')
+}
 
-// Temporary: Use mock user ID for testing
-const userId = session?.user?.id || 'test-user-id'
-
-// if (!session) {
-//   return Astro.redirect('/auth/login')
-// }
+const userId = Astro.locals.user.id
 ---
 
 <Layout title="Panel - Nature Log">
   <PanelPage client:only="react" userId={userId} />
-</Layout> -->
+</Layout>
