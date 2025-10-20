@@ -116,7 +116,7 @@ Główne cele procesu testowania to:
 ## 6. Narzędzia do Testowania
 
 - **Testy jednostkowe i integracyjne**: Vitest lub Jest z React Testing Library.
-- **Testy E2E**: Playwright lub Cypress.
+- **Testy E2E**: Playwright.
 - **Testy API**: Postman lub wbudowane narzędzia w frameworku do testów E2E.
 - **Testy wydajnościowe**: Lighthouse, WebPageTest.
 - **CI/CD**: GitHub Actions do automatycznego uruchamiania testów po każdym pushu do repozytorium.
