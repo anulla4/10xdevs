@@ -1,15 +1,31 @@
 ---
 import { createSupabaseServerInstance } from "../../db/supabase.client";
 
-// Create Supabase server instance
+/**
+ * Logout Page
+ * 
+ * Handles user logout by:
+ * 1. Clearing the Supabase session
+ * 2. Removing authentication cookies
+ * 3. Redirecting to the login page
+ * 
+ * This page is accessible without authentication (see middleware PUBLIC_PATHS)
+ */
+
+// Create Supabase server instance with cookies and headers
 const supabase = createSupabaseServerInstance({
   cookies: Astro.cookies,
   headers: Astro.request.headers,
 });
 
-// Sign out
-await supabase.auth.signOut();
+// Sign out - this clears the session and removes cookies
+const { error } = await supabase.auth.signOut();
 
-// Redirect to login
+// Log any errors (optional, for debugging)
+if (error) {
+  console.error("Logout error:", error);
+}
+
+// Always redirect to login page after logout attempt
 return Astro.redirect("/auth/login");
 ---

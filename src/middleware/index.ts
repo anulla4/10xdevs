@@ -10,6 +10,7 @@ const PUBLIC_PATHS = [
   "/auth/register",
   "/auth/reset-password",
   "/auth/update-password",
+  "/auth/logout",
   // Auth API endpoints
   "/api/auth/login",
   "/api/auth/register",
