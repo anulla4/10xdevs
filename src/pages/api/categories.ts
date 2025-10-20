@@ -47,6 +47,8 @@ export const GET: APIRoute = async (context) => {
       throw new UnauthorizedError("Missing auth context");
     }
 
+    // Categories are public - no user authentication required
+
     // Parse and validate query parameters
     const parsed = QuerySchema.safeParse(Object.fromEntries(url.searchParams));
     if (!parsed.success) {

@@ -78,10 +78,12 @@ function PanelPageContent({ userId }: PanelPageProps) {
 
   const handleCloseModal = () => {
     setModalState({ type: "none" });
+    setPrefillLocation(undefined);
   };
 
   const handleModalSuccess = () => {
     setModalState({ type: "none" });
+    setPrefillLocation(undefined);
     if (modalState.type === "create") {
       toast.success("Obserwacja została dodana");
     } else if (modalState.type === "edit") {
@@ -96,10 +98,22 @@ function PanelPageContent({ userId }: PanelPageProps) {
   const editObservation =
     modalState.type === "edit" ? observationsData?.items.find((obs) => obs.id === modalState.id) : undefined;
 
+  const handleAddObservation = () => {
+    setModalState({ type: "create" });
+  };
+
+  const handleMapClick = (lat: number, lng: number) => {
+    setModalState({ type: "create" });
+    // Store location for prefill - we'll pass it to modal
+    setPrefillLocation({ lat, lng });
+  };
+
+  const [prefillLocation, setPrefillLocation] = useState<{ lat: number; lng: number } | undefined>(undefined);
+
   return (
     <div className="min-h-screen bg-gray-50">
       <div className="mx-auto max-w-[1920px]">
-        <PanelToolbar value={filters} onChange={handleFiltersChange} />
+        <PanelToolbar value={filters} onChange={handleFiltersChange} onAddObservation={handleAddObservation} />
         <PanelContent
           filters={filters}
           selectedObservationId={selectedObservationId}
@@ -107,6 +121,7 @@ function PanelPageContent({ userId }: PanelPageProps) {
           onFiltersChange={handleFiltersChange}
           onEdit={handleEdit}
           onDelete={handleDelete}
+          onMapClick={handleMapClick}
         />
       </div>
 
@@ -114,6 +129,7 @@ function PanelPageContent({ userId }: PanelPageProps) {
       {modalState.type === "create" && (
         <ObservationFormModal
           mode="create"
+          prefillLocation={prefillLocation}
           onSuccess={handleModalSuccess}
           onClose={handleCloseModal}
           onError={(msg) => toast.error(msg)}

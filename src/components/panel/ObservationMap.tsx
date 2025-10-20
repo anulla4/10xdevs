@@ -10,6 +10,7 @@ type ObservationMapProps = {
   filters: ObservationListFilters;
   selectedObservationId: string | null;
   onMarkerSelect: (id: string | null) => void;
+  onMapClick?: (lat: number, lng: number) => void;
 };
 
 // Fix Leaflet default icon issue with webpack (only on client side)
@@ -26,11 +27,7 @@ if (typeof window !== "undefined") {
 const DEFAULT_CENTER: [number, number] = [52.0693, 19.4803];
 const DEFAULT_ZOOM = 6;
 
-export function ObservationMap({
-  filters,
-  selectedObservationId,
-  onMarkerSelect,
-}: ObservationMapProps) {
+export function ObservationMap({ filters, selectedObservationId, onMarkerSelect, onMapClick }: ObservationMapProps) {
   const [bbox, setBbox] = useState<MapBbox | undefined>(undefined);
   const debouncedBbox = useDebounce(bbox, 300);
 
@@ -56,6 +53,7 @@ export function ObservationMap({
         />
         
         <MapBoundsTracker onBoundsChange={setBbox} />
+        {onMapClick && <MapClickHandler onMapClick={onMapClick} />}
         
         {markers.map((marker) => (
           <Marker
@@ -135,6 +133,17 @@ function MapBoundsTracker({ onBoundsChange }: { onBoundsChange: (bbox: MapBbox) 
       max_lng: bounds.getEast(),
     });
   }, []);
+
+  return null;
+}
+
+// Component to handle map clicks for adding observations
+function MapClickHandler({ onMapClick }: { onMapClick: (lat: number, lng: number) => void }) {
+  useMapEvents({
+    click: (e) => {
+      onMapClick(e.latlng.lat, e.latlng.lng);
+    },
+  });
 
   return null;
 }

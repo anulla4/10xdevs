@@ -10,6 +10,7 @@ type PanelContentProps = {
   onFiltersChange: (filters: ObservationListFilters) => void;
   onEdit: (id: string) => void;
   onDelete: (id: string, name: string) => void;
+  onMapClick?: (lat: number, lng: number) => void;
 };
 
 type MobileTab = "list" | "map";
@@ -21,6 +22,7 @@ export function PanelContent({
   onFiltersChange,
   onEdit,
   onDelete,
+  onMapClick,
 }: PanelContentProps) {
   const [activeTab, setActiveTab] = useState<MobileTab>("list");
   const [isMobile, setIsMobile] = useState(false);
@@ -84,6 +86,7 @@ export function PanelContent({
             filters={filters}
             selectedObservationId={selectedObservationId}
             onMarkerSelect={onSelectObservation}
+            onMapClick={onMapClick}
           />
         </div>
       </div>
