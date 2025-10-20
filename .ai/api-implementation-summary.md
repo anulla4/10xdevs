@@ -9,9 +9,13 @@
 ## 📊 Implementation Status: 100% Complete
 
 ### Endpoints Implemented: 11/11 ✅
+
 ### Error Handling: 11/11 ✅
+
 ### Request Tracking: 11/11 ✅
+
 ### Documentation: Complete ✅
+
 ### Manual Testing: All Passed ✅
 
 ---
@@ -90,6 +94,7 @@
 ### **1. Centralny Logger** (`src/lib/logger.ts`)
 
 **Funkcjonalności:**
+
 - Unikalny `request_id` dla każdego żądania
 - Strukturalne logi w formacie JSON
 - Metryki latency (czas odpowiedzi)
@@ -97,6 +102,7 @@
 - Kontekst: userId, method, path, userAgent
 
 **Przykład logu:**
+
 ```json
 {
   "timestamp": "2025-10-15T13:52:00.123Z",
@@ -115,6 +121,7 @@
 ### **2. Error Handling** (`src/lib/api-error.ts`)
 
 **Klasy błędów:**
+
 - `ValidationError` (400) - Błędne dane wejściowe
 - `UnauthorizedError` (401) - Brak autoryzacji
 - `ForbiddenError` (403) - Brak uprawnień
@@ -124,11 +131,13 @@
 - `InternalServerError` (500) - Nieoczekiwany błąd
 
 **Utility Functions:**
+
 - `createErrorResponse()` - Automatyczne tworzenie odpowiedzi błędu
 - `createSuccessResponse()` - Automatyczne tworzenie odpowiedzi sukcesu
 - Sanityzacja błędów (ukrywanie stack traces w production)
 
 **Format błędu:**
+
 ```json
 {
   "error": {
@@ -146,12 +155,14 @@
 ### **3. Middleware** (`src/middleware/index.ts`)
 
 **Funkcjonalności:**
+
 - Generowanie unikalnego `request_id`
 - Dodanie `X-Request-ID` do nagłówków odpowiedzi
 - Inicjalizacja Supabase client
 - Przygotowanie kontekstu dla JWT (TODO)
 
 **Types** (`src/env.d.ts`):
+
 ```typescript
 interface Locals {
   supabase: SupabaseClient<Database>;
@@ -163,6 +174,7 @@ interface Locals {
 ### **4. Services Layer**
 
 **Pliki serwisów:**
+
 - `observations.service.ts` - 6 funkcji (list, getById, create, update, delete, getMarkers)
 - `categories.service.ts` - 2 funkcje (list, getById)
 - `profile.service.ts` - 2 funkcje (getCurrent, updateCurrent)
@@ -175,6 +187,7 @@ interface Locals {
 ### **OpenAPI 3.0 Specification** (`openapi.yaml`)
 
 **Zawartość:**
+
 - Wszystkie 11 endpointów
 - Szczegółowe schematy request/response
 - Parametry query, path, body
@@ -185,11 +198,13 @@ interface Locals {
 ### **Swagger UI** (`/api-docs`)
 
 **Dostęp:**
+
 ```
 http://localhost:3000/api-docs
 ```
 
 **Funkcjonalności:**
+
 - Interaktywna dokumentacja
 - Testowanie endpointów
 - Podgląd schematów
@@ -202,6 +217,7 @@ http://localhost:3000/api-docs
 ### **1. PostGIS Integration**
 
 **Widok `observations_read`:**
+
 ```sql
 CREATE VIEW public.observations_read AS
 SELECT
@@ -223,6 +239,7 @@ FROM public.observations o;
 ```
 
 **Konwersja:**
+
 - Frontend → API: `{lat, lng}` (JSON)
 - API → DB: `ST_SetSRID(ST_MakePoint(lng, lat), 4326)` (PostGIS)
 - DB → API: `ST_Y(location), ST_X(location)` (lat, lng)
@@ -231,6 +248,7 @@ FROM public.observations o;
 ### **2. Auto-generowanie Slug**
 
 **Trigger DB:**
+
 ```sql
 CREATE TRIGGER set_slug_on_insert
   BEFORE INSERT ON observations
@@ -239,12 +257,14 @@ CREATE TRIGGER set_slug_on_insert
 ```
 
 **Przykład:**
+
 - Input: `name: "Brzoza brodawkowata"`
 - Output: `slug: "brzoza-brodawkowata-c3cc88d4"`
 
 ### **3. Row Level Security (RLS)**
 
 **Polityki:**
+
 - Użytkownicy widzą tylko swoje obserwacje
 - Kategorie są publiczne (read-only)
 - Profile są prywatne
@@ -427,16 +447,19 @@ curl "http://localhost:3000/api/observations/map?min_lat=52.22&max_lat=52.24&min
 ## 🚦 Next Steps (Optional)
 
 ### **Priority 1 - Authentication**
+
 - [ ] Implementacja JWT authentication
 - [ ] Middleware do weryfikacji tokenów
-- [ ] Endpoints /api/auth/*
+- [ ] Endpoints /api/auth/\*
 
 ### **Priority 2 - Testing**
+
 - [ ] Integration tests (Vitest)
 - [ ] Edge cases tests
 - [ ] RLS tests
 
 ### **Priority 3 - Production Readiness**
+
 - [ ] Rate limiting
 - [ ] CORS configuration
 - [ ] External logging service (Datadog, Sentry)
@@ -447,16 +470,19 @@ curl "http://localhost:3000/api/observations/map?min_lat=52.22&max_lat=52.24&min
 ## 📞 Resources
 
 ### **Documentation:**
+
 - API Docs: `http://localhost:3000/api-docs`
 - OpenAPI Spec: `/openapi.yaml`
 - This Summary: `/.ai/api-implementation-summary.md`
 
 ### **Code References:**
+
 - Error Handling Pattern: `src/pages/api/categories.ts` (wzorzec)
 - Logger: `src/lib/logger.ts`
 - Error Classes: `src/lib/api-error.ts`
 
 ### **Database:**
+
 - Migrations: `supabase/migrations/`
 - Seed Data: `supabase/seed.sql`
 - Reset DB: `supabase db reset`
