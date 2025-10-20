@@ -17,8 +17,6 @@ const PUBLIC_PATHS = [
   "/api/auth/logout",
   "/api/auth/reset-password",
   "/api/auth/update-password",
-  // Landing page
-  "/",
 ];
 
 export const onRequest = defineMiddleware(async (context, next) => {
