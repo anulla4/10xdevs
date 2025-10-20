@@ -14,6 +14,8 @@ const success = Astro.url.searchParams.get("success");
 let successMessage: string | undefined;
 if (success === "password_changed") {
   successMessage = "Hasło zostało zmienione. Możesz się teraz zalogować.";
+} else if (success === "email_confirmed") {
+  successMessage = "Twój adres e-mail został potwierdzony. Możesz się teraz zalogować.";
 }
 ---
 

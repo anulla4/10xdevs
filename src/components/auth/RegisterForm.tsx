@@ -29,6 +29,7 @@ export function RegisterForm({ redirectTo = "/panel" }: RegisterFormProps) {
   const [errors, setErrors] = useState<FormErrors>({});
   const [isLoading, setIsLoading] = useState(false);
   const [apiError, setApiError] = useState<string | null>(null);
+  const [successMessage, setSuccessMessage] = useState<string | null>(null);
 
   const validate = (): boolean => {
     const newErrors: FormErrors = {};
@@ -58,6 +59,7 @@ export function RegisterForm({ redirectTo = "/panel" }: RegisterFormProps) {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setApiError(null);
+    setSuccessMessage(null);
 
     if (!validate()) return;
 
@@ -77,7 +79,7 @@ export function RegisterForm({ redirectTo = "/panel" }: RegisterFormProps) {
 
       if (!response.ok) {
         const data = await response.json().catch(() => ({}));
-        
+
         if (response.status === 409) {
           setApiError("E-mail jest już zarejestrowany");
         } else if (response.status === 400) {
@@ -90,8 +92,24 @@ export function RegisterForm({ redirectTo = "/panel" }: RegisterFormProps) {
         return;
       }
 
-      // Success - redirect
-      window.location.href = redirectTo;
+      // Success - check if email confirmation is required
+      const data = await response.json();
+
+      if (data.requiresEmailConfirmation) {
+        // Show success message and don't redirect
+        setSuccessMessage(
+          data.message || "Konto zostało utworzone. Sprawdź swoją skrzynkę e-mail i kliknij link potwierdzający."
+        );
+        // Clear form
+        setFormData({
+          email: "",
+          password: "",
+          confirmPassword: "",
+        });
+      } else {
+        // Auto-login successful, redirect
+        window.location.href = redirectTo;
+      }
     } catch (error) {
       setApiError("Brak połączenia z serwerem. Sprawdź połączenie internetowe.");
     } finally {
@@ -138,6 +156,20 @@ export function RegisterForm({ redirectTo = "/panel" }: RegisterFormProps) {
   return (
     <div className="w-full max-w-md mx-auto">
       <form onSubmit={handleSubmit} className="space-y-4">
+        {successMessage && (
+          <div className="p-4 rounded-md bg-green-50 dark:bg-green-950/20 border border-green-200 dark:border-green-800 text-green-900 dark:text-green-100 text-sm">
+            <p className="font-semibold mb-1">Rejestracja zakończona pomyślnie!</p>
+            <p>{successMessage}</p>
+            <p className="mt-2">
+              Po potwierdzeniu adresu e-mail będziesz mógł się{" "}
+              <a href="/auth/login" className="underline font-medium">
+                zalogować
+              </a>
+              .
+            </p>
+          </div>
+        )}
+
         {apiError && (
           <div className="p-3 rounded-md bg-destructive/10 border border-destructive text-destructive text-sm">
             {apiError}
@@ -155,7 +187,7 @@ export function RegisterForm({ redirectTo = "/panel" }: RegisterFormProps) {
             value={formData.email}
             onChange={(e) => setFormData({ ...formData, email: e.target.value })}
             onBlur={() => handleBlur("email")}
-            disabled={isLoading}
+            disabled={isLoading || !!successMessage}
             aria-invalid={!!errors.email}
             aria-describedby={errors.email ? "email-error" : undefined}
           />
@@ -177,7 +209,7 @@ export function RegisterForm({ redirectTo = "/panel" }: RegisterFormProps) {
             value={formData.password}
             onChange={(e) => setFormData({ ...formData, password: e.target.value })}
             onBlur={() => handleBlur("password")}
-            disabled={isLoading}
+            disabled={isLoading || !!successMessage}
             aria-invalid={!!errors.password}
             aria-describedby={errors.password ? "password-error" : undefined}
           />
@@ -199,7 +231,7 @@ export function RegisterForm({ redirectTo = "/panel" }: RegisterFormProps) {
             value={formData.confirmPassword}
             onChange={(e) => setFormData({ ...formData, confirmPassword: e.target.value })}
             onBlur={() => handleBlur("confirmPassword")}
-            disabled={isLoading}
+            disabled={isLoading || !!successMessage}
             aria-invalid={!!errors.confirmPassword}
             aria-describedby={errors.confirmPassword ? "confirmPassword-error" : undefined}
           />
@@ -211,7 +243,7 @@ export function RegisterForm({ redirectTo = "/panel" }: RegisterFormProps) {
         </div>
 
         {/* Submit Button */}
-        <Button type="submit" className="w-full" disabled={isLoading}>
+        <Button type="submit" className="w-full" disabled={isLoading || !!successMessage}>
           {isLoading && <Loader2 className="h-4 w-4 animate-spin" />}
           Zarejestruj się
         </Button>

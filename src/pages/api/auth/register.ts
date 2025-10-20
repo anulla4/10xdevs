@@ -34,12 +34,13 @@ export const POST: APIRoute = async ({ request, cookies, locals }) => {
     });
 
     // Attempt registration
+    // Note: Supabase will send a confirmation email if email confirmation is enabled
+    // The user needs to click the link in the email to verify their account
     const { data, error } = await supabase.auth.signUp({
       email,
       password,
       options: {
-        // Email confirmation disabled for MVP
-        emailRedirectTo: undefined,
+        emailRedirectTo: `${new URL(request.url).origin}/auth/login?success=email_confirmed`,
       },
     });
 
@@ -91,15 +92,23 @@ export const POST: APIRoute = async ({ request, cookies, locals }) => {
       requestId: locals.requestId,
       userId: data.user.id,
       email: data.user.email,
+      emailConfirmationRequired: !data.session,
     });
 
-    // Auto-login after registration
+    // Check if email confirmation is required
+    // If there's no session, it means email confirmation is enabled
+    const requiresEmailConfirmation = !data.session;
+
     return new Response(
       JSON.stringify({
         user: {
           id: data.user.id,
           email: data.user.email,
         },
+        requiresEmailConfirmation,
+        message: requiresEmailConfirmation
+          ? "Konto zostało utworzone. Sprawdź swoją skrzynkę e-mail i kliknij link potwierdzający."
+          : "Konto zostało utworzone pomyślnie.",
       }),
       {
         status: 201,
