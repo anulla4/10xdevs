@@ -1,4 +1,5 @@
 /// <reference types="astro/client" />
+/// <reference types="@testing-library/jest-dom" />
 
 import type { SupabaseClient } from '@supabase/supabase-js';
 import type { Database } from './db/database.types.ts';
