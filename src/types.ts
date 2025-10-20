@@ -84,3 +84,49 @@ export type AppSettingDto = {
   created_at: Timestamp
   updated_at: Timestamp
 }
+
+// OpenRouter Service Types
+export type Role = 'system' | 'user' | 'assistant' | 'tool'
+
+export type OpenRouterMessage = {
+  role: Role
+  content: string
+}
+
+export type ResponseFormat =
+  | undefined
+  | {
+      type: 'json_schema'
+      json_schema: {
+        name: string
+        strict: true
+        schema: Record<string, unknown> // JSON Schema draft-07 compatible
+      }
+    }
+
+export type OpenRouterParams = {
+  temperature?: number
+  max_tokens?: number
+  top_p?: number
+  presence_penalty?: number
+  frequency_penalty?: number
+  seed?: number
+}
+
+export type ChatRequest = {
+  system?: string
+  user: string | OpenRouterMessage[] // single prompt or conversation history
+  model?: string
+  params?: OpenRouterParams
+  response_format?: ResponseFormat
+}
+
+export type ChatResult = {
+  content: string // merged content from choice(s)
+  raw: unknown // full OpenRouter response (for debug/log)
+}
+
+export type ChatChunk = {
+  delta: string
+  done: boolean
+}
