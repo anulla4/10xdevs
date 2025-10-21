@@ -159,13 +159,13 @@ export function ObservationFormModal({
   const isSubmitting = createMutation.isPending || updateMutation.isPending;
 
   return (
-    <Dialog open={open} onOpenChange={handleClose}>
-      <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto">
+    <Dialog open={open} onOpenChange={handleClose} data-test-id="observation-form-dialog">
+      <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto" data-test-id="observation-form-content">
         <DialogHeader>
           <DialogTitle>{mode === "create" ? "Dodaj obserwację" : "Edytuj obserwację"}</DialogTitle>
         </DialogHeader>
 
-        <form onSubmit={handleSubmit} className="space-y-4">
+        <form onSubmit={handleSubmit} className="space-y-4" data-test-id="observation-form">
           {/* Name */}
           <div className="space-y-2">
             <Label htmlFor="name">
@@ -178,6 +178,7 @@ export function ObservationFormModal({
               maxLength={100}
               aria-invalid={!!errors.name}
               aria-describedby={errors.name ? "name-error" : undefined}
+              data-test-id="field-name"
             />
             {errors.name && (
               <p id="name-error" className="text-sm text-destructive">
@@ -197,6 +198,7 @@ export function ObservationFormModal({
               rows={3}
               aria-invalid={!!errors.description}
               aria-describedby={errors.description ? "description-error" : undefined}
+              data-test-id="field-description"
             />
             <div className="flex justify-between text-xs text-muted-foreground">
               <span>{errors.description && <span className="text-destructive">{errors.description}</span>}</span>
@@ -216,6 +218,7 @@ export function ObservationFormModal({
               className="h-10 w-full rounded-md border border-input bg-white pl-3 pr-10 py-2 text-sm shadow-sm transition-colors focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:cursor-not-allowed disabled:opacity-50 appearance-none bg-[url('data:image/svg+xml;charset=utf-8,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%2212%22%20height%3D%2212%22%20viewBox%3D%220%200%2012%2012%22%3E%3Cpath%20fill%3D%22%23666%22%20d%3D%22M10.293%203.293L6%207.586%201.707%203.293A1%201%200%2000.293%204.707l5%205a1%201%200%20001.414%200l5-5a1%201%200%2010-1.414-1.414z%22%2F%3E%3C%2Fsvg%3E')] bg-[length:16px_16px] bg-[right_0.75rem_center] bg-no-repeat"
               disabled={categoriesLoading}
               aria-invalid={!!errors.category_id}
+              data-test-id="field-category"
             >
               <option value="">{categoriesLoading ? "Ładowanie..." : "Wybierz kategorię"}</option>
               {categories?.map((cat) => (
@@ -246,6 +249,7 @@ export function ObservationFormModal({
               id="observation_date"
               value={formData.observation_date}
               onChange={(e) => setFormData({ ...formData, observation_date: e.target.value })}
+              data-test-id="field-observation-date"
             />
           </div>
 
@@ -262,6 +266,7 @@ export function ObservationFormModal({
                 onChange={(e) => setFormData({ ...formData, location_lat: e.target.value })}
                 step="0.000001"
                 aria-invalid={!!errors.location_lat}
+                data-test-id="field-location-lat"
               />
               {errors.location_lat && <p className="text-sm text-destructive">{errors.location_lat}</p>}
             </div>
@@ -277,6 +282,7 @@ export function ObservationFormModal({
                 onChange={(e) => setFormData({ ...formData, location_lng: e.target.value })}
                 step="0.000001"
                 aria-invalid={!!errors.location_lng}
+                data-test-id="field-location-lng"
               />
               {errors.location_lng && <p className="text-sm text-destructive">{errors.location_lng}</p>}
             </div>
@@ -290,6 +296,7 @@ export function ObservationFormModal({
               value={formData.location_source}
               onChange={(e) => setFormData({ ...formData, location_source: e.target.value })}
               className="h-10 w-full rounded-md border border-input bg-white pl-3 pr-10 py-2 text-sm shadow-sm transition-colors focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:cursor-not-allowed disabled:opacity-50 appearance-none bg-[url('data:image/svg+xml;charset=utf-8,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%2212%22%20height%3D%2212%22%20viewBox%3D%220%200%2012%2012%22%3E%3Cpath%20fill%3D%22%23666%22%20d%3D%22M10.293%203.293L6%207.586%201.707%203.293A1%201%200%2000.293%204.707l5%205a1%201%200%20001.414%200l5-5a1%201%200%2010-1.414-1.414z%22%2F%3E%3C%2Fsvg%3E')] bg-[length:16px_16px] bg-[right_0.75rem_center] bg-no-repeat"
+              data-test-id="field-location-source"
             >
               <option value="manual">ręczne</option>
               <option value="gps">gps</option>
@@ -302,6 +309,7 @@ export function ObservationFormModal({
               id="is_favorite"
               checked={formData.is_favorite}
               onCheckedChange={(checked) => setFormData({ ...formData, is_favorite: checked as boolean })}
+              data-test-id="field-is-favorite"
             />
             <Label htmlFor="is_favorite" className="cursor-pointer">
               Dodaj do ulubionych
@@ -310,10 +318,10 @@ export function ObservationFormModal({
         </form>
 
         <DialogFooter>
-          <Button type="button" variant="outline" onClick={handleClose} disabled={isSubmitting}>
+          <Button type="button" variant="outline" onClick={handleClose} disabled={isSubmitting} data-test-id="btn-cancel-observation">
             Anuluj
           </Button>
-          <Button type="submit" onClick={handleSubmit} disabled={isSubmitting}>
+          <Button type="submit" onClick={handleSubmit} disabled={isSubmitting} data-test-id="btn-save-observation">
             {isSubmitting && <Loader2 className="h-4 w-4 animate-spin" />}
             {mode === "create" ? "Dodaj" : "Zapisz"}
           </Button>

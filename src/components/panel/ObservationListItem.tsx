@@ -17,6 +17,8 @@ export function ObservationListItem({ item, selected, onClick, onEdit, onDelete 
       role="button"
       tabIndex={0}
       aria-pressed={selected}
+      data-test-id="observation-row"
+      data-observation-id={item.id}
       onKeyDown={(e) => {
         if (e.key === 'Enter' || e.key === ' ') {
           e.preventDefault();
@@ -71,6 +73,7 @@ export function ObservationListItem({ item, selected, onClick, onEdit, onDelete 
                 }}
                 className="rounded p-1.5 text-gray-400 hover:bg-gray-100 hover:text-blue-600"
                 aria-label="Edytuj obserwację"
+                data-test-id="row-edit"
               >
                 <Edit2 className="h-4 w-4" />
               </button>
@@ -83,6 +86,7 @@ export function ObservationListItem({ item, selected, onClick, onEdit, onDelete 
                 }}
                 className="rounded p-1.5 text-gray-400 hover:bg-gray-100 hover:text-red-600"
                 aria-label="Usuń obserwację"
+                data-test-id="row-delete"
               >
                 <Trash2 className="h-4 w-4" />
               </button>

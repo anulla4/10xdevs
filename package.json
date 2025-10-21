@@ -14,7 +14,8 @@
     "test:unit": "vitest",
     "test:unit:watch": "vitest --watch",
     "test:unit:ui": "vitest --ui",
-    "test:e2e": "playwright test",
+    "test:seed-user": "npx tsx scripts/seed-test-user.ts",
+    "test:e2e": "npm run test:seed-user && playwright test",
     "test:e2e:ui": "playwright test --ui"
   },
   "dependencies": {
@@ -56,6 +57,8 @@
     "@typescript-eslint/eslint-plugin": "8.28.0",
     "@typescript-eslint/parser": "8.28.0",
     "@vitest/ui": "^3.2.4",
+    "cross-env": "^10.1.0",
+    "dotenv": "^17.2.3",
     "eslint": "9.23.0",
     "eslint-config-prettier": "10.1.1",
     "eslint-import-resolver-typescript": "4.2.5",
@@ -71,6 +74,7 @@
     "lint-staged": "15.5.0",
     "prettier-plugin-astro": "0.14.1",
     "supabase": "^2.51.0",
+    "tsx": "^4.20.6",
     "typescript-eslint": "8.28.0",
     "vitest": "^3.2.4"
   },

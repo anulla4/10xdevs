@@ -32,8 +32,8 @@ export function ConfirmDeleteModal({ observationId, observationName, onConfirm, 
   const isDeleting = deleteMutation.isPending;
 
   return (
-    <AlertDialog open={open} onOpenChange={handleClose}>
-      <AlertDialogContent>
+    <AlertDialog open={open} onOpenChange={handleClose} data-test-id="delete-dialog">
+      <AlertDialogContent data-test-id="delete-dialog-content">
         <AlertDialogHeader>
           <div className="flex items-start gap-4">
             <div className="flex-shrink-0 rounded-full bg-destructive/10 p-3">
@@ -58,8 +58,8 @@ export function ConfirmDeleteModal({ observationId, observationName, onConfirm, 
         )}
 
         <AlertDialogFooter>
-          <AlertDialogCancel onClick={handleClose} disabled={isDeleting}>Anuluj</AlertDialogCancel>
-          <AlertDialogAction onClick={handleConfirm} disabled={isDeleting} className="bg-destructive text-destructive-foreground hover:bg-destructive/90">
+          <AlertDialogCancel onClick={handleClose} disabled={isDeleting} data-test-id="btn-cancel-delete">Anuluj</AlertDialogCancel>
+          <AlertDialogAction onClick={handleConfirm} disabled={isDeleting} className="bg-destructive text-destructive-foreground hover:bg-destructive/90" data-test-id="btn-confirm-delete">
             {isDeleting && <Loader2 className="h-4 w-4 animate-spin" />}
             Usuń
           </AlertDialogAction>

@@ -69,7 +69,7 @@ export function LoginForm({ redirectTo = "/panel", error }: LoginFormProps) {
 
       if (!response.ok) {
         const data = await response.json().catch(() => ({}));
-        
+
         if (response.status === 401) {
           setApiError("Nieprawidłowy e-mail lub hasło");
         } else if (response.status === 500) {
@@ -82,7 +82,7 @@ export function LoginForm({ redirectTo = "/panel", error }: LoginFormProps) {
 
       // Success - redirect with full page reload to refresh session
       window.location.href = redirectTo;
-    } catch (error) {
+    } catch {
       setApiError("Brak połączenia z serwerem. Sprawdź połączenie internetowe.");
     } finally {
       setIsLoading(false);
@@ -117,7 +117,10 @@ export function LoginForm({ redirectTo = "/panel", error }: LoginFormProps) {
     <div className="w-full max-w-md mx-auto">
       <form onSubmit={handleSubmit} className="space-y-4">
         {apiError && (
-          <div className="p-3 rounded-md bg-destructive/10 border border-destructive text-destructive text-sm">
+          <div
+            data-test-id="login-error"
+            className="p-3 rounded-md bg-destructive/10 border border-destructive text-destructive text-sm"
+          >
             {apiError}
           </div>
         )}
@@ -129,6 +132,7 @@ export function LoginForm({ redirectTo = "/panel", error }: LoginFormProps) {
           </Label>
           <Input
             id="email"
+            data-test-id="login-email"
             type="email"
             value={formData.email}
             onChange={(e) => setFormData({ ...formData, email: e.target.value })}
@@ -151,6 +155,7 @@ export function LoginForm({ redirectTo = "/panel", error }: LoginFormProps) {
           </Label>
           <Input
             id="password"
+            data-test-id="login-password"
             type="password"
             value={formData.password}
             onChange={(e) => setFormData({ ...formData, password: e.target.value })}
@@ -167,7 +172,7 @@ export function LoginForm({ redirectTo = "/panel", error }: LoginFormProps) {
         </div>
 
         {/* Submit Button */}
-        <Button type="submit" className="w-full" disabled={isLoading}>
+        <Button type="submit" className="w-full" disabled={isLoading} data-test-id="login-submit">
           {isLoading && <Loader2 className="h-4 w-4 animate-spin" />}
           Zaloguj się
         </Button>

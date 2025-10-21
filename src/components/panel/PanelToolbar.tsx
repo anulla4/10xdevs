@@ -80,6 +80,7 @@ export function PanelToolbar({ value, onChange, onAddObservation }: PanelToolbar
             className="w-full rounded-lg border border-gray-300 py-2 pl-10 pr-4 text-sm focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500"
             aria-label="Szukaj obserwacji"
             maxLength={200}
+            data-test-id="search-input"
           />
         </div>
 
@@ -91,6 +92,7 @@ export function PanelToolbar({ value, onChange, onAddObservation }: PanelToolbar
             onChange={handleSortChange}
             className="rounded-lg border border-gray-300 bg-white py-2 pl-3 pr-10 text-sm focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500 appearance-none bg-[url('data:image/svg+xml;charset=utf-8,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%2212%22%20height%3D%2212%22%20viewBox%3D%220%200%2012%2012%22%3E%3Cpath%20fill%3D%22%23666%22%20d%3D%22M10.293%203.293L6%207.586%201.707%203.293A1%201%200%2000.293%204.707l5%205a1%201%200%20001.414%200l5-5a1%201%200%2010-1.414-1.414z%22%2F%3E%3C%2Fsvg%3E')] bg-[length:16px_16px] bg-[right_0.75rem_center] bg-no-repeat"
             aria-label="Sortuj według"
+            data-test-id="sort-select"
           >
             {SORT_OPTIONS.map((option) => (
               <option key={option.value} value={option.value}>
@@ -106,6 +108,7 @@ export function PanelToolbar({ value, onChange, onAddObservation }: PanelToolbar
           onChange={handleOrderChange}
           className="rounded-lg border border-gray-300 bg-white py-2 pl-3 pr-10 text-sm focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500 appearance-none bg-[url('data:image/svg+xml;charset=utf-8,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%2212%22%20height%3D%2212%22%20viewBox%3D%220%200%2012%2012%22%3E%3Cpath%20fill%3D%22%23666%22%20d%3D%22M10.293%203.293L6%207.586%201.707%203.293A1%201%200%2000.293%204.707l5%205a1%201%200%20001.414%200l5-5a1%201%200%2010-1.414-1.414z%22%2F%3E%3C%2Fsvg%3E')] bg-[length:16px_16px] bg-[right_0.75rem_center] bg-no-repeat"
           aria-label="Kolejność sortowania"
+          data-test-id="order-select"
         >
           {ORDER_OPTIONS.map((option) => (
             <option key={option.value} value={option.value}>
@@ -124,6 +127,7 @@ export function PanelToolbar({ value, onChange, onAddObservation }: PanelToolbar
           }`}
           aria-pressed={value.favorite === true}
           aria-label="Pokaż tylko ulubione"
+          data-test-id="filter-favorite-toggle"
         >
           ⭐ Ulubione
         </button>
@@ -134,6 +138,7 @@ export function PanelToolbar({ value, onChange, onAddObservation }: PanelToolbar
             onClick={onAddObservation}
             className="ml-auto rounded-lg bg-blue-600 px-4 py-2 text-sm font-medium text-white transition-colors hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 flex items-center gap-2"
             aria-label="Dodaj obserwację"
+            data-test-id="add-observation-button"
           >
             <Plus className="h-4 w-4" />
             Dodaj obserwację
