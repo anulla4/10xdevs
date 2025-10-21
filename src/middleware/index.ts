@@ -23,6 +23,7 @@ const PUBLIC_PATHS = [
 ];
 
 export const onRequest = defineMiddleware(async (context, next) => {
+  try {
   // Generate unique request ID for tracking
   const requestId = generateRequestId();
   context.locals.requestId = requestId;
@@ -68,5 +69,9 @@ export const onRequest = defineMiddleware(async (context, next) => {
     res.headers.set("X-Request-ID", requestId);
   });
 
-  return response;
+    return response;
+  } catch (error) {
+    console.error('Middleware error:', error);
+    throw error;
+  }
 });

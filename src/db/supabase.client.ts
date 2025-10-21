@@ -4,8 +4,12 @@ import type { AstroCookies } from "astro";
 
 import type { Database } from "../db/database.types.ts";
 
-console.log("SERVER STARTUP: SUPABASE_URL", process.env.SUPABASE_URL);
-console.log("SERVER STARTUP: SUPABASE_KEY", process.env.SUPABASE_KEY ? "Loaded" : "NOT LOADED");
+console.log("=== Supabase Client Initialization ===");
+console.log("SUPABASE_URL:", process.env.SUPABASE_URL);
+console.log("SUPABASE_KEY present:", !!process.env.SUPABASE_KEY);
+console.log("NODE_ENV:", process.env.NODE_ENV);
+console.log("Current directory:", process.cwd());
+console.log("================================");
 
 const supabaseUrl = process.env.SUPABASE_URL;
 const supabaseAnonKey = process.env.SUPABASE_KEY;
