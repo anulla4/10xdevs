@@ -46,7 +46,13 @@ export default defineConfig({
   reporter: "html",
   use: {
     baseURL: "http://localhost:4321",
-    trace: "on-first-retry",
+    trace: "on",
+    video: "on",
+    headless: false,
+    launchOptions: {
+      slowMo: 1000,
+      devtools: true,
+    },
   },
   projects: [
     {
@@ -60,7 +66,15 @@ export default defineConfig({
     },
     {
       name: "chromium",
-      use: { ...devices["Desktop Chrome"], storageState: "tests/e2e/.auth/storage.json" },
+      use: {
+        ...devices["Desktop Chrome"],
+        storageState: "tests/e2e/.auth/storage.json",
+        headless: false,
+        // Zwolnij testy żeby było widać co się dzieje
+        launchOptions: {
+          slowMo: 100,
+        },
+      },
       dependencies: ["setup db"],
     },
   ],
@@ -76,6 +90,6 @@ export default defineConfig({
       SUPABASE_KEY: process.env.SUPABASE_KEY,
       SUPABASE_SERVICE_ROLE_KEY: process.env.SUPABASE_SERVICE_ROLE_KEY,
     },
-    timeout: 120_000,
+    timeout: 60000, // Increased timeout to 60s
   },
 });
