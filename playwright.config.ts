@@ -46,8 +46,8 @@ export default defineConfig({
   reporter: "html",
   use: {
     baseURL: "http://localhost:4321",
-    trace: "on",
-    video: "on",
+    trace: "retain-on-failure",
+    video: "retain-on-failure",
     headless: false,
     launchOptions: {
       slowMo: 1000,
