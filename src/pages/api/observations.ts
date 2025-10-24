@@ -60,7 +60,8 @@ export const GET: APIRoute = async (context) => {
 
   try {
     const supabase = locals.supabase;
-    if (!supabase) {
+    const userId = locals.userId;
+    if (!supabase || !userId) {
       throw new UnauthorizedError("Missing auth context");
     }
 
@@ -118,7 +119,8 @@ export const POST: APIRoute = async (context) => {
 
   try {
     const supabase = locals.supabase;
-    if (!supabase) {
+    const userId = locals.userId;
+    if (!supabase || !userId) {
       throw new UnauthorizedError("Missing auth context");
     }
 
@@ -140,10 +142,6 @@ export const POST: APIRoute = async (context) => {
       logger.logValidationError(logContext, error.details);
       throw error;
     }
-
-    // For now, use test user ID
-    // TODO: Get user ID from JWT token when auth is implemented
-    const userId = "00000000-0000-0000-0000-000000000001";
 
     const observation = await createObservation(userId, parsed.data, supabase);
 

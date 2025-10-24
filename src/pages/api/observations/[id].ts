@@ -49,7 +49,8 @@ export const GET: APIRoute = async (context) => {
 
   try {
     const supabase = locals.supabase;
-    if (!supabase) {
+    const userId = locals.userId;
+    if (!supabase || !userId) {
       throw new UnauthorizedError("Missing auth context");
     }
 
@@ -108,7 +109,8 @@ export const PATCH: APIRoute = async (context) => {
 
   try {
     const supabase = locals.supabase;
-    if (!supabase) {
+    const userId = locals.userId;
+    if (!supabase || !userId) {
       throw new UnauthorizedError("Missing auth context");
     }
 
@@ -139,7 +141,6 @@ export const PATCH: APIRoute = async (context) => {
       throw error;
     }
 
-    const userId = "00000000-0000-0000-0000-000000000001";
     const observation = await updateObservation(
       parsedParams.data.id,
       userId,
@@ -191,7 +192,8 @@ export const DELETE: APIRoute = async (context) => {
 
   try {
     const supabase = locals.supabase;
-    if (!supabase) {
+    const userId = locals.userId;
+    if (!supabase || !userId) {
       throw new UnauthorizedError("Missing auth context");
     }
 
@@ -205,7 +207,6 @@ export const DELETE: APIRoute = async (context) => {
       throw error;
     }
 
-    const userId = "00000000-0000-0000-0000-000000000001";
     const deleted = await deleteObservation(parsed.data.id, userId, supabase);
 
     if (!deleted) {

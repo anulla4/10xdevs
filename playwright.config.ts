@@ -33,16 +33,14 @@ if (!process.env.SUPABASE_URL || !process.env.SUPABASE_KEY || !process.env.SUPAB
   throw new Error("SUPABASE_URL, SUPABASE_KEY, and SUPABASE_SERVICE_ROLE_KEY must be set in .env.test for E2E tests.");
 }
 
-if (!process.env.E2E_EMAIL || !process.env.E2E_PASSWORD) {
-  throw new Error("E2E_EMAIL and E2E_PASSWORD must be set in .env.test for E2E tests.");
-}
-
 export default defineConfig({
   testDir: "./tests/e2e",
   fullyParallel: true,
   forbidOnly: !!process.env.CI,
   retries: process.env.CI ? 2 : 0,
-  workers: process.env.CI ? 1 : undefined,
+  // Uruchamiamy testy sekwencyjnie (jeden po drugim), aby uniknąć problemów ze współdzielonym stanem (np. zalogowany użytkownik).
+  // Docelowo można to rozwiązać przez izolację testów (każdy worker ma swojego użytkownika).
+  workers: 1,
   reporter: "html",
   use: {
     baseURL: "http://localhost:4321",
@@ -56,26 +54,15 @@ export default defineConfig({
   },
   projects: [
     {
-      name: "setup db",
-      testMatch: /global\.setup\.ts/,
-      teardown: "cleanup db",
-    },
-    {
-      name: "cleanup db",
-      testMatch: /global\.teardown\.ts/,
-    },
-    {
       name: "chromium",
       use: {
         ...devices["Desktop Chrome"],
-        storageState: "tests/e2e/.auth/storage.json",
         headless: false,
         // Zwolnij testy żeby było widać co się dzieje
         launchOptions: {
           slowMo: 100,
         },
       },
-      dependencies: ["setup db"],
     },
   ],
   webServer: {

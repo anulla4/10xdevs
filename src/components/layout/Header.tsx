@@ -40,7 +40,7 @@ export function Header({ isAuthenticated, user }: HeaderProps) {
 
               {/* Logout button */}
               <Button variant="outline" size="sm" asChild>
-                <a href="/auth/logout" className="flex items-center gap-2">
+                <a href="/auth/logout" className="flex items-center gap-2" data-test-id="nav-logout">
                   <LogOut className="h-4 w-4" />
                   <span className="hidden sm:inline">Wyloguj</span>
                 </a>
@@ -50,7 +50,7 @@ export function Header({ isAuthenticated, user }: HeaderProps) {
             <>
               {/* Login button */}
               <Button variant="ghost" size="sm" asChild>
-                <a href="/auth/login">Zaloguj się</a>
+                <a href="/auth/login" data-test-id="nav-login">Zaloguj się</a>
               </Button>
 
               {/* Register button */}

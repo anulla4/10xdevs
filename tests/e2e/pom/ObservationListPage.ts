@@ -44,4 +44,9 @@ export class ObservationListPage {
   async expectRowHidden(name: string) {
     await expect(this.rowByName(name)).toHaveCount(0);
   }
+
+  async confirmDeletion() {
+    const confirmButton = this.page.locator('[data-test-id="btn-confirm-delete"]');
+    await confirmButton.click();
+  }
 }

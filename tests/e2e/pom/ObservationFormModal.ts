@@ -4,6 +4,7 @@ import type { Page, Locator } from "@playwright/test";
 export class ObservationFormModal {
   readonly page: Page;
   readonly dialog: Locator;
+  readonly overlay: Locator;
   readonly content: Locator;
   readonly form: Locator;
 
@@ -24,6 +25,8 @@ export class ObservationFormModal {
     // Use fallback selectors for dev server caching issues
     this.dialog = page.getByTestId('observation-form-dialog')
       .or(page.getByRole('dialog'));
+    this.overlay = page.getByTestId('observation-form-overlay')
+      .or(page.locator('[data-slot="dialog-overlay"]'));
     this.content = page.getByTestId('observation-form-content')
       .or(page.locator('form').first());
     this.form = page.getByTestId('observation-form')
@@ -49,37 +52,41 @@ export class ObservationFormModal {
       .or(page.getByLabel(/długość/i));
     this.locationSource = page.getByTestId('field-location-source')
       .or(page.locator('select[name="location_source"]'));
-    this.isFavorite = page.getByTestId('field-is-favorite')
-      .or(page.locator('input[name="is_favorite"]'))
-      .or(page.getByLabel(/ulubione/i));
+    this.isFavorite = this.form.getByTestId('field-is-favorite')
+      .or(this.form.locator('input[name="is_favorite"]'))
+      .or(this.form.getByRole('checkbox', { name: /dodaj do ulubionych/i }));
 
     this.cancelButton = page.getByTestId('btn-cancel-observation')
       .or(page.getByRole('button', { name: /anuluj/i }));
     this.saveButton = page.getByTestId('btn-save-observation')
+      .or(page.getByRole('button', { name: /dodaj/i }))
       .or(page.getByRole('button', { name: /zapisz/i }));
   }
 
   async waitForOpen() {
-    await expect(this.dialog).toBeVisible();
-    await expect(this.content).toBeVisible();
+    await this.overlay.waitFor({ state: 'visible' });
+    await this.content.waitFor({ state: 'visible' });
   }
 
   async waitForClose() {
-    await expect(this.dialog).toBeHidden();
+    await this.overlay.waitFor({ state: 'hidden', timeout: 15000 });
+    await this.content.waitFor({ state: 'hidden', timeout: 15000 });
   }
 
   async fillForm(data: {
-    name: string;
+    name?: string;
     description?: string;
     categoryValue?: string; // value attribute or label via selectOption
     categoryIndex?: number; // fallback if value unknown
     observationDateISO?: string; // 'YYYY-MM-DDTHH:mm'
-    lat: string;
-    lng: string;
+    lat?: string;
+    lng?: string;
     locationSource?: 'manual' | 'gps';
     favorite?: boolean;
   }) {
-    await this.name.fill(data.name);
+    if (data.name) {
+      await this.name.fill(data.name);
+    }
     if (data.description !== undefined) {
       await this.description.fill(data.description);
     }
@@ -94,8 +101,12 @@ export class ObservationFormModal {
       await this.observationDate.fill(data.observationDateISO);
     }
 
-    await this.locationLat.fill(data.lat);
-    await this.locationLng.fill(data.lng);
+    if (data.lat) {
+      await this.locationLat.fill(data.lat);
+    }
+    if (data.lng) {
+      await this.locationLng.fill(data.lng);
+    }
 
     if (data.locationSource) {
       await this.locationSource.selectOption(data.locationSource);
@@ -109,7 +120,15 @@ export class ObservationFormModal {
     }
   }
 
-  async save() {
+  async save(options?: { label?: RegExp | string }) {
+    if (options?.label) {
+      const button = this.form
+        .getByRole('button', { name: options.label })
+        .or(this.page.getByRole('button', { name: options.label }));
+      await button.click();
+      return;
+    }
+
     await this.saveButton.click();
   }
 
