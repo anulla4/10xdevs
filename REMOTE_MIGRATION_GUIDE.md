@@ -1,4 +1,4 @@
-# Przewodnik Migracji do Zdalnej Bazy Testowej
+Przewodnik Migracji do Zdalnej Bazy Testowej
 
 ## ⚠️ UWAGA: Ten dokument opisuje migrację do zdalnej bazy testowej
 ## Lokalna baza działa na porcie 54321 (projekt: 10xDevs_Project)
