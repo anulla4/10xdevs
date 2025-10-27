@@ -9,9 +9,6 @@ jobs:
   build-and-test:
     name: Build and Test
     runs-on: ubuntu-latest
-    defaults:
-      run:
-        working-directory: nature-log
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
@@ -51,5 +48,5 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: build-artifacts
-          path: nature-log/dist/
+          path: dist/
           retention-days: 7
