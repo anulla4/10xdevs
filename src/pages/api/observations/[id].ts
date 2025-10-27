@@ -1,21 +1,17 @@
 export const prerender = false;
 
-import type { APIRoute } from "astro";
-import { z } from "zod";
-import type { ObservationDto } from "../../../types";
-import {
-  getObservationById,
-  updateObservation,
-  deleteObservation,
-} from "../../../lib/services/observations.service";
-import { logger, type LogContext } from "../../../lib/logger";
+import type { APIRoute } from 'astro';
+import { z } from 'zod';
+import type { ObservationDto } from '../../../types';
+import { getObservationById, updateObservation, deleteObservation } from '../../../lib/services/observations.service';
+import { logger, type LogContext } from '../../../lib/logger';
 import {
   UnauthorizedError,
   ValidationError,
   NotFoundError,
   createErrorResponse,
   createSuccessResponse,
-} from "../../../lib/api-error";
+} from '../../../lib/api-error';
 
 const ParamsSchema = z.object({
   id: z.string().uuid(),
@@ -26,10 +22,12 @@ const UpdateObservationSchema = z.object({
   description: z.string().max(500).nullable().optional(),
   category_id: z.string().uuid().optional(),
   observation_date: z.string().datetime().optional(),
-  location: z.object({
-    lat: z.number().min(-90).max(90),
-    lng: z.number().min(-180).max(180),
-  }).optional(),
+  location: z
+    .object({
+      lat: z.number().min(-90).max(90),
+      lng: z.number().min(-180).max(180),
+    })
+    .optional(),
   location_source: z.string().nullable().optional(),
   location_accuracy: z.number().min(0).max(999.99).nullable().optional(),
   is_favorite: z.boolean().optional(),
@@ -44,29 +42,26 @@ export const GET: APIRoute = async (context) => {
     userId: locals.userId,
     method: request.method,
     path: url.pathname,
-    userAgent: request.headers.get("user-agent") || undefined,
+    userAgent: request.headers.get('user-agent') || undefined,
   };
 
   try {
     const supabase = locals.supabase;
     const userId = locals.userId;
     if (!supabase || !userId) {
-      throw new UnauthorizedError("Missing auth context");
+      throw new UnauthorizedError('Missing auth context');
     }
 
     const parsed = ParamsSchema.safeParse(params);
     if (!parsed.success) {
-      const error = new ValidationError(
-        "Invalid observation ID",
-        parsed.error.flatten()
-      );
+      const error = new ValidationError('Invalid observation ID', parsed.error.flatten());
       logger.logValidationError(logContext, error.details);
       throw error;
     }
 
     const observation = await getObservationById(parsed.data.id, supabase);
     if (!observation) {
-      throw new NotFoundError("Observation");
+      throw new NotFoundError('Observation');
     }
 
     const latency = Date.now() - startTime;
@@ -76,11 +71,7 @@ export const GET: APIRoute = async (context) => {
   } catch (err: any) {
     const latency = Date.now() - startTime;
 
-    if (
-      err instanceof ValidationError ||
-      err instanceof UnauthorizedError ||
-      err instanceof NotFoundError
-    ) {
+    if (err instanceof ValidationError || err instanceof UnauthorizedError || err instanceof NotFoundError) {
       logger.logRequest(logContext, {
         status: err.statusCode,
         latency,
@@ -104,22 +95,19 @@ export const PATCH: APIRoute = async (context) => {
     userId: locals.userId,
     method: request.method,
     path: url.pathname,
-    userAgent: request.headers.get("user-agent") || undefined,
+    userAgent: request.headers.get('user-agent') || undefined,
   };
 
   try {
     const supabase = locals.supabase;
     const userId = locals.userId;
     if (!supabase || !userId) {
-      throw new UnauthorizedError("Missing auth context");
+      throw new UnauthorizedError('Missing auth context');
     }
 
     const parsedParams = ParamsSchema.safeParse(params);
     if (!parsedParams.success) {
-      const error = new ValidationError(
-        "Invalid observation ID",
-        parsedParams.error.flatten()
-      );
+      const error = new ValidationError('Invalid observation ID', parsedParams.error.flatten());
       logger.logValidationError(logContext, error.details);
       throw error;
     }
@@ -128,28 +116,20 @@ export const PATCH: APIRoute = async (context) => {
     try {
       body = await request.json();
     } catch {
-      throw new ValidationError("Invalid JSON body");
+      throw new ValidationError('Invalid JSON body');
     }
 
     const parsedBody = UpdateObservationSchema.safeParse(body);
     if (!parsedBody.success) {
-      const error = new ValidationError(
-        "Invalid request body",
-        parsedBody.error.flatten()
-      );
+      const error = new ValidationError('Invalid request body', parsedBody.error.flatten());
       logger.logValidationError(logContext, error.details);
       throw error;
     }
 
-    const observation = await updateObservation(
-      parsedParams.data.id,
-      userId,
-      parsedBody.data,
-      supabase
-    );
+    const observation = await updateObservation(parsedParams.data.id, userId, parsedBody.data, supabase);
 
     if (!observation) {
-      throw new NotFoundError("Observation");
+      throw new NotFoundError('Observation');
     }
 
     const latency = Date.now() - startTime;
@@ -159,11 +139,7 @@ export const PATCH: APIRoute = async (context) => {
   } catch (err: any) {
     const latency = Date.now() - startTime;
 
-    if (
-      err instanceof ValidationError ||
-      err instanceof UnauthorizedError ||
-      err instanceof NotFoundError
-    ) {
+    if (err instanceof ValidationError || err instanceof UnauthorizedError || err instanceof NotFoundError) {
       logger.logRequest(logContext, {
         status: err.statusCode,
         latency,
@@ -187,22 +163,19 @@ export const DELETE: APIRoute = async (context) => {
     userId: locals.userId,
     method: request.method,
     path: url.pathname,
-    userAgent: request.headers.get("user-agent") || undefined,
+    userAgent: request.headers.get('user-agent') || undefined,
   };
 
   try {
     const supabase = locals.supabase;
     const userId = locals.userId;
     if (!supabase || !userId) {
-      throw new UnauthorizedError("Missing auth context");
+      throw new UnauthorizedError('Missing auth context');
     }
 
     const parsed = ParamsSchema.safeParse(params);
     if (!parsed.success) {
-      const error = new ValidationError(
-        "Invalid observation ID",
-        parsed.error.flatten()
-      );
+      const error = new ValidationError('Invalid observation ID', parsed.error.flatten());
       logger.logValidationError(logContext, error.details);
       throw error;
     }
@@ -210,7 +183,7 @@ export const DELETE: APIRoute = async (context) => {
     const deleted = await deleteObservation(parsed.data.id, userId, supabase);
 
     if (!deleted) {
-      throw new NotFoundError("Observation");
+      throw new NotFoundError('Observation');
     }
 
     const latency = Date.now() - startTime;
@@ -220,11 +193,7 @@ export const DELETE: APIRoute = async (context) => {
   } catch (err: any) {
     const latency = Date.now() - startTime;
 
-    if (
-      err instanceof ValidationError ||
-      err instanceof UnauthorizedError ||
-      err instanceof NotFoundError
-    ) {
+    if (err instanceof ValidationError || err instanceof UnauthorizedError || err instanceof NotFoundError) {
       logger.logRequest(logContext, {
         status: err.statusCode,
         latency,

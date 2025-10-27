@@ -1,9 +1,9 @@
-import { useState, useEffect } from "react";
-import { ObservationList } from "./ObservationList";
-import { ObservationMap } from "./ObservationMap";
-import type { ObservationListFilters } from "./types";
+import { useState, useEffect } from 'react';
+import { ObservationList } from './ObservationList';
+import { ObservationMap } from './ObservationMap';
+import type { ObservationListFilters } from './types';
 
-type PanelContentProps = {
+interface PanelContentProps {
   filters: ObservationListFilters;
   selectedObservationId: string | null;
   onSelectObservation: (id: string | null) => void;
@@ -11,9 +11,9 @@ type PanelContentProps = {
   onEdit: (id: string) => void;
   onDelete: (id: string, name: string) => void;
   onMapClick?: (lat: number, lng: number) => void;
-};
+}
 
-type MobileTab = "list" | "map";
+type MobileTab = 'list' | 'map';
 
 export function PanelContent({
   filters,
@@ -24,7 +24,7 @@ export function PanelContent({
   onDelete,
   onMapClick,
 }: PanelContentProps) {
-  const [activeTab, setActiveTab] = useState<MobileTab>("list");
+  const [activeTab, setActiveTab] = useState<MobileTab>('list');
   const [isMobile, setIsMobile] = useState(false);
 
   // Detect mobile viewport
@@ -34,8 +34,8 @@ export function PanelContent({
     };
 
     checkMobile();
-    window.addEventListener("resize", checkMobile);
-    return () => window.removeEventListener("resize", checkMobile);
+    window.addEventListener('resize', checkMobile);
+    return () => window.removeEventListener('resize', checkMobile);
   }, []);
 
   const handlePageChange = (page: number) => {
@@ -49,16 +49,16 @@ export function PanelContent({
         <div className="border-b border-gray-200 bg-white">
           <div className="flex">
             <button
-              onClick={() => setActiveTab("list")}
-              className={`flex-1 px-4 py-3 text-sm font-medium transition-colors ${activeTab === "list" ? "border-b-2 border-blue-600 text-blue-600" : "text-gray-600 hover:text-gray-900"}`}
-              aria-current={activeTab === "list" ? "page" : undefined}
+              onClick={() => setActiveTab('list')}
+              className={`flex-1 px-4 py-3 text-sm font-medium transition-colors ${activeTab === 'list' ? 'border-b-2 border-blue-600 text-blue-600' : 'text-gray-600 hover:text-gray-900'}`}
+              aria-current={activeTab === 'list' ? 'page' : undefined}
             >
               Lista
             </button>
             <button
-              onClick={() => setActiveTab("map")}
-              className={`flex-1 px-4 py-3 text-sm font-medium transition-colors ${activeTab === "map" ? "border-b-2 border-blue-600 text-blue-600" : "text-gray-600 hover:text-gray-900"}`}
-              aria-current={activeTab === "map" ? "page" : undefined}
+              onClick={() => setActiveTab('map')}
+              className={`flex-1 px-4 py-3 text-sm font-medium transition-colors ${activeTab === 'map' ? 'border-b-2 border-blue-600 text-blue-600' : 'text-gray-600 hover:text-gray-900'}`}
+              aria-current={activeTab === 'map' ? 'page' : undefined}
             >
               Mapa
             </button>
@@ -69,7 +69,9 @@ export function PanelContent({
       {/* Desktop: two columns, Mobile: single view based on active tab */}
       <div className="h-full lg:grid lg:grid-cols-2 lg:gap-0">
         {/* List column */}
-        <div className={`h-full overflow-hidden border-r border-gray-200 bg-white ${isMobile && activeTab !== "list" ? "hidden" : ""}`}>
+        <div
+          className={`h-full overflow-hidden border-r border-gray-200 bg-white ${isMobile && activeTab !== 'list' ? 'hidden' : ''}`}
+        >
           <ObservationList
             filters={filters}
             selectedObservationId={selectedObservationId}
@@ -81,7 +83,7 @@ export function PanelContent({
         </div>
 
         {/* Map column */}
-        <div className={`h-full overflow-hidden bg-gray-100 ${isMobile && activeTab !== "map" ? "hidden" : ""}`}>
+        <div className={`h-full overflow-hidden bg-gray-100 ${isMobile && activeTab !== 'map' ? 'hidden' : ''}`}>
           <ObservationMap
             filters={filters}
             selectedObservationId={selectedObservationId}

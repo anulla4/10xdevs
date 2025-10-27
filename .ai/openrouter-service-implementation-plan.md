@@ -10,10 +10,10 @@
   - Obsługa: komunikat systemowy, komunikat użytkownika, response_format (JSON Schema), nazwa modelu, parametry modelu, streaming, retry/backoff, walidacja wyników.
 
 Rekomendowana lokalizacja plików:
+
 - `src/lib/services/openrouter.service.ts` – implementacja serwisu
 - `src/types.ts` – wspólne typy (DTO, schematy)
 - `src/pages/api/ai/chat.ts` – endpoint HTTP do czatu (POST)
-
 
 ## 2. Opis konstruktora
 
@@ -32,7 +32,7 @@ type OpenRouterConfig = {
     seed?: number;
   };
   appName?: string; // do nagłówka X-Title
-  appUrl?: string;  // do nagłówka HTTP-Referer
+  appUrl?: string; // do nagłówka HTTP-Referer
   timeoutMs?: number; // np. 60_000
   maxRetries?: number; // np. 2-3
 };
@@ -48,7 +48,6 @@ class OpenRouterService {
 - **Źródła konfiguracji**:
   - `import.meta.env.OPENROUTER_API_KEY` – pobierany w endpointzie lub middleware i przekazywany do serwisu (nie importować bezpośrednio w komponencie klienckim!).
   - `import.meta.env.OPENROUTER_APP_URL` oraz `import.meta.env.OPENROUTER_APP_NAME` – do nagłówków referencyjnych (opcjonalne, ale zalecane przez OpenRouter).
-
 
 ## 3. Publiczne metody i pola
 
@@ -106,12 +105,11 @@ export type ChatRequest = {
 
 export type ChatResult = {
   content: string; // scalona treść z wyboru(ów)
-  raw: unknown;    // pełna odpowiedź OpenRouter (do debug/log)
+  raw: unknown; // pełna odpowiedź OpenRouter (do debug/log)
 };
 
 export type ChatChunk = { delta: string; done: boolean };
 ```
-
 
 ## 4. Prywatne metody i pola
 
@@ -132,7 +130,6 @@ export type ChatChunk = { delta: string; done: boolean };
   - Redaguje wrażliwe fragmenty z logów (np. klucze, e-maile, ID tokenów).
 
 - **Pola prywatne**: `apiKey`, `cfg`.
-
 
 ## 5. Obsługa błędów
 
@@ -159,7 +156,6 @@ Potencjalne scenariusze i reakcje:
 10. **Błędy deserializacji streamu**
     - Bezpieczne domknięcie strumienia, częściowa treść jest ignorowana, 502/503.
 
-
 ## 6. Kwestie bezpieczeństwa
 
 - **Sekrety tylko na serwerze**: `OPENROUTER_API_KEY` dostępny jedynie w kodzie SSR/API. Nigdy nie wypływa do klienta.
@@ -168,7 +164,6 @@ Potencjalne scenariusze i reakcje:
 - **RLS i autoryzacja**: jeżeli wynik jest zapisywany w Supabase – używać RLS i JWT, zgodnie z `src/db` i regułami projektu.
 - **CORS**: Endpoint wewnętrzny w tej samej domenie; jeśli otwierany publicznie – whitelist origin i metody.
 - **Ochrona przed nadużyciami**: wprowadzić podstawowy throttling na endpointzie (np. IP-based) i/lub wymagać sesji użytkownika.
-
 
 ## 7. Plan wdrożenia krok po kroku
 
@@ -212,7 +207,6 @@ Potencjalne scenariusze i reakcje:
   - GitHub Actions: lint → test → build → docker → deploy (zgodnie z projektem).
   - Sekrety ustawione w repo/DO.
 
-
 ## Implementacyjne szczegóły zgodne z OpenRouter API
 
 ### 7.1 Komunikat systemowy (przykład 1)
@@ -230,7 +224,7 @@ const messages: OpenRouterMessage[] = [
 
 ```ts
 const req: ChatRequest = {
-  user: 'Opisz siedliska bobra europejskiego w 2 zdaniach.'
+  user: 'Opisz siedliska bobra europejskiego w 2 zdaniach.',
 };
 ```
 
@@ -259,15 +253,15 @@ const response_format: ResponseFormat = {
               common_name: { type: 'string' },
               latin_name: { type: 'string' },
             },
-            required: ['common_name', 'latin_name']
+            required: ['common_name', 'latin_name'],
           },
           minItems: 1,
-          maxItems: 10
-        }
+          maxItems: 10,
+        },
       },
-      required: ['items']
-    }
-  }
+      required: ['items'],
+    },
+  },
 };
 ```
 
@@ -290,12 +284,11 @@ const req: ChatRequest = {
 ```ts
 const req: ChatRequest = {
   user: 'Wypisz 5 drzew liściastych.',
-  params: { temperature: 0.2, max_tokens: 400, top_p: 0.95, seed: 42 }
+  params: { temperature: 0.2, max_tokens: 400, top_p: 0.95, seed: 42 },
 };
 ```
 
 - Mergowane z `cfg.defaultParams` (req ma pierwszeństwo). Przekazywane w body do OpenRouter.
-
 
 ## Minimalna implementacja zapytania (non-stream)
 
@@ -341,7 +334,6 @@ getHeaders() {
 }
 ```
 
-
 ## Przykładowy endpoint Astro (`src/pages/api/ai/chat.ts`)
 
 Zgodnie z zasadami: handler `POST`, walidacja Zod, brak eksportu default.
@@ -355,17 +347,19 @@ const BodySchema = z.object({
   system: z.string().min(1).optional(),
   user: z.union([
     z.string().min(1),
-    z.array(z.object({ role: z.enum(['system', 'user', 'assistant', 'tool']), content: z.string() }))
+    z.array(z.object({ role: z.enum(['system', 'user', 'assistant', 'tool']), content: z.string() })),
   ]),
   model: z.string().optional(),
-  params: z.object({
-    temperature: z.number().min(0).max(2).optional(),
-    max_tokens: z.number().int().positive().optional(),
-    top_p: z.number().min(0).max(1).optional(),
-    presence_penalty: z.number().min(-2).max(2).optional(),
-    frequency_penalty: z.number().min(-2).max(2).optional(),
-    seed: z.number().int().optional(),
-  }).optional(),
+  params: z
+    .object({
+      temperature: z.number().min(0).max(2).optional(),
+      max_tokens: z.number().int().positive().optional(),
+      top_p: z.number().min(0).max(1).optional(),
+      presence_penalty: z.number().min(-2).max(2).optional(),
+      frequency_penalty: z.number().min(-2).max(2).optional(),
+      seed: z.number().int().optional(),
+    })
+    .optional(),
   response_format: z.any().optional(), // można doprecyzować JSON Schema
 });
 
@@ -394,14 +388,12 @@ export const POST: APIRoute = async ({ request }) => {
 export const prerender = false;
 ```
 
-
 ## Notatki implementacyjne
 
 - Przenoś całą logikę HTTP do `OpenRouterService` (endpoint prosty i testowalny).
 - Waliduj wejścia/wyjścia Zodem, utrzymuj minimalny surface API w endpointzie.
 - Dla streamingu: użyj `ReadableStream` i parsuj `data:` linie SSE. Zwróć strumień do klienta.
 - Integracja UI: komponent React ładuje się przez `client:load`/`client:idle` tylko dla interakcji (zgodnie z zasadami projektu).
-
 
 ## Checklista jakości (zgodna z .windsurfrules)
 

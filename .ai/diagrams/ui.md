@@ -5,6 +5,7 @@
 Na podstawie `auth-spec.md` zidentyfikowano następujące kluczowe elementy, które zostaną uwzględnione w architekturze UI:
 
 **Strony Astro (SSR):**
+
 - `pages/index.astro` (Modyfikacja): Strona powitalna dla gości, przekierowuje zalogowanych użytkowników do panelu.
 - `pages/panel.astro` (Modyfikacja): Chroniona strona panelu, wymaga autentykacji.
 - `pages/auth/login.astro` (Nowa): Strona z formularzem logowania.
@@ -14,6 +15,7 @@ Na podstawie `auth-spec.md` zidentyfikowano następujące kluczowe elementy, kt�
 - `pages/auth/logout.astro` (Nowa): Strona serwerowa do obsługi wylogowania.
 
 **Komponenty React (Client-Side):**
+
 - `components/layout/Header.tsx` (Nowy): Nagłówek aplikacji, dynamicznie wyświetla stan zalogowania.
 - `components/auth/LoginForm.tsx` (Nowy): Formularz logowania z walidacją.
 - `components/auth/RegisterForm.tsx` (Nowy): Formularz rejestracji z walidacją.
@@ -22,6 +24,7 @@ Na podstawie `auth-spec.md` zidentyfikowano następujące kluczowe elementy, kt�
 - `components/panel/PanelPage.tsx` (Istniejący): Główny komponent panelu, będzie otrzymywać `userId` z `panel.astro`.
 
 **Layouty Astro:**
+
 - `layouts/Layout.astro` (Modyfikacja): Główny layout aplikacji, będzie zawierał nowy `Header`.
 
 ### 2. Przepływ Danych
@@ -44,6 +47,7 @@ Na podstawie `auth-spec.md` zidentyfikowano następujące kluczowe elementy, kt�
 </architecture_analysis>
 
 <mermaid_diagram>
+
 ```mermaid
 flowchart TD
     classDef new fill:#c8e6c9,stroke:#388e3c,stroke-width:2px;
@@ -54,10 +58,10 @@ flowchart TD
         direction LR
         subgraph "Strony Astro (SSR)"
             direction TB
-            
+
             WelcomePage["/index.astro"]:::modified
             PanelAstro["/panel.astro"]:::modified
-            
+
             subgraph "Nowe Strony Autentykacji"
                 direction TB
                 LoginPage["/auth/login.astro"]:::new
@@ -82,7 +86,7 @@ flowchart TD
                 ResetPasswordForm["components/auth/ResetPasswordForm.tsx"]:::new
                 UpdatePasswordForm["components/auth/UpdatePasswordForm.tsx"]:::new
             end
-            
+
             PanelPage["components/panel/PanelPage.tsx"]:::existing
         end
     end
@@ -145,4 +149,5 @@ flowchart TD
     PanelAstro -- "Używa Auth Guard" --> AuthGuards
     AuthGuards -- "Sprawdza sesję" --> Middleware
 ```
+
 </mermaid_diagram>

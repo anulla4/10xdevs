@@ -1,7 +1,7 @@
-import type { APIRoute } from "astro";
-import { createSupabaseServerInstance } from "../../../db/supabase.client";
-import { resetPasswordSchema, validateRequest } from "../../../lib/validation/auth.validation";
-import { authLogger } from "../../../lib/auth-logger";
+import type { APIRoute } from 'astro';
+import { createSupabaseServerInstance } from '../../../db/supabase.client';
+import { resetPasswordSchema, validateRequest } from '../../../lib/validation/auth.validation';
+import { authLogger } from '../../../lib/auth-logger';
 
 export const prerender = false;
 
@@ -15,12 +15,12 @@ export const POST: APIRoute = async ({ request, cookies, locals }) => {
     if (!validation.success) {
       return new Response(
         JSON.stringify({
-          error: "Nieprawidłowe dane",
+          error: 'Nieprawidłowe dane',
           details: validation.errors,
         }),
         {
           status: 400,
-          headers: { "Content-Type": "application/json" },
+          headers: { 'Content-Type': 'application/json' },
         }
       );
     }
@@ -45,13 +45,13 @@ export const POST: APIRoute = async ({ request, cookies, locals }) => {
     // SECURITY: Always return success, even if email doesn't exist
     // This prevents email enumeration attacks
     if (error) {
-      authLogger.warn("Password reset email failed", {
+      authLogger.warn('Password reset email failed', {
         requestId: locals.requestId,
         email,
         error: error.message,
       });
     } else {
-      authLogger.info("Password reset email sent", {
+      authLogger.info('Password reset email sent', {
         requestId: locals.requestId,
         email,
       });
@@ -60,26 +60,26 @@ export const POST: APIRoute = async ({ request, cookies, locals }) => {
     // Always return success
     return new Response(
       JSON.stringify({
-        message: "Jeśli konto z tym adresem e-mail istnieje, link resetujący został wysłany.",
+        message: 'Jeśli konto z tym adresem e-mail istnieje, link resetujący został wysłany.',
       }),
       {
         status: 200,
-        headers: { "Content-Type": "application/json" },
+        headers: { 'Content-Type': 'application/json' },
       }
     );
   } catch (error) {
-    authLogger.error("Reset password endpoint error", {
+    authLogger.error('Reset password endpoint error', {
       requestId: locals.requestId,
-      error: error instanceof Error ? error.message : "Unknown error",
+      error: error instanceof Error ? error.message : 'Unknown error',
     });
 
     return new Response(
       JSON.stringify({
-        error: "Wystąpił błąd serwera. Spróbuj ponownie.",
+        error: 'Wystąpił błąd serwera. Spróbuj ponownie.',
       }),
       {
         status: 500,
-        headers: { "Content-Type": "application/json" },
+        headers: { 'Content-Type': 'application/json' },
       }
     );
   }

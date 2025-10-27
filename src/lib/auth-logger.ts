@@ -3,7 +3,7 @@
  * Auth endpoints don't always have full request context
  */
 
-type LogLevel = "info" | "warn" | "error";
+type LogLevel = 'info' | 'warn' | 'error';
 
 interface SimpleLogContext {
   requestId: string;
@@ -26,14 +26,14 @@ function formatLog(level: LogLevel, message: string, context: SimpleLogContext):
 
 export const authLogger = {
   info(message: string, context: SimpleLogContext): void {
-    console.log(formatLog("info", message, context));
+    console.log(formatLog('info', message, context));
   },
 
   warn(message: string, context: SimpleLogContext): void {
-    console.warn(formatLog("warn", message, context));
+    console.warn(formatLog('warn', message, context));
   },
 
   error(message: string, context: SimpleLogContext): void {
-    console.error(formatLog("error", message, context));
+    console.error(formatLog('error', message, context));
   },
 };

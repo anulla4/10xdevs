@@ -1,5 +1,5 @@
-import { expect } from "@playwright/test";
-import type { Page, Locator } from "@playwright/test";
+import { expect } from '@playwright/test';
+import type { Page, Locator } from '@playwright/test';
 
 export class ObservationListPage {
   readonly page: Page;
@@ -8,7 +8,8 @@ export class ObservationListPage {
   constructor(page: Page) {
     this.page = page;
     // Use fallback selector for dev server caching
-    this.rows = page.locator('[data-test-id="observation-row"]')
+    this.rows = page
+      .locator('[data-test-id="observation-row"]')
       .or(page.locator('tr[data-observation-id]'))
       .or(page.locator('tbody tr'));
   }
@@ -22,8 +23,8 @@ export class ObservationListPage {
     await expect(row).toBeVisible();
     const editBtn = row
       .locator('[data-test-id="row-edit"]')
-      .or(row.getByRole("button", { name: /edytuj/i }))
-      .or(row.locator("button").filter({ hasText: /edytuj/i }));
+      .or(row.getByRole('button', { name: /edytuj/i }))
+      .or(row.locator('button').filter({ hasText: /edytuj/i }));
     await editBtn.click();
   }
 
@@ -32,8 +33,8 @@ export class ObservationListPage {
     await expect(row).toBeVisible();
     const deleteBtn = row
       .locator('[data-test-id="row-delete"]')
-      .or(row.getByRole("button", { name: /usuń/i }))
-      .or(row.locator("button").filter({ hasText: /usuń/i }));
+      .or(row.getByRole('button', { name: /usuń/i }))
+      .or(row.locator('button').filter({ hasText: /usuń/i }));
     await deleteBtn.click();
   }
 

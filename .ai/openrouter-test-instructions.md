@@ -52,25 +52,30 @@ npx tsx scripts/test-openrouter.ts --stream
 ## ✅ Co testuje skrypt?
 
 ### Test 1: Prosty czat ✉️
+
 - Wysyła proste pytanie: "Wymień 2 gatunki ptaków wodnych w Polsce"
 - Sprawdza czy odpowiedź przychodzi poprawnie
 - Wyświetla użyty model
 
 ### Test 2: Strukturyzowana odpowiedź (JSON Schema) 📊
+
 - Wysyła zapytanie z `response_format` (JSON Schema)
 - Waliduje odpowiedź przez Zod
 - Sprawdza czy struktura jest zgodna ze schematem
 
 ### Test 3: Różne modele 🔄
+
 - Używa `withModel()` do zmiany modelu na `gpt-4o-mini`
 - Sprawdza czy parametry są przekazywane poprawnie
 
 ### Test 4: Streaming (opcjonalny) 📡
+
 - Testuje streaming odpowiedzi token po tokenie
 - Wyświetla odpowiedź na bieżąco
 - Liczy chunki
 
 ### Test 5: buildMessages (unit test) 🧩
+
 - Testuje metodę `buildMessages()` bez API
 - Sprawdza różne formaty wejściowe
 
@@ -150,28 +155,34 @@ OpenRouter Service działa poprawnie! 🚀
 ## 🐛 Troubleshooting
 
 ### Błąd: "OPENROUTER_API_KEY not configured"
+
 - Sprawdź czy dodałaś klucz do `.env`
 - Upewnij się że plik `.env` jest w głównym katalogu projektu
 - Sprawdź czy nie ma literówki w nazwie zmiennej
 
 ### Błąd: "401 Unauthorized"
+
 - Klucz API jest nieprawidłowy
 - Wygeneruj nowy klucz na https://openrouter.ai/keys
 
 ### Błąd: "429 Rate Limit"
+
 - Przekroczyłaś limit requestów (mało prawdopodobne w testach)
 - Poczekaj chwilę i spróbuj ponownie
 
 ### Błąd: "Network request failed"
+
 - Sprawdź połączenie z internetem
 - Sprawdź czy firewall nie blokuje połączenia
 
 ### Błąd: "Cannot find module 'tsx'"
+
 ```bash
 npm install -D tsx
 ```
 
 ### Błąd: "Cannot find module 'dotenv'"
+
 ```bash
 npm install dotenv
 ```
@@ -196,6 +207,7 @@ Jeśli testy przeszły pomyślnie:
 ✅ **OpenRouter Service działa poprawnie!**
 
 Możesz:
+
 1. Zostawić implementację na przyszłość (nie używać w MVP)
 2. Zintegrować w konkretnej funkcji aplikacji
 3. Usunąć klucz API z `.env` jeśli nie planujesz używać teraz

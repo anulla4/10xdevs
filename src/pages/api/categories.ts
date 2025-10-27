@@ -1,25 +1,17 @@
 export const prerender = false;
 
-import type { APIRoute } from "astro";
-import { z } from "zod";
-import type { ListResponse, CategoryDto } from "../../types";
-import {
-  listCategories,
-  ListCategoriesParamsSchema,
-} from "../../lib/services/categories.service";
-import { logger, type LogContext } from "../../lib/logger";
-import {
-  UnauthorizedError,
-  ValidationError,
-  createErrorResponse,
-  createSuccessResponse,
-} from "../../lib/api-error";
+import type { APIRoute } from 'astro';
+import { z } from 'zod';
+import type { ListResponse, CategoryDto } from '../../types';
+import { listCategories, ListCategoriesParamsSchema } from '../../lib/services/categories.service';
+import { logger, type LogContext } from '../../lib/logger';
+import { UnauthorizedError, ValidationError, createErrorResponse, createSuccessResponse } from '../../lib/api-error';
 
 const QuerySchema = z
   .object({
     search: z.string().trim().min(1).optional(),
-    sort: z.enum(["sort_order", "name"]).default("sort_order"),
-    order: z.enum(["asc", "desc"]).default("asc"),
+    sort: z.enum(['sort_order', 'name']).default('sort_order'),
+    order: z.enum(['asc', 'desc']).default('asc'),
   })
   .transform((v) => ({
     search: v.search,
@@ -37,14 +29,14 @@ export const GET: APIRoute = async (context) => {
     userId: locals.userId,
     method: request.method,
     path: url.pathname,
-    userAgent: request.headers.get("user-agent") || undefined,
+    userAgent: request.headers.get('user-agent') || undefined,
   };
 
   try {
     const supabase = locals.supabase;
 
     if (!supabase) {
-      throw new UnauthorizedError("Missing auth context");
+      throw new UnauthorizedError('Missing auth context');
     }
 
     // Categories are public - no user authentication required
@@ -52,10 +44,7 @@ export const GET: APIRoute = async (context) => {
     // Parse and validate query parameters
     const parsed = QuerySchema.safeParse(Object.fromEntries(url.searchParams));
     if (!parsed.success) {
-      const error = new ValidationError(
-        "Invalid query parameters",
-        parsed.error.flatten()
-      );
+      const error = new ValidationError('Invalid query parameters', parsed.error.flatten());
       logger.logValidationError(logContext, error.details);
       throw error;
     }

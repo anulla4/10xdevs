@@ -1,25 +1,25 @@
-import { z } from "zod";
+import { z } from 'zod';
 
 // Email validation
 export const emailSchema = z
   .string()
-  .min(1, "E-mail jest wymagany")
-  .email("Podaj prawidłowy adres e-mail")
+  .min(1, 'E-mail jest wymagany')
+  .email('Podaj prawidłowy adres e-mail')
   .toLowerCase()
   .trim();
 
 // Password validation - min 8 chars, uppercase, lowercase, digit
 export const passwordSchema = z
   .string()
-  .min(8, "Hasło musi mieć minimum 8 znaków")
-  .regex(/[a-z]/, "Hasło musi zawierać małą literę")
-  .regex(/[A-Z]/, "Hasło musi zawierać wielką literę")
-  .regex(/\d/, "Hasło musi zawierać cyfrę");
+  .min(8, 'Hasło musi mieć minimum 8 znaków')
+  .regex(/[a-z]/, 'Hasło musi zawierać małą literę')
+  .regex(/[A-Z]/, 'Hasło musi zawierać wielką literę')
+  .regex(/\d/, 'Hasło musi zawierać cyfrę');
 
 // Login request schema
 export const loginSchema = z.object({
   email: emailSchema,
-  password: z.string().min(1, "Hasło jest wymagane"),
+  password: z.string().min(1, 'Hasło jest wymagane'),
 });
 
 // Register request schema
@@ -40,7 +40,7 @@ export const updatePasswordSchema = z.object({
 
 // Delete account request schema
 export const deleteAccountSchema = z.object({
-  password: z.string().min(1, "Hasło jest wymagane"),
+  password: z.string().min(1, 'Hasło jest wymagane'),
 });
 
 // Type exports
@@ -56,11 +56,11 @@ export function validateRequest<T>(
   data: unknown
 ): { success: true; data: T } | { success: false; errors: string[] } {
   const result = schema.safeParse(data);
-  
+
   if (result.success) {
     return { success: true, data: result.data };
   }
-  
+
   const errors = result.error.errors.map((err) => err.message);
   return { success: false, errors };
 }

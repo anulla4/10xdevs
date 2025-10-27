@@ -53,35 +53,44 @@ src/
 ## Komponenty UI - Hierarchia
 
 ### RegisterForm
+
 ```tsx
 <div className="w-full max-w-md mx-auto">
   <form>
     {apiError && <div>...</div>}
-    
-    <div> {/* Email */}
+
+    <div>
+      {' '}
+      {/* Email */}
       <Label>E-mail *</Label>
       <Input type="email" />
       {errors.email && <p>...</p>}
     </div>
-    
-    <div> {/* Password */}
+
+    <div>
+      {' '}
+      {/* Password */}
       <Label>Hasło *</Label>
       <Input type="password" />
       {errors.password && <p>...</p>}
     </div>
-    
-    <div> {/* Confirm Password */}
+
+    <div>
+      {' '}
+      {/* Confirm Password */}
       <Label>Potwierdź hasło *</Label>
       <Input type="password" />
       {errors.confirmPassword && <p>...</p>}
     </div>
-    
+
     <Button type="submit">
       {isLoading && <Loader2 />}
       Zarejestruj się
     </Button>
-    
-    <div> {/* Link to Login */}
+
+    <div>
+      {' '}
+      {/* Link to Login */}
       Masz już konto? <a>Zaloguj się</a>
     </div>
   </form>
@@ -89,29 +98,36 @@ src/
 ```
 
 ### LoginForm
+
 ```tsx
 <div className="w-full max-w-md mx-auto">
   <form>
     {apiError && <div>...</div>}
-    
-    <div> {/* Email */}
+
+    <div>
+      {' '}
+      {/* Email */}
       <Label>E-mail *</Label>
       <Input type="email" />
       {errors.email && <p>...</p>}
     </div>
-    
-    <div> {/* Password */}
+
+    <div>
+      {' '}
+      {/* Password */}
       <Label>Hasło *</Label>
       <Input type="password" />
       {errors.password && <p>...</p>}
     </div>
-    
+
     <Button type="submit">
       {isLoading && <Loader2 />}
       Zaloguj się
     </Button>
-    
-    <div> {/* Links */}
+
+    <div>
+      {' '}
+      {/* Links */}
       <a>Zapomniałeś hasła?</a>
       Nie masz konta? <a>Zarejestruj się</a>
     </div>
@@ -120,28 +136,33 @@ src/
 ```
 
 ### ResetPasswordForm
+
 ```tsx
 <div className="w-full max-w-md mx-auto">
   {isSuccess ? (
-    <div> {/* Success message */}
+    <div>
+      {' '}
+      {/* Success message */}
       <CheckCircle2 />
       Link został wysłany...
     </div>
   ) : (
     <form>
       <p>Podaj adres e-mail...</p>
-      
-      <div> {/* Email */}
+
+      <div>
+        {' '}
+        {/* Email */}
         <Label>E-mail *</Label>
         <Input type="email" />
         {error && <p>...</p>}
       </div>
-      
+
       <Button type="submit">
         {isLoading && <Loader2 />}
         Wyślij link
       </Button>
-      
+
       <a>Wróć do logowania</a>
     </form>
   )}
@@ -149,51 +170,61 @@ src/
 ```
 
 ### UpdatePasswordForm
+
 ```tsx
 <div className="w-full max-w-md mx-auto">
   <form>
-    <div> {/* Info box */}
+    <div>
+      {' '}
+      {/* Info box */}
       Link jest ważny przez 1 godzinę
     </div>
-    
+
     {apiError && <div>...</div>}
-    
-    <div> {/* Password */}
+
+    <div>
+      {' '}
+      {/* Password */}
       <Label>Nowe hasło *</Label>
       <Input type="password" />
       {errors.password && <p>...</p>}
     </div>
-    
-    <div> {/* Confirm Password */}
+
+    <div>
+      {' '}
+      {/* Confirm Password */}
       <Label>Potwierdź hasło *</Label>
       <Input type="password" />
       {errors.confirmPassword && <p>...</p>}
     </div>
-    
+
     <Button type="submit">
       {isLoading && <Loader2 />}
       Zmień hasło
     </Button>
-    
+
     <a>Wygeneruj nowy link</a>
   </form>
 </div>
 ```
 
 ### Header
+
 ```tsx
 <header className="sticky top-0 ...">
   <div className="container">
-    <div> {/* Logo */}
-      <a href={isAuthenticated ? "/panel" : "/"}>
-        🌿 Nature Log
-      </a>
+    <div>
+      {' '}
+      {/* Logo */}
+      <a href={isAuthenticated ? '/panel' : '/'}>🌿 Nature Log</a>
     </div>
-    
+
     <nav>
       {isAuthenticated ? (
         <>
-          <div> {/* User email */}
+          <div>
+            {' '}
+            {/* User email */}
             <User /> {user.email}
           </div>
           <Button>Panel</Button>
@@ -213,6 +244,7 @@ src/
 ```
 
 ### WelcomePage
+
 ```tsx
 <div className="min-h-screen bg-gradient-to-br ...">
   {/* Hero Section */}
@@ -221,18 +253,22 @@ src/
       <span>🌿</span>
       <h1>Nature Log</h1>
       <p>Twoje obserwacje przyrody...</p>
-      
-      <div> {/* CTA Buttons */}
+
+      <div>
+        {' '}
+        {/* CTA Buttons */}
         <Button>Rozpocznij za darmo</Button>
         <Button>Zaloguj się</Button>
       </div>
     </div>
   </div>
-  
+
   {/* Features Section */}
   <div className="container">
     <div className="grid md:grid-cols-2 lg:grid-cols-4">
-      <div> {/* Feature 1 */}
+      <div>
+        {' '}
+        {/* Feature 1 */}
         <Leaf />
         <h3>Kataloguj obserwacje</h3>
         <p>...</p>
@@ -240,7 +276,7 @@ src/
       {/* ... 3 more features */}
     </div>
   </div>
-  
+
   {/* Footer CTA */}
   <div className="container">
     <div className="bg-white rounded-2xl">
@@ -254,12 +290,13 @@ src/
 ## Strony Astro - Layout
 
 ### register.astro / login.astro / reset-password.astro / update-password.astro
+
 ```astro
 ---
-import Layout from "../../layouts/Layout.astro";
-import { FormComponent } from "../../components/auth/FormComponent";
+import Layout from '../../layouts/Layout.astro';
+import { FormComponent } from '../../components/auth/FormComponent';
 
-const redirectTo = Astro.url.searchParams.get("redirectTo") || "/panel";
+const redirectTo = Astro.url.searchParams.get('redirectTo') || '/panel';
 ---
 
 <Layout title="...">
@@ -269,7 +306,7 @@ const redirectTo = Astro.url.searchParams.get("redirectTo") || "/panel";
         <h1>Tytuł</h1>
         <p>Opis</p>
       </div>
-      
+
       <div class="bg-white dark:bg-gray-950 rounded-lg shadow-lg p-8 border">
         <FormComponent client:load redirectTo={redirectTo} />
       </div>
@@ -281,6 +318,7 @@ const redirectTo = Astro.url.searchParams.get("redirectTo") || "/panel";
 ## Przepływ użytkownika
 
 ### Rejestracja
+
 ```
 1. User → /auth/register
 2. Wypełnia formularz (email, hasło, potwierdzenie)
@@ -291,6 +329,7 @@ const redirectTo = Astro.url.searchParams.get("redirectTo") || "/panel";
 ```
 
 ### Logowanie
+
 ```
 1. User → /auth/login
 2. Wypełnia formularz (email, hasło)
@@ -301,6 +340,7 @@ const redirectTo = Astro.url.searchParams.get("redirectTo") || "/panel";
 ```
 
 ### Reset hasła
+
 ```
 1. User → /auth/login → "Zapomniałeś hasła?"
 2. Redirect → /auth/reset-password
@@ -317,6 +357,7 @@ const redirectTo = Astro.url.searchParams.get("redirectTo") || "/panel";
 ```
 
 ### Wylogowanie
+
 ```
 1. User → klik "Wyloguj" w Header
 2. Redirect → /auth/logout
@@ -327,6 +368,7 @@ const redirectTo = Astro.url.searchParams.get("redirectTo") || "/panel";
 ## Walidacja
 
 ### Client-side (React)
+
 - **Timing**: onBlur + przed submit
 - **Email**: `/^[^\s@]+@[^\s@]+\.[^\s@]+$/`
 - **Password**: `/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d).{8,}$/`
@@ -334,6 +376,7 @@ const redirectTo = Astro.url.searchParams.get("redirectTo") || "/panel";
 - **Feedback**: Inline errors (red text pod polem)
 
 ### Server-side (do implementacji)
+
 - Wszystkie walidacje powtórzone na backendzie
 - Zwracanie odpowiednich HTTP status codes
 - Mapowanie błędów na user-friendly messages
@@ -341,6 +384,7 @@ const redirectTo = Astro.url.searchParams.get("redirectTo") || "/panel";
 ## Styling
 
 ### Kolory
+
 - **Primary**: Green (nature theme)
 - **Background**: Gradient green-blue
 - **Cards**: White/dark with shadow
@@ -348,11 +392,13 @@ const redirectTo = Astro.url.searchParams.get("redirectTo") || "/panel";
 - **Success**: Green
 
 ### Spacing
+
 - **Form**: `space-y-4` (16px między sekcjami)
 - **Field**: `space-y-2` (8px między label/input/error)
 - **Container**: `px-4 md:px-6` (responsive padding)
 
 ### Responsywność
+
 - **Mobile**: Single column, hidden elements
 - **Tablet**: `sm:` breakpoint (640px)
 - **Desktop**: `md:` breakpoint (768px), `lg:` (1024px)

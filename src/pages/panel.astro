@@ -1,13 +1,13 @@
 ---
-import Layout from '../layouts/Layout.astro'
-import { PanelPage } from '../components/panel/PanelPage'
+import Layout from '../layouts/Layout.astro';
+import { PanelPage } from '../components/panel/PanelPage';
 
 // Auth guard - require authentication
 if (!Astro.locals.user) {
-  return Astro.redirect('/auth/login?redirectTo=/panel')
+  return Astro.redirect('/auth/login?redirectTo=/panel');
 }
 
-const userId = Astro.locals.user.id
+const userId = Astro.locals.user.id;
 ---
 
 <Layout title="Panel - Nature Log">

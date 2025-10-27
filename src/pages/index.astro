@@ -1,11 +1,11 @@
 ---
-import Layout from '../layouts/Layout.astro'
-import { WelcomePage } from '../components/layout/WelcomePage'
+import Layout from '../layouts/Layout.astro';
+import { WelcomePage } from '../components/layout/WelcomePage';
 
 // User is authenticated (middleware ensures this)
 // Redirect to panel as the main authenticated landing page
 if (Astro.locals.user) {
-  return Astro.redirect('/panel')
+  return Astro.redirect('/panel');
 }
 ---
 

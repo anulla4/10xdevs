@@ -1,18 +1,18 @@
-import { useState } from "react";
-import { Loader2 } from "lucide-react";
-import { useCategories } from "../hooks/useCategories";
-import { useCreateObservation, useUpdateObservation } from "../hooks/useObservations";
-import type { ObservationVM } from "./types";
-import type { ObservationCreateCommand, ObservationUpdateCommand } from "../../types";
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "@/components/ui/dialog";
-import { Input } from "@/components/ui/input";
-import { Textarea } from "@/components/ui/textarea";
-import { Label } from "@/components/ui/label";
-import { Button } from "@/components/ui/button";
-import { Checkbox } from "@/components/ui/checkbox";
+import { useState } from 'react';
+import { Loader2 } from 'lucide-react';
+import { useCategories } from '../hooks/useCategories';
+import { useCreateObservation, useUpdateObservation } from '../hooks/useObservations';
+import type { ObservationVM } from './types';
+import type { ObservationCreateCommand, ObservationUpdateCommand } from '../../types';
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from '@/components/ui/dialog';
+import { Input } from '@/components/ui/input';
+import { Textarea } from '@/components/ui/textarea';
+import { Label } from '@/components/ui/label';
+import { Button } from '@/components/ui/button';
+import { Checkbox } from '@/components/ui/checkbox';
 
 interface ObservationFormModalProps {
-  mode: "create" | "edit";
+  mode: 'create' | 'edit';
   initial?: ObservationVM;
   prefillLocation?: { lat: number; lng: number };
   onSuccess: () => void;
@@ -47,29 +47,29 @@ export function ObservationFormModal({
   const updateMutation = useUpdateObservation();
 
   const [formData, setFormData] = useState<FormData>(() => {
-    if (mode === "edit" && initial) {
+    if (mode === 'edit' && initial) {
       return {
         name: initial.name,
-        description: initial.description || "",
+        description: initial.description || '',
         category_id: initial.category_id,
         observation_date: initial.observation_date.slice(0, 16), // Format for datetime-local
         location_lat: String(initial.location.lat),
         location_lng: String(initial.location.lng),
-        location_source: initial.location_source || "manual",
-        location_accuracy: initial.location_accuracy ? String(initial.location_accuracy) : "",
+        location_source: initial.location_source || 'manual',
+        location_accuracy: initial.location_accuracy ? String(initial.location_accuracy) : '',
         is_favorite: initial.is_favorite,
       };
     }
 
     return {
-      name: "",
-      description: "",
-      category_id: "",
+      name: '',
+      description: '',
+      category_id: '',
       observation_date: new Date().toISOString().slice(0, 16),
-      location_lat: prefillLocation ? String(prefillLocation.lat) : "",
-      location_lng: prefillLocation ? String(prefillLocation.lng) : "",
-      location_source: "manual",
-      location_accuracy: "",
+      location_lat: prefillLocation ? String(prefillLocation.lat) : '',
+      location_lng: prefillLocation ? String(prefillLocation.lng) : '',
+      location_source: 'manual',
+      location_accuracy: '',
       is_favorite: false,
     };
   });
@@ -87,33 +87,33 @@ export function ObservationFormModal({
     const newErrors: FormErrors = {};
 
     if (!formData.name.trim()) {
-      newErrors.name = "Nazwa jest wymagana";
+      newErrors.name = 'Nazwa jest wymagana';
     } else if (formData.name.length > 100) {
-      newErrors.name = "Nazwa nie może być dłuższa niż 100 znaków";
+      newErrors.name = 'Nazwa nie może być dłuższa niż 100 znaków';
     }
 
     if (formData.description.length > 500) {
-      newErrors.description = "Opis nie może być dłuższy niż 500 znaków";
+      newErrors.description = 'Opis nie może być dłuższy niż 500 znaków';
     }
 
     if (!formData.category_id) {
-      newErrors.category_id = "Kategoria jest wymagana";
+      newErrors.category_id = 'Kategoria jest wymagana';
     }
 
     const lat = parseFloat(formData.location_lat);
     if (isNaN(lat) || lat < -90 || lat > 90) {
-      newErrors.location_lat = "Szerokość geograficzna musi być w zakresie -90 do 90";
+      newErrors.location_lat = 'Szerokość geograficzna musi być w zakresie -90 do 90';
     }
 
     const lng = parseFloat(formData.location_lng);
     if (isNaN(lng) || lng < -180 || lng > 180) {
-      newErrors.location_lng = "Długość geograficzna musi być w zakresie -180 do 180";
+      newErrors.location_lng = 'Długość geograficzna musi być w zakresie -180 do 180';
     }
 
     if (formData.location_accuracy) {
       const accuracy = parseFloat(formData.location_accuracy);
       if (isNaN(accuracy) || accuracy < 0 || accuracy > 999.99) {
-        newErrors.location_accuracy = "Dokładność musi być w zakresie 0 do 999.99";
+        newErrors.location_accuracy = 'Dokładność musi być w zakresie 0 do 999.99';
       }
     }
 
@@ -141,7 +141,7 @@ export function ObservationFormModal({
     };
 
     try {
-      if (mode === "create") {
+      if (mode === 'create') {
         await createMutation.mutateAsync(command);
       } else if (initial) {
         const updateCommand: ObservationUpdateCommand = command;
@@ -149,7 +149,7 @@ export function ObservationFormModal({
       }
       onSuccess();
     } catch (error) {
-      const message = error instanceof Error ? error.message : "Nie udało się zapisać obserwacji";
+      const message = error instanceof Error ? error.message : 'Nie udało się zapisać obserwacji';
       if (onError) {
         onError(message);
       }
@@ -162,7 +162,7 @@ export function ObservationFormModal({
     <Dialog open={open} onOpenChange={handleClose} data-test-id="observation-form-dialog">
       <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto" data-test-id="observation-form-content">
         <DialogHeader>
-          <DialogTitle>{mode === "create" ? "Dodaj obserwację" : "Edytuj obserwację"}</DialogTitle>
+          <DialogTitle>{mode === 'create' ? 'Dodaj obserwację' : 'Edytuj obserwację'}</DialogTitle>
         </DialogHeader>
 
         <form onSubmit={handleSubmit} className="space-y-4" data-test-id="observation-form">
@@ -177,7 +177,7 @@ export function ObservationFormModal({
               onChange={(e) => setFormData({ ...formData, name: e.target.value })}
               maxLength={100}
               aria-invalid={!!errors.name}
-              aria-describedby={errors.name ? "name-error" : undefined}
+              aria-describedby={errors.name ? 'name-error' : undefined}
               data-test-id="field-name"
             />
             {errors.name && (
@@ -197,7 +197,7 @@ export function ObservationFormModal({
               maxLength={500}
               rows={3}
               aria-invalid={!!errors.description}
-              aria-describedby={errors.description ? "description-error" : undefined}
+              aria-describedby={errors.description ? 'description-error' : undefined}
               data-test-id="field-description"
             />
             <div className="flex justify-between text-xs text-muted-foreground">
@@ -220,7 +220,7 @@ export function ObservationFormModal({
               aria-invalid={!!errors.category_id}
               data-test-id="field-category"
             >
-              <option value="">{categoriesLoading ? "Ładowanie..." : "Wybierz kategorię"}</option>
+              <option value="">{categoriesLoading ? 'Ładowanie...' : 'Wybierz kategorię'}</option>
               {categories?.map((cat) => (
                 <option key={cat.id} value={cat.id}>
                   {cat.name.toLowerCase()}
@@ -229,7 +229,7 @@ export function ObservationFormModal({
             </select>
             {categoriesError && (
               <p className="text-sm text-destructive">
-                Błąd ładowania kategorii: {categoriesError instanceof Error ? categoriesError.message : "Nieznany błąd"}
+                Błąd ładowania kategorii: {categoriesError instanceof Error ? categoriesError.message : 'Nieznany błąd'}
               </p>
             )}
             {errors.category_id && (
@@ -318,12 +318,18 @@ export function ObservationFormModal({
         </form>
 
         <DialogFooter>
-          <Button type="button" variant="outline" onClick={handleClose} disabled={isSubmitting} data-test-id="btn-cancel-observation">
+          <Button
+            type="button"
+            variant="outline"
+            onClick={handleClose}
+            disabled={isSubmitting}
+            data-test-id="btn-cancel-observation"
+          >
             Anuluj
           </Button>
           <Button type="submit" onClick={handleSubmit} disabled={isSubmitting} data-test-id="btn-save-observation">
             {isSubmitting && <Loader2 className="h-4 w-4 animate-spin" />}
-            {mode === "create" ? "Dodaj" : "Zapisz"}
+            {mode === 'create' ? 'Dodaj' : 'Zapisz'}
           </Button>
         </DialogFooter>
       </DialogContent>

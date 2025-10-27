@@ -1,8 +1,8 @@
-import { useState } from "react";
-import { Loader2 } from "lucide-react";
-import { Input } from "@/components/ui/input";
-import { Button } from "@/components/ui/button";
-import { Label } from "@/components/ui/label";
+import { useState } from 'react';
+import { Loader2 } from 'lucide-react';
+import { Input } from '@/components/ui/input';
+import { Button } from '@/components/ui/button';
+import { Label } from '@/components/ui/label';
 
 interface FormData {
   password: string;
@@ -15,8 +15,8 @@ const PASSWORD_REGEX = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d).{8,}$/;
 
 export function UpdatePasswordForm() {
   const [formData, setFormData] = useState<FormData>({
-    password: "",
-    confirmPassword: "",
+    password: '',
+    confirmPassword: '',
   });
 
   const [errors, setErrors] = useState<FormErrors>({});
@@ -27,15 +27,15 @@ export function UpdatePasswordForm() {
     const newErrors: FormErrors = {};
 
     if (!formData.password) {
-      newErrors.password = "Hasło jest wymagane";
+      newErrors.password = 'Hasło jest wymagane';
     } else if (!PASSWORD_REGEX.test(formData.password)) {
-      newErrors.password = "Hasło musi mieć min. 8 znaków i zawierać wielką literę, małą literę oraz cyfrę";
+      newErrors.password = 'Hasło musi mieć min. 8 znaków i zawierać wielką literę, małą literę oraz cyfrę';
     }
 
     if (!formData.confirmPassword) {
-      newErrors.confirmPassword = "Potwierdzenie hasła jest wymagane";
+      newErrors.confirmPassword = 'Potwierdzenie hasła jest wymagane';
     } else if (formData.password !== formData.confirmPassword) {
-      newErrors.confirmPassword = "Hasła nie są zgodne";
+      newErrors.confirmPassword = 'Hasła nie są zgodne';
     }
 
     setErrors(newErrors);
@@ -51,10 +51,10 @@ export function UpdatePasswordForm() {
     setIsLoading(true);
 
     try {
-      const response = await fetch("/api/auth/update-password", {
-        method: "POST",
+      const response = await fetch('/api/auth/update-password', {
+        method: 'POST',
         headers: {
-          "Content-Type": "application/json",
+          'Content-Type': 'application/json',
         },
         body: JSON.stringify({
           password: formData.password,
@@ -63,21 +63,21 @@ export function UpdatePasswordForm() {
 
       if (!response.ok) {
         const data = await response.json().catch(() => ({}));
-        
+
         if (response.status === 401) {
-          setApiError("Link wygasł lub jest nieprawidłowy. Wygeneruj nowy link.");
+          setApiError('Link wygasł lub jest nieprawidłowy. Wygeneruj nowy link.');
         } else if (response.status === 500) {
-          setApiError("Wystąpił błąd serwera. Spróbuj ponownie.");
+          setApiError('Wystąpił błąd serwera. Spróbuj ponownie.');
         } else {
-          setApiError(data.message || "Wystąpił błąd. Spróbuj ponownie.");
+          setApiError(data.message || 'Wystąpił błąd. Spróbuj ponownie.');
         }
         return;
       }
 
       // Success - redirect to login with success message
-      window.location.href = "/auth/login?success=password_changed";
+      window.location.href = '/auth/login?success=password_changed';
     } catch (error) {
-      setApiError("Brak połączenia z serwerem. Sprawdź połączenie internetowe.");
+      setApiError('Brak połączenia z serwerem. Sprawdź połączenie internetowe.');
     } finally {
       setIsLoading(false);
     }
@@ -86,21 +86,21 @@ export function UpdatePasswordForm() {
   const handleBlur = (field: keyof FormData) => {
     const newErrors: FormErrors = { ...errors };
 
-    if (field === "password") {
+    if (field === 'password') {
       if (!formData.password) {
-        newErrors.password = "Hasło jest wymagane";
+        newErrors.password = 'Hasło jest wymagane';
       } else if (!PASSWORD_REGEX.test(formData.password)) {
-        newErrors.password = "Hasło musi mieć min. 8 znaków i zawierać wielką literę, małą literę oraz cyfrę";
+        newErrors.password = 'Hasło musi mieć min. 8 znaków i zawierać wielką literę, małą literę oraz cyfrę';
       } else {
         delete newErrors.password;
       }
     }
 
-    if (field === "confirmPassword") {
+    if (field === 'confirmPassword') {
       if (!formData.confirmPassword) {
-        newErrors.confirmPassword = "Potwierdzenie hasła jest wymagane";
+        newErrors.confirmPassword = 'Potwierdzenie hasła jest wymagane';
       } else if (formData.password !== formData.confirmPassword) {
-        newErrors.confirmPassword = "Hasła nie są zgodne";
+        newErrors.confirmPassword = 'Hasła nie są zgodne';
       } else {
         delete newErrors.confirmPassword;
       }
@@ -132,10 +132,10 @@ export function UpdatePasswordForm() {
             type="password"
             value={formData.password}
             onChange={(e) => setFormData({ ...formData, password: e.target.value })}
-            onBlur={() => handleBlur("password")}
+            onBlur={() => handleBlur('password')}
             disabled={isLoading}
             aria-invalid={!!errors.password}
-            aria-describedby={errors.password ? "password-error" : undefined}
+            aria-describedby={errors.password ? 'password-error' : undefined}
           />
           {errors.password && (
             <p id="password-error" className="text-sm text-destructive">
@@ -154,10 +154,10 @@ export function UpdatePasswordForm() {
             type="password"
             value={formData.confirmPassword}
             onChange={(e) => setFormData({ ...formData, confirmPassword: e.target.value })}
-            onBlur={() => handleBlur("confirmPassword")}
+            onBlur={() => handleBlur('confirmPassword')}
             disabled={isLoading}
             aria-invalid={!!errors.confirmPassword}
-            aria-describedby={errors.confirmPassword ? "confirmPassword-error" : undefined}
+            aria-describedby={errors.confirmPassword ? 'confirmPassword-error' : undefined}
           />
           {errors.confirmPassword && (
             <p id="confirmPassword-error" className="text-sm text-destructive">

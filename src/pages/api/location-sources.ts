@@ -1,14 +1,10 @@
 export const prerender = false;
 
-import type { APIRoute } from "astro";
-import type { ListResponse, LocationSourceDto } from "../../types";
-import { listLocationSources } from "../../lib/services/location-sources.service";
-import { logger, type LogContext } from "../../lib/logger";
-import {
-  UnauthorizedError,
-  createErrorResponse,
-  createSuccessResponse,
-} from "../../lib/api-error";
+import type { APIRoute } from 'astro';
+import type { ListResponse, LocationSourceDto } from '../../types';
+import { listLocationSources } from '../../lib/services/location-sources.service';
+import { logger, type LogContext } from '../../lib/logger';
+import { UnauthorizedError, createErrorResponse, createSuccessResponse } from '../../lib/api-error';
 
 export const GET: APIRoute = async (context) => {
   const startTime = Date.now();
@@ -19,13 +15,13 @@ export const GET: APIRoute = async (context) => {
     userId: locals.userId,
     method: request.method,
     path: url.pathname,
-    userAgent: request.headers.get("user-agent") || undefined,
+    userAgent: request.headers.get('user-agent') || undefined,
   };
 
   try {
     const supabase = locals.supabase;
     if (!supabase) {
-      throw new UnauthorizedError("Missing auth context");
+      throw new UnauthorizedError('Missing auth context');
     }
 
     const result = await listLocationSources(supabase);

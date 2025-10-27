@@ -1,25 +1,25 @@
-import { useState } from "react";
-import { Loader2, CheckCircle2 } from "lucide-react";
-import { Input } from "@/components/ui/input";
-import { Button } from "@/components/ui/button";
-import { Label } from "@/components/ui/label";
+import { useState } from 'react';
+import { Loader2, CheckCircle2 } from 'lucide-react';
+import { Input } from '@/components/ui/input';
+import { Button } from '@/components/ui/button';
+import { Label } from '@/components/ui/label';
 
 const EMAIL_REGEX = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
 export function ResetPasswordForm() {
-  const [email, setEmail] = useState("");
+  const [email, setEmail] = useState('');
   const [error, setError] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(false);
   const [isSuccess, setIsSuccess] = useState(false);
 
   const validate = (): boolean => {
     if (!email.trim()) {
-      setError("E-mail jest wymagany");
+      setError('E-mail jest wymagany');
       return false;
     }
-    
+
     if (!EMAIL_REGEX.test(email)) {
-      setError("Podaj prawidłowy adres e-mail");
+      setError('Podaj prawidłowy adres e-mail');
       return false;
     }
 
@@ -35,23 +35,23 @@ export function ResetPasswordForm() {
     setIsLoading(true);
 
     try {
-      const response = await fetch("/api/auth/reset-password", {
-        method: "POST",
+      const response = await fetch('/api/auth/reset-password', {
+        method: 'POST',
         headers: {
-          "Content-Type": "application/json",
+          'Content-Type': 'application/json',
         },
         body: JSON.stringify({ email }),
       });
 
       if (!response.ok) {
-        setError("Wystąpił błąd. Spróbuj ponownie.");
+        setError('Wystąpił błąd. Spróbuj ponownie.');
         return;
       }
 
       // Always show success (security best practice)
       setIsSuccess(true);
     } catch (error) {
-      setError("Brak połączenia z serwerem. Sprawdź połączenie internetowe.");
+      setError('Brak połączenia z serwerem. Sprawdź połączenie internetowe.');
     } finally {
       setIsLoading(false);
     }
@@ -59,9 +59,9 @@ export function ResetPasswordForm() {
 
   const handleBlur = () => {
     if (!email.trim()) {
-      setError("E-mail jest wymagany");
+      setError('E-mail jest wymagany');
     } else if (!EMAIL_REGEX.test(email)) {
-      setError("Podaj prawidłowy adres e-mail");
+      setError('Podaj prawidłowy adres e-mail');
     } else {
       setError(null);
     }
@@ -74,15 +74,11 @@ export function ResetPasswordForm() {
           <div className="flex items-start gap-3">
             <CheckCircle2 className="h-5 w-5 text-green-600 dark:text-green-400 mt-0.5 shrink-0" />
             <div className="space-y-2">
-              <h3 className="font-semibold text-green-900 dark:text-green-100">
-                Link został wysłany
-              </h3>
+              <h3 className="font-semibold text-green-900 dark:text-green-100">Link został wysłany</h3>
               <p className="text-sm text-green-800 dark:text-green-200">
                 Link resetujący został wysłany na podany adres e-mail. Sprawdź swoją skrzynkę odbiorczą.
               </p>
-              <p className="text-xs text-green-700 dark:text-green-300 mt-2">
-                Link będzie ważny przez 1 godzinę.
-              </p>
+              <p className="text-xs text-green-700 dark:text-green-300 mt-2">Link będzie ważny przez 1 godzinę.</p>
             </div>
           </div>
         </div>
@@ -118,7 +114,7 @@ export function ResetPasswordForm() {
             onBlur={handleBlur}
             disabled={isLoading}
             aria-invalid={!!error}
-            aria-describedby={error ? "email-error" : undefined}
+            aria-describedby={error ? 'email-error' : undefined}
           />
           {error && (
             <p id="email-error" className="text-sm text-destructive">

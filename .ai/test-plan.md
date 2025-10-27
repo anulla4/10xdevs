@@ -11,6 +11,7 @@ Niniejszy dokument przedstawia plan testów dla aplikacji webowej "Nature Log" �
 ### 1.2. Cele Testowania
 
 Główne cele procesu testowania to:
+
 - **Weryfikacja funkcjonalności**: Upewnienie się, że wszystkie funkcje aplikacji działają zgodnie z założeniami i specyfikacją.
 - **Zapewnienie bezpieczeństwa**: Identyfikacja i eliminacja potencjalnych luk w zabezpieczeniach, zwłaszcza w modułach uwierzytelniania i autoryzacji.
 - **Ocena użyteczności**: Sprawdzenie, czy interfejs użytkownika jest intuicyjny, responsywny i przyjazny dla użytkownika.
@@ -126,6 +127,7 @@ Główne cele procesu testowania to:
 ## 7. Harmonogram Testów
 
 Proces testowania będzie prowadzony równolegle z procesem deweloperskim, zgodnie z poniższym harmonogramem:
+
 - **Sprint 1-2**: Implementacja i testowanie modułu uwierzytelniania.
 - **Sprint 3-4**: Implementacja i testowanie podstawowych funkcji CRUD dla obserwacji.
 - **Sprint 5**: Testowanie zaawansowanych funkcji (filtrowanie, sortowanie, mapa).

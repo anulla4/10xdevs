@@ -1,11 +1,11 @@
-import type { CategoryDto } from "../../types";
-import type { SupabaseClient } from "../../db/supabase.client";
-import { z } from "zod";
+import type { CategoryDto } from '../../types';
+import type { SupabaseClient } from '../../db/supabase.client';
+import { z } from 'zod';
 
 export const ListCategoriesParamsSchema = z.object({
   search: z.string().min(1).optional(),
-  sort: z.enum(["sort_order", "name"]).default("sort_order"),
-  order: z.enum(["asc", "desc"]).default("asc"),
+  sort: z.enum(['sort_order', 'name']).default('sort_order'),
+  order: z.enum(['asc', 'desc']).default('asc'),
 });
 
 export type ListCategoriesParams = z.infer<typeof ListCategoriesParamsSchema>;
@@ -22,17 +22,15 @@ export async function listCategories(
 ): Promise<{ items: CategoryDto[] }> {
   const { search, sort, order } = params;
 
-  let query = supabase
-    .from("categories")
-    .select("id, name, icon, color, sort_order");
+  let query = supabase.from('categories').select('id, name, icon, color, sort_order');
 
   // Apply search filter if provided
   if (search) {
-    query = query.ilike("name", `%${search}%`);
+    query = query.ilike('name', `%${search}%`);
   }
 
   // Apply sorting
-  query = query.order(sort, { ascending: order === "asc" });
+  query = query.order(sort, { ascending: order === 'asc' });
 
   const { data, error } = await query;
 
@@ -55,18 +53,15 @@ export async function listCategories(
  * @param supabase - Supabase client instance
  * @returns Category or null if not found
  */
-export async function getCategoryById(
-  id: string,
-  supabase: SupabaseClient
-): Promise<CategoryDto | null> {
+export async function getCategoryById(id: string, supabase: SupabaseClient): Promise<CategoryDto | null> {
   const { data, error } = await supabase
-    .from("categories")
-    .select("id, name, icon, color, sort_order")
-    .eq("id", id)
+    .from('categories')
+    .select('id, name, icon, color, sort_order')
+    .eq('id', id)
     .single();
 
   if (error) {
-    if (error.code === "PGRST116") {
+    if (error.code === 'PGRST116') {
       // Not found
       return null;
     }

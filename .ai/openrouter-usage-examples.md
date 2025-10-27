@@ -16,6 +16,7 @@ OPENROUTER_DEFAULT_MODEL=google/gemini-flash-1.5
 ```
 
 W produkcji ustaw te zmienne w:
+
 - **GitHub Actions**: Secrets w repozytorium
 - **DigitalOcean**: Environment Variables w App Platform/Droplet
 
@@ -26,15 +27,15 @@ Endpoint już utworzony w `src/pages/api/ai/chat.ts`.
 ### Wywołanie z klienta (React):
 
 ```tsx
-import { useState } from 'react'
-import type { ChatResult } from '../types'
+import { useState } from 'react';
+import type { ChatResult } from '../types';
 
 export function SimpleChatExample() {
-  const [response, setResponse] = useState<string>('')
-  const [loading, setLoading] = useState(false)
+  const [response, setResponse] = useState<string>('');
+  const [loading, setLoading] = useState(false);
 
   const handleSubmit = async (prompt: string) => {
-    setLoading(true)
+    setLoading(true);
     try {
       const res = await fetch('/api/ai/chat', {
         method: 'POST',
@@ -43,32 +44,30 @@ export function SimpleChatExample() {
           system: 'Jesteś asystentem Nature Log. Odpowiadasz zwięźle.',
           user: prompt,
         }),
-      })
+      });
 
       if (!res.ok) {
-        const error = await res.json()
-        throw new Error(error.error?.message ?? 'Request failed')
+        const error = await res.json();
+        throw new Error(error.error?.message ?? 'Request failed');
       }
 
-      const data: ChatResult = await res.json()
-      setResponse(data.content)
+      const data: ChatResult = await res.json();
+      setResponse(data.content);
     } catch (err) {
-      console.error('Chat error:', err)
-      setResponse('Wystąpił błąd podczas komunikacji z AI.')
+      console.error('Chat error:', err);
+      setResponse('Wystąpił błąd podczas komunikacji z AI.');
     } finally {
-      setLoading(false)
+      setLoading(false);
     }
-  }
+  };
 
   return (
     <div>
-      <button onClick={() => handleSubmit('Wypisz 3 gatunki ptaków wodnych w Polsce.')}>
-        Zapytaj AI
-      </button>
+      <button onClick={() => handleSubmit('Wypisz 3 gatunki ptaków wodnych w Polsce.')}>Zapytaj AI</button>
       {loading && <p>Ładowanie...</p>}
       {response && <p>{response}</p>}
     </div>
-  )
+  );
 }
 ```
 
@@ -78,12 +77,12 @@ export function SimpleChatExample() {
 
 ```ts
 // src/pages/api/ai/identify-species.ts
-export const prerender = false
+export const prerender = false;
 
-import type { APIRoute } from 'astro'
-import { z } from 'zod'
-import { OpenRouterService } from '../../lib/services/openrouter.service'
-import { createSuccessResponse, createErrorResponse } from '../../lib/api-error'
+import type { APIRoute } from 'astro';
+import { z } from 'zod';
+import { OpenRouterService } from '../../lib/services/openrouter.service';
+import { createSuccessResponse, createErrorResponse } from '../../lib/api-error';
 
 const SpeciesSchema = z.object({
   items: z.array(
@@ -94,11 +93,11 @@ const SpeciesSchema = z.object({
       conservation_status: z.enum(['LC', 'NT', 'VU', 'EN', 'CR', 'EW', 'EX']),
     })
   ),
-})
+});
 
 export const POST: APIRoute = async ({ request }) => {
   try {
-    const { description } = await request.json()
+    const { description } = await request.json();
 
     const service = new OpenRouterService(import.meta.env.OPENROUTER_API_KEY, {
       defaultModel: 'openai/gpt-4o-mini',
@@ -106,7 +105,7 @@ export const POST: APIRoute = async ({ request }) => {
       appName: import.meta.env.OPENROUTER_APP_NAME,
       timeoutMs: 60_000,
       maxRetries: 2,
-    })
+    });
 
     const result = await service.generateChat({
       system: 'Jesteś ekspertem od identyfikacji gatunków. Zwracaj wyniki w JSON.',
@@ -142,16 +141,16 @@ export const POST: APIRoute = async ({ request }) => {
           },
         },
       },
-    })
+    });
 
     // Validate structured response
-    const validated = service.validateStructured(result.content, SpeciesSchema)
+    const validated = service.validateStructured(result.content, SpeciesSchema);
 
-    return createSuccessResponse(validated)
+    return createSuccessResponse(validated);
   } catch (err) {
-    return createErrorResponse(err as Error, true)
+    return createErrorResponse(err as Error, true);
   }
-}
+};
 ```
 
 ## Przykład 3: Streaming odpowiedzi
@@ -160,20 +159,20 @@ export const POST: APIRoute = async ({ request }) => {
 
 ```ts
 // src/pages/api/ai/chat-stream.ts
-export const prerender = false
+export const prerender = false;
 
-import type { APIRoute } from 'astro'
-import { OpenRouterService } from '../../lib/services/openrouter.service'
+import type { APIRoute } from 'astro';
+import { OpenRouterService } from '../../lib/services/openrouter.service';
 
 export const POST: APIRoute = async ({ request }) => {
   try {
-    const { prompt } = await request.json()
+    const { prompt } = await request.json();
 
     const service = new OpenRouterService(import.meta.env.OPENROUTER_API_KEY, {
       defaultModel: 'openrouter/auto',
       appUrl: import.meta.env.OPENROUTER_APP_URL,
       appName: import.meta.env.OPENROUTER_APP_NAME,
-    })
+    });
 
     // Create ReadableStream for SSE
     const stream = new ReadableStream({
@@ -183,90 +182,88 @@ export const POST: APIRoute = async ({ request }) => {
             system: 'Jesteś asystentem Nature Log.',
             user: prompt,
           })) {
-            const data = `data: ${JSON.stringify(chunk)}\n\n`
-            controller.enqueue(new TextEncoder().encode(data))
+            const data = `data: ${JSON.stringify(chunk)}\n\n`;
+            controller.enqueue(new TextEncoder().encode(data));
 
             if (chunk.done) {
-              controller.close()
-              break
+              controller.close();
+              break;
             }
           }
         } catch (err) {
-          controller.error(err)
+          controller.error(err);
         }
       },
-    })
+    });
 
     return new Response(stream, {
       headers: {
         'Content-Type': 'text/event-stream',
         'Cache-Control': 'no-cache',
-        'Connection': 'keep-alive',
+        Connection: 'keep-alive',
       },
-    })
+    });
   } catch (err) {
-    return new Response(JSON.stringify({ error: 'Stream failed' }), { status: 500 })
+    return new Response(JSON.stringify({ error: 'Stream failed' }), { status: 500 });
   }
-}
+};
 ```
 
 ### Klient React ze streamingiem:
 
 ```tsx
-import { useState } from 'react'
+import { useState } from 'react';
 
 export function StreamingChatExample() {
-  const [content, setContent] = useState('')
-  const [loading, setLoading] = useState(false)
+  const [content, setContent] = useState('');
+  const [loading, setLoading] = useState(false);
 
   const handleStream = async (prompt: string) => {
-    setLoading(true)
-    setContent('')
+    setLoading(true);
+    setContent('');
 
     try {
       const res = await fetch('/api/ai/chat-stream', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ prompt }),
-      })
+      });
 
-      if (!res.body) throw new Error('No response body')
+      if (!res.body) throw new Error('No response body');
 
-      const reader = res.body.getReader()
-      const decoder = new TextDecoder()
+      const reader = res.body.getReader();
+      const decoder = new TextDecoder();
 
       while (true) {
-        const { done, value } = await reader.read()
-        if (done) break
+        const { done, value } = await reader.read();
+        if (done) break;
 
-        const text = decoder.decode(value)
-        const lines = text.split('\n')
+        const text = decoder.decode(value);
+        const lines = text.split('\n');
 
         for (const line of lines) {
           if (line.startsWith('data: ')) {
-            const chunk = JSON.parse(line.slice(6))
+            const chunk = JSON.parse(line.slice(6));
             if (chunk.delta) {
-              setContent((prev) => prev + chunk.delta)
+              setContent((prev) => prev + chunk.delta);
             }
           }
         }
       }
     } catch (err) {
-      console.error('Stream error:', err)
+      console.error('Stream error:', err);
     } finally {
-      setLoading(false)
+      setLoading(false);
     }
-  }
+  };
 
   return (
     <div>
-      <button onClick={() => handleStream('Opisz siedliska bobra europejskiego.')}>
-        Streamuj odpowiedź
-      </button>
+      <button onClick={() => handleStream('Opisz siedliska bobra europejskiego.')}>Streamuj odpowiedź</button>
       {loading && <p>Generowanie...</p>}
       <pre>{content}</pre>
     </div>
-  )
+  );
 }
 ```
 
@@ -274,33 +271,30 @@ export function StreamingChatExample() {
 
 ```ts
 // src/lib/services/ai-suggestions.service.ts
-import { OpenRouterService } from './openrouter.service'
-import type { ObservationDto } from '../../types'
+import { OpenRouterService } from './openrouter.service';
+import type { ObservationDto } from '../../types';
 
-export async function generateObservationSuggestions(
-  observation: ObservationDto,
-  apiKey: string
-): Promise<string[]> {
+export async function generateObservationSuggestions(observation: ObservationDto, apiKey: string): Promise<string[]> {
   const service = new OpenRouterService(apiKey, {
     defaultModel: 'openai/gpt-4o-mini',
     defaultParams: { temperature: 0.7, max_tokens: 200 },
     timeoutMs: 30_000,
     maxRetries: 1,
-  })
+  });
 
   const result = await service.generateChat({
     system: 'Jesteś ekspertem od przyrody. Generuj krótkie sugestie obserwacji.',
     user: `Na podstawie obserwacji "${observation.name}" w kategorii "${observation.category.name}", zaproponuj 3 podobne rzeczy do zaobserwowania w okolicy.`,
     params: { temperature: 0.8 },
-  })
+  });
 
   // Parse suggestions from response
   const suggestions = result.content
     .split('\n')
     .filter((line) => line.trim().length > 0)
-    .slice(0, 3)
+    .slice(0, 3);
 
-  return suggestions
+  return suggestions;
 }
 ```
 
@@ -308,17 +302,17 @@ export async function generateObservationSuggestions(
 
 ```ts
 // src/lib/services/ai-tasks.service.ts
-import { OpenRouterService } from './openrouter.service'
+import { OpenRouterService } from './openrouter.service';
 
 export class AITasksService {
-  private baseService: OpenRouterService
+  private baseService: OpenRouterService;
 
   constructor(apiKey: string) {
     this.baseService = new OpenRouterService(apiKey, {
       defaultModel: 'openrouter/auto',
       appUrl: import.meta.env.OPENROUTER_APP_URL,
       appName: import.meta.env.OPENROUTER_APP_NAME,
-    })
+    });
   }
 
   // Szybkie zadanie - tani model
@@ -326,14 +320,14 @@ export class AITasksService {
     const service = this.baseService.withModel('openai/gpt-4o-mini', {
       temperature: 0.3,
       max_tokens: 150,
-    })
+    });
 
     const result = await service.generateChat({
       system: 'Twórz zwięzłe streszczenia w 2 zdaniach.',
       user: text,
-    })
+    });
 
-    return result.content
+    return result.content;
   }
 
   // Złożone zadanie - mocniejszy model
@@ -341,14 +335,14 @@ export class AITasksService {
     const service = this.baseService.withModel('openai/gpt-4o', {
       temperature: 0.5,
       max_tokens: 1000,
-    })
+    });
 
     const result = await service.generateChat({
       system: 'Jesteś ekspertem od analizy danych przyrodniczych.',
       user: `Przeprowadź szczegółową analizę: ${text}`,
-    })
+    });
 
-    return result.content
+    return result.content;
   }
 
   // Kreatywne zadanie - wyższa temperatura
@@ -356,14 +350,14 @@ export class AITasksService {
     const service = this.baseService.withModel('anthropic/claude-3.5-sonnet', {
       temperature: 0.9,
       max_tokens: 500,
-    })
+    });
 
     const result = await service.generateChat({
       system: 'Twórz poetyckie opisy przyrody.',
       user: `Opisz obserwację: ${observation}`,
-    })
+    });
 
-    return result.content
+    return result.content;
   }
 }
 ```
@@ -371,7 +365,7 @@ export class AITasksService {
 ## Obsługa błędów
 
 ```tsx
-import type { ChatResult } from '../types'
+import type { ChatResult } from '../types';
 
 async function safeChatRequest(prompt: string): Promise<string> {
   try {
@@ -379,31 +373,31 @@ async function safeChatRequest(prompt: string): Promise<string> {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ user: prompt }),
-    })
+    });
 
     if (!res.ok) {
-      const error = await res.json()
-      
+      const error = await res.json();
+
       // Handle specific error codes
       switch (error.error?.code) {
         case 'ValidationError':
-          return 'Nieprawidłowe dane wejściowe.'
+          return 'Nieprawidłowe dane wejściowe.';
         case 'Timeout':
-          return 'Żądanie przekroczyło limit czasu. Spróbuj ponownie.'
+          return 'Żądanie przekroczyło limit czasu. Spróbuj ponownie.';
         case 'RateLimitExceeded':
-          return 'Zbyt wiele żądań. Poczekaj chwilę.'
+          return 'Zbyt wiele żądań. Poczekaj chwilę.';
         case 'AuthenticationError':
-          return 'Błąd konfiguracji usługi AI.'
+          return 'Błąd konfiguracji usługi AI.';
         default:
-          return 'Wystąpił błąd. Spróbuj ponownie później.'
+          return 'Wystąpił błąd. Spróbuj ponownie później.';
       }
     }
 
-    const data: ChatResult = await res.json()
-    return data.content
+    const data: ChatResult = await res.json();
+    return data.content;
   } catch (err) {
-    console.error('Chat request failed:', err)
-    return 'Nie można połączyć się z usługą AI.'
+    console.error('Chat request failed:', err);
+    return 'Nie można połączyć się z usługą AI.';
   }
 }
 ```
@@ -426,6 +420,7 @@ curl -X POST http://localhost:4321/api/ai/chat \
 ## Monitoring kosztów
 
 OpenRouter udostępnia dashboard do monitorowania:
+
 - Liczby żądań
 - Zużycia tokenów
 - Kosztów per model
@@ -435,13 +430,13 @@ Dostęp: https://openrouter.ai/activity
 
 ## Porównanie modeli (ceny 2024/2025)
 
-| Model | Input ($/1M) | Output ($/1M) | Context | Zalecenie |
-|-------|--------------|---------------|---------|-----------|
-| **google/gemini-flash-1.5** | $0.075 | $0.30 | 1M | ⭐ Najtańszy, świetny do prostych zadań |
-| **openai/gpt-4o-mini** | $0.15 | $0.60 | 128k | Stabilny, dobra jakość |
-| **anthropic/claude-3-haiku** | $0.25 | $1.25 | 200k | Szybki, świetna jakość |
-| **openrouter/auto** | Dynamiczna | Dynamiczna | Zależny | Auto-wybór najtańszego |
-| **openai/gpt-4o** | $2.50 | $10.00 | 128k | Premium, złożone zadania |
+| Model                        | Input ($/1M) | Output ($/1M) | Context | Zalecenie                               |
+| ---------------------------- | ------------ | ------------- | ------- | --------------------------------------- |
+| **google/gemini-flash-1.5**  | $0.075       | $0.30         | 1M      | ⭐ Najtańszy, świetny do prostych zadań |
+| **openai/gpt-4o-mini**       | $0.15        | $0.60         | 128k    | Stabilny, dobra jakość                  |
+| **anthropic/claude-3-haiku** | $0.25        | $1.25         | 200k    | Szybki, świetna jakość                  |
+| **openrouter/auto**          | Dynamiczna   | Dynamiczna    | Zależny | Auto-wybór najtańszego                  |
+| **openai/gpt-4o**            | $2.50        | $10.00        | 128k    | Premium, złożone zadania                |
 
 ### Kiedy używać którego modelu?
 

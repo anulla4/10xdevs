@@ -1,7 +1,7 @@
-import type { APIRoute } from "astro";
-import { createSupabaseServerInstance } from "../../../db/supabase.client";
-import { loginSchema, validateRequest } from "../../../lib/validation/auth.validation";
-import { authLogger } from "../../../lib/auth-logger";
+import type { APIRoute } from 'astro';
+import { createSupabaseServerInstance } from '../../../db/supabase.client';
+import { loginSchema, validateRequest } from '../../../lib/validation/auth.validation';
+import { authLogger } from '../../../lib/auth-logger';
 
 export const prerender = false;
 
@@ -15,12 +15,12 @@ export const POST: APIRoute = async ({ request, cookies, locals }) => {
     if (!validation.success) {
       return new Response(
         JSON.stringify({
-          error: "Nieprawidłowe dane",
+          error: 'Nieprawidłowe dane',
           details: validation.errors,
         }),
         {
           status: 400,
-          headers: { "Content-Type": "application/json" },
+          headers: { 'Content-Type': 'application/json' },
         }
       );
     }
@@ -40,7 +40,7 @@ export const POST: APIRoute = async ({ request, cookies, locals }) => {
     });
 
     if (error) {
-      authLogger.warn("Login failed", {
+      authLogger.warn('Login failed', {
         requestId: locals.requestId,
         email,
         error: error.message,
@@ -49,16 +49,16 @@ export const POST: APIRoute = async ({ request, cookies, locals }) => {
       // Generic error message for security (don't reveal if email exists)
       return new Response(
         JSON.stringify({
-          error: "Nieprawidłowy e-mail lub hasło",
+          error: 'Nieprawidłowy e-mail lub hasło',
         }),
         {
           status: 401,
-          headers: { "Content-Type": "application/json" },
+          headers: { 'Content-Type': 'application/json' },
         }
       );
     }
 
-    authLogger.info("User logged in successfully", {
+    authLogger.info('User logged in successfully', {
       requestId: locals.requestId,
       userId: data.user.id,
       email: data.user.email,
@@ -73,22 +73,22 @@ export const POST: APIRoute = async ({ request, cookies, locals }) => {
       }),
       {
         status: 200,
-        headers: { "Content-Type": "application/json" },
+        headers: { 'Content-Type': 'application/json' },
       }
     );
   } catch (error) {
-    authLogger.error("Login endpoint error", {
+    authLogger.error('Login endpoint error', {
       requestId: locals.requestId,
-      error: error instanceof Error ? error.message : "Unknown error",
+      error: error instanceof Error ? error.message : 'Unknown error',
     });
 
     return new Response(
       JSON.stringify({
-        error: "Wystąpił błąd serwera. Spróbuj ponownie.",
+        error: 'Wystąpił błąd serwera. Spróbuj ponownie.',
       }),
       {
         status: 500,
-        headers: { "Content-Type": "application/json" },
+        headers: { 'Content-Type': 'application/json' },
       }
     );
   }

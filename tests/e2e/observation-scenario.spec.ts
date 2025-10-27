@@ -1,20 +1,20 @@
-import { test, expect } from "@playwright/test";
-import { LoginPage } from "./pom/LoginPage";
-import { PanelPage } from "./pom/PanelPage";
-import { ObservationFormModal } from "./pom/ObservationFormModal";
-import { ObservationListPage } from "./pom/ObservationListPage";
+import { test, expect } from '@playwright/test';
+import { LoginPage } from './pom/LoginPage';
+import { PanelPage } from './pom/PanelPage';
+import { ObservationFormModal } from './pom/ObservationFormModal';
+import { ObservationListPage } from './pom/ObservationListPage';
 
-test.describe("E2E: Pełny scenariusz zarządzania obserwacją", () => {
+test.describe('E2E: Pełny scenariusz zarządzania obserwacją', () => {
   let observationName: string;
-  const observationDescription = "granit strzegomski";
-  const editedObservationDescription = "granit strzeliński";
+  const observationDescription = 'granit strzegomski';
+  const editedObservationDescription = 'granit strzeliński';
 
   const email = process.env.E2E_EMAIL;
   const password = process.env.E2E_PASSWORD;
 
   test.beforeEach(async ({ page }) => {
     if (!email || !password) {
-      test.skip(true, "Zmienne środowiskowe E2E_EMAIL i E2E_PASSWORD muszą być ustawione.");
+      test.skip(true, 'Zmienne środowiskowe E2E_EMAIL i E2E_PASSWORD muszą być ustawione.');
       return;
     }
     observationName = `Granit-${Date.now()}`;
@@ -23,7 +23,7 @@ test.describe("E2E: Pełny scenariusz zarządzania obserwacją", () => {
     await expect(page).toHaveURL(/\/panel(\?.*)?$/);
   });
 
-  test("Użytkownik może dodać, edytować, usunąć i wylogować się", async ({ page }) => {
+  test('Użytkownik może dodać, edytować, usunąć i wylogować się', async ({ page }) => {
     const panelPage = new PanelPage(page);
     const modal = new ObservationFormModal(page);
     const list = new ObservationListPage(page);
@@ -35,8 +35,8 @@ test.describe("E2E: Pełny scenariusz zarządzania obserwacją", () => {
       name: observationName,
       description: observationDescription,
       categoryIndex: 3,
-      lat: "50.123456",
-      lng: "17.645566",
+      lat: '50.123456',
+      lng: '17.645566',
       favorite: true,
     });
     await modal.save();

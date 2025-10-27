@@ -1,7 +1,16 @@
-import { useState } from "react";
-import { AlertTriangle, Loader2 } from "lucide-react";
-import { useDeleteObservation } from "../hooks/useObservations";
-import { AlertDialog, AlertDialogContent, AlertDialogHeader, AlertDialogTitle, AlertDialogDescription, AlertDialogFooter, AlertDialogCancel, AlertDialogAction } from "@/components/ui/alert-dialog";
+import { useState } from 'react';
+import { AlertTriangle, Loader2 } from 'lucide-react';
+import { useDeleteObservation } from '../hooks/useObservations';
+import {
+  AlertDialog,
+  AlertDialogContent,
+  AlertDialogHeader,
+  AlertDialogTitle,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogCancel,
+  AlertDialogAction,
+} from '@/components/ui/alert-dialog';
 
 interface ConfirmDeleteModalProps {
   observationId: string;
@@ -25,7 +34,7 @@ export function ConfirmDeleteModal({ observationId, observationName, onConfirm, 
       setOpen(false);
       onConfirm();
     } catch (error) {
-      console.error("Failed to delete observation:", error);
+      console.error('Failed to delete observation:', error);
     }
   };
 
@@ -42,7 +51,7 @@ export function ConfirmDeleteModal({ observationId, observationName, onConfirm, 
             <div className="flex-1">
               <AlertDialogTitle>Usuń obserwację</AlertDialogTitle>
               <AlertDialogDescription className="mt-2">
-                Czy na pewno chcesz usunąć obserwację{" "}
+                Czy na pewno chcesz usunąć obserwację{' '}
                 <span className="font-medium text-foreground">"{observationName}"</span>? Tej operacji nie można cofnąć.
               </AlertDialogDescription>
             </div>
@@ -52,14 +61,21 @@ export function ConfirmDeleteModal({ observationId, observationName, onConfirm, 
         {deleteMutation.isError && (
           <div className="rounded-md bg-destructive/10 p-3">
             <p className="text-sm text-destructive">
-              {deleteMutation.error instanceof Error ? deleteMutation.error.message : "Nie udało się usunąć obserwacji"}
+              {deleteMutation.error instanceof Error ? deleteMutation.error.message : 'Nie udało się usunąć obserwacji'}
             </p>
           </div>
         )}
 
         <AlertDialogFooter>
-          <AlertDialogCancel onClick={handleClose} disabled={isDeleting} data-test-id="btn-cancel-delete">Anuluj</AlertDialogCancel>
-          <AlertDialogAction onClick={handleConfirm} disabled={isDeleting} className="bg-destructive text-destructive-foreground hover:bg-destructive/90" data-test-id="btn-confirm-delete">
+          <AlertDialogCancel onClick={handleClose} disabled={isDeleting} data-test-id="btn-cancel-delete">
+            Anuluj
+          </AlertDialogCancel>
+          <AlertDialogAction
+            onClick={handleConfirm}
+            disabled={isDeleting}
+            className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
+            data-test-id="btn-confirm-delete"
+          >
             {isDeleting && <Loader2 className="h-4 w-4 animate-spin" />}
             Usuń
           </AlertDialogAction>

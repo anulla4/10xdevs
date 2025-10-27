@@ -1,7 +1,7 @@
-import type { ObservationDto, CategoryDto, ObservationMarkerDto } from "../../types";
+import type { ObservationDto, CategoryDto, ObservationMarkerDto } from '../../types';
 
 // ViewModel types for UI
-export type ObservationListItemVM = {
+export interface ObservationListItemVM {
   id: string;
   name: string;
   dateLabel: string;
@@ -12,9 +12,9 @@ export type ObservationListItemVM = {
     color: string;
     icon: string;
   };
-};
+}
 
-export type MarkerVM = {
+export interface MarkerVM {
   id: string;
   lat: number;
   lng: number;
@@ -22,15 +22,15 @@ export type MarkerVM = {
   subtitle: string;
   categoryName: string;
   categoryColor: string;
-};
+}
 
-export type PaginationMeta = {
+export interface PaginationMeta {
   total: number;
   page: number;
   limit: number;
-};
+}
 
-export type ObservationVM = {
+export interface ObservationVM {
   id: string;
   name: string;
   description: string | null;
@@ -43,28 +43,28 @@ export type ObservationVM = {
   };
   location_source: string | null;
   location_accuracy: number | null;
-};
+}
 
-export type ObservationListFilters = {
+export interface ObservationListFilters {
   page: number;
   limit: number;
   q?: string;
-  sort: "observation_date" | "name" | "created_at";
-  order: "asc" | "desc";
+  sort: 'observation_date' | 'name' | 'created_at';
+  order: 'asc' | 'desc';
   category_id?: string;
   favorite?: boolean;
-};
+}
 
-export type MapBbox = {
+export interface MapBbox {
   min_lat: number;
   min_lng: number;
   max_lat: number;
   max_lng: number;
-};
+}
 
-export type ViewportMode = "desktop" | "mobile";
+export type ViewportMode = 'desktop' | 'mobile';
 
-export type PanelQueryParams = Omit<ObservationListFilters, "page" | "limit"> & {
+export type PanelQueryParams = Omit<ObservationListFilters, 'page' | 'limit'> & {
   page?: string;
   limit?: string;
 };
@@ -72,15 +72,15 @@ export type PanelQueryParams = Omit<ObservationListFilters, "page" | "limit"> & 
 // Mappers
 export function mapObservationToListItem(dto: ObservationDto): ObservationListItemVM {
   const date = new Date(dto.observation_date);
-  const dateLabel = date.toLocaleDateString("pl-PL", {
-    year: "numeric",
-    month: "short",
-    day: "numeric",
+  const dateLabel = date.toLocaleDateString('pl-PL', {
+    year: 'numeric',
+    month: 'short',
+    day: 'numeric',
   });
 
   const locationLabel = dto.location
     ? `${dto.location.lat.toFixed(4)}, ${dto.location.lng.toFixed(4)}`
-    : "Brak lokalizacji";
+    : 'Brak lokalizacji';
 
   return {
     id: dto.id,
@@ -115,10 +115,10 @@ export function mapObservationToVM(dto: ObservationDto): ObservationVM {
 
 export function mapMarkerToVM(dto: ObservationMarkerDto): MarkerVM {
   const date = new Date(dto.observation_date);
-  const subtitle = date.toLocaleDateString("pl-PL", {
-    year: "numeric",
-    month: "short",
-    day: "numeric",
+  const subtitle = date.toLocaleDateString('pl-PL', {
+    year: 'numeric',
+    month: 'short',
+    day: 'numeric',
   });
 
   return {

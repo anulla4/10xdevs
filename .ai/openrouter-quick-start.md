@@ -42,6 +42,7 @@ npx tsx scripts/test-openrouter.ts --stream
 ```
 
 Test sprawdzi:
+
 - ✅ Prosty czat
 - ✅ JSON Schema z walidacją
 - ✅ Różne modele
@@ -59,6 +60,7 @@ npm run dev
 Otwórz: http://localhost:4321/ai-demo
 
 Przetestuj oba tryby:
+
 - **Czat blokowy** - odpowiedź po zakończeniu generowania
 - **Czat streaming** - odpowiedź token po tokenie
 
@@ -71,19 +73,23 @@ Użyj gotowych komponentów React lub wywołaj API bezpośrednio.
 ## 📁 Co zostało zaimplementowane?
 
 ### Serwis i typy
+
 - ✅ `src/lib/services/openrouter.service.ts` - główny serwis (410 linii)
 - ✅ `src/lib/services/__tests__/openrouter.service.test.ts` - 23 testy jednostkowe
 - ✅ `src/types.ts` - typy TypeScript (Role, ChatRequest, ChatResult, etc.)
 
 ### Endpointy API
+
 - ✅ `src/pages/api/ai/chat.ts` - POST endpoint dla czatu blokowego
 - ✅ `src/pages/api/ai/chat-stream.ts` - POST endpoint dla streamingu
 
 ### Komponenty React
+
 - ✅ `src/components/ai/AIChatBox.tsx` - komponent czatu blokowego
 - ✅ `src/components/ai/AIStreamChat.tsx` - komponent czatu ze streamingiem
 
 ### Demo i dokumentacja
+
 - ✅ `src/pages/ai-demo.astro` - strona demonstracyjna
 - ✅ `.ai/openrouter-service-implementation-plan.md` - pełny plan implementacji
 - ✅ `.ai/openrouter-usage-examples.md` - 7 przykładów użycia
@@ -96,7 +102,7 @@ Użyj gotowych komponentów React lub wywołaj API bezpośrednio.
 ### Przykład 1: Prosty czat w komponencie React
 
 ```tsx
-import { AIChatBox } from "../components/ai/AIChatBox"
+import { AIChatBox } from '../components/ai/AIChatBox';
 
 export function MyComponent() {
   return (
@@ -106,7 +112,7 @@ export function MyComponent() {
       placeholder="Zadaj pytanie o przyrodę..."
       onResponse={(response) => console.log(response)}
     />
-  )
+  );
 }
 ```
 
@@ -121,10 +127,10 @@ async function askAI(question: string) {
       system: 'Jesteś asystentem Nature Log.',
       user: question,
     }),
-  })
-  
-  const data = await response.json()
-  return data.content
+  });
+
+  const data = await response.json();
+  return data.content;
 }
 ```
 
@@ -132,21 +138,21 @@ async function askAI(question: string) {
 
 ```ts
 // src/pages/api/my-ai-feature.ts
-import { OpenRouterService } from '../../lib/services/openrouter.service'
+import { OpenRouterService } from '../../lib/services/openrouter.service';
 
 export const POST: APIRoute = async ({ request }) => {
   const service = new OpenRouterService(import.meta.env.OPENROUTER_API_KEY, {
     defaultModel: 'google/gemini-flash-1.5',
     timeoutMs: 30_000,
-  })
-  
+  });
+
   const result = await service.generateChat({
     system: 'Jesteś ekspertem.',
     user: 'Twoje pytanie',
-  })
-  
-  return new Response(JSON.stringify(result))
-}
+  });
+
+  return new Response(JSON.stringify(result));
+};
 ```
 
 ### Przykład 4: Strukturyzowana odpowiedź (JSON Schema)
@@ -171,25 +177,27 @@ const result = await service.generateChat({
                 common_name: { type: 'string' },
                 latin_name: { type: 'string' },
               },
-              required: ['common_name', 'latin_name']
-            }
-          }
+              required: ['common_name', 'latin_name'],
+            },
+          },
         },
-        required: ['items']
-      }
-    }
-  }
-})
+        required: ['items'],
+      },
+    },
+  },
+});
 
 // Walidacja z Zod
 const BirdSchema = z.object({
-  items: z.array(z.object({
-    common_name: z.string(),
-    latin_name: z.string(),
-  }))
-})
+  items: z.array(
+    z.object({
+      common_name: z.string(),
+      latin_name: z.string(),
+    })
+  ),
+});
 
-const validated = service.validateStructured(result.content, BirdSchema)
+const validated = service.validateStructured(result.content, BirdSchema);
 ```
 
 ---
@@ -197,24 +205,29 @@ const validated = service.validateStructured(result.content, BirdSchema)
 ## 💰 Koszty
 
 ### Model domyślny: `google/gemini-flash-1.5`
+
 - **Input**: $0.075 za 1M tokenów
 - **Output**: $0.30 za 1M tokenów
 - **Najtańszy** dostępny model z dobrą jakością
 
 ### Przykładowe koszty:
+
 - **1000 requestów/miesiąc** (średnio 500 tokenów input + 200 output): **~$0.10/miesiąc**
 - **10,000 requestów/miesiąc**: **~$1.00/miesiąc**
 
 ### Porównanie z innymi modelami:
-| Model | Input ($/1M) | Output ($/1M) | Zalecenie |
-|-------|--------------|---------------|-----------|
-| **google/gemini-flash-1.5** | $0.075 | $0.30 | ⭐ Domyślny (najtańszy) |
-| openai/gpt-4o-mini | $0.15 | $0.60 | Stabilny, 2x droższy |
-| anthropic/claude-3-haiku | $0.25 | $1.25 | Świetna jakość, 3x droższy |
-| openai/gpt-4o | $2.50 | $10.00 | Premium, 33x droższy |
+
+| Model                       | Input ($/1M) | Output ($/1M) | Zalecenie                  |
+| --------------------------- | ------------ | ------------- | -------------------------- |
+| **google/gemini-flash-1.5** | $0.075       | $0.30         | ⭐ Domyślny (najtańszy)    |
+| openai/gpt-4o-mini          | $0.15        | $0.60         | Stabilny, 2x droższy       |
+| anthropic/claude-3-haiku    | $0.25        | $1.25         | Świetna jakość, 3x droższy |
+| openai/gpt-4o               | $2.50        | $10.00        | Premium, 33x droższy       |
 
 ### Monitoring kosztów:
+
 Dashboard OpenRouter: https://openrouter.ai/activity
+
 - Liczba żądań
 - Zużycie tokenów per model
 - Koszty w czasie rzeczywistym
@@ -227,30 +240,28 @@ Dashboard OpenRouter: https://openrouter.ai/activity
 ### Funkcje które mogą wykorzystać AI (post-MVP):
 
 #### 1. **Identyfikacja gatunków** 🔍
+
 ```tsx
 // Przykład: Rozpoznawanie ptaków z opisu
-const species = await askAI(
-  "Zidentyfikuj ptaka: mały, żółty brzuch, czarna czapeczka, śpiewa w lesie"
-)
+const species = await askAI('Zidentyfikuj ptaka: mały, żółty brzuch, czarna czapeczka, śpiewa w lesie');
 ```
 
 #### 2. **Automatyczne opisy** 📝
+
 ```tsx
 // Przykład: Generowanie opisu obserwacji
-const description = await askAI(
-  `Wygeneruj krótki opis obserwacji: ${observation.name} w lokalizacji ${location}`
-)
+const description = await askAI(`Wygeneruj krótki opis obserwacji: ${observation.name} w lokalizacji ${location}`);
 ```
 
 #### 3. **Sugestie obserwacji** 💡
+
 ```tsx
 // Przykład: Co można zobaczyć w okolicy
-const suggestions = await askAI(
-  `Jakie gatunki można zaobserwować w ${location} w ${season}?`
-)
+const suggestions = await askAI(`Jakie gatunki można zaobserwować w ${location} w ${season}?`);
 ```
 
 #### 4. **Chatbot pomocniczy** 💬
+
 ```tsx
 // Przykład: Pomoc dla użytkowników
 <AIChatBox
@@ -260,11 +271,10 @@ const suggestions = await askAI(
 ```
 
 #### 5. **Analiza danych** 📊
+
 ```tsx
 // Przykład: Podsumowanie obserwacji użytkownika
-const summary = await askAI(
-  `Przeanalizuj moje obserwacje i podaj statystyki: ${JSON.stringify(observations)}`
-)
+const summary = await askAI(`Przeanalizuj moje obserwacje i podaj statystyki: ${JSON.stringify(observations)}`);
 ```
 
 ---
@@ -315,6 +325,7 @@ npm run test:coverage
 ```
 
 ### Testy obejmują:
+
 - ✅ Constructor validation
 - ✅ buildMessages() - różne scenariusze
 - ✅ generateChat() - success, params, retry
@@ -331,15 +342,17 @@ npm run test:coverage
 ### Zmienne środowiskowe w produkcji:
 
 #### GitHub Actions (Secrets):
+
 ```yaml
 # .github/workflows/deploy.yml
 env:
   OPENROUTER_API_KEY: ${{ secrets.OPENROUTER_API_KEY }}
   OPENROUTER_APP_URL: ${{ secrets.OPENROUTER_APP_URL }}
-  OPENROUTER_APP_NAME: "Nature Log"
+  OPENROUTER_APP_NAME: 'Nature Log'
 ```
 
 #### DigitalOcean (Environment Variables):
+
 ```
 OPENROUTER_API_KEY=sk-or-v1-xxxxxxxxxxxxx
 OPENROUTER_APP_URL=https://naturelog.example.com
@@ -375,28 +388,37 @@ Szczegółowe informacje znajdziesz w:
 ## ❓ FAQ
 
 ### Czy muszę używać AI w MVP?
+
 **NIE.** AI jest opcjonalne i oznaczone jako "poza MVP" w tech stacku.
 
 ### Czy implementacja kosztuje coś gdy nie używam?
+
 **NIE.** Koszty są tylko za rzeczywiste wywołania API. Bez klucza API nic nie działa.
 
 ### Czy mogę usunąć stronę demo?
+
 **TAK.** Usuń `src/pages/ai-demo.astro` jeśli nie potrzebujesz. Reszta zostanie.
 
 ### Jak zmienić model na inny?
+
 Zmień w `.env`:
+
 ```env
 OPENROUTER_DEFAULT_MODEL=openai/gpt-4o-mini
 ```
+
 Lub per-request w kodzie:
+
 ```ts
-await service.generateChat({ user: "...", model: "openai/gpt-4o-mini" })
+await service.generateChat({ user: '...', model: 'openai/gpt-4o-mini' });
 ```
 
 ### Czy mogę używać bez streamu?
+
 **TAK.** Użyj tylko `/api/ai/chat` (blokowy) i komponentu `AIChatBox`.
 
 ### Jak ograniczyć koszty?
+
 1. Ustaw `max_tokens` w parametrach
 2. Używaj cache dla powtarzalnych zapytań
 3. Monitoruj dashboard OpenRouter

@@ -1,25 +1,25 @@
-import { useEffect, useState, useRef } from "react";
-import { MapContainer, TileLayer, Marker, Popup, useMap, useMapEvents } from "react-leaflet";
-import L from "leaflet";
-import { useMarkers } from "../hooks/useMarkers";
-import { useDebounce } from "../hooks/useDebounce";
-import { mapMarkerToVM } from "./types";
-import type { ObservationListFilters, MapBbox } from "./types";
+import { useEffect, useState, useRef } from 'react';
+import { MapContainer, TileLayer, Marker, Popup, useMap, useMapEvents } from 'react-leaflet';
+import L from 'leaflet';
+import { useMarkers } from '../hooks/useMarkers';
+import { useDebounce } from '../hooks/useDebounce';
+import { mapMarkerToVM } from './types';
+import type { ObservationListFilters, MapBbox } from './types';
 
-type ObservationMapProps = {
+interface ObservationMapProps {
   filters: ObservationListFilters;
   selectedObservationId: string | null;
   onMarkerSelect: (id: string | null) => void;
   onMapClick?: (lat: number, lng: number) => void;
-};
+}
 
 // Fix Leaflet default icon issue with webpack (only on client side)
-if (typeof window !== "undefined") {
+if (typeof window !== 'undefined') {
   delete (L.Icon.Default.prototype as any)._getIconUrl;
   L.Icon.Default.mergeOptions({
-    iconRetinaUrl: "https://unpkg.com/leaflet@1.9.4/dist/images/marker-icon-2x.png",
-    iconUrl: "https://unpkg.com/leaflet@1.9.4/dist/images/marker-icon.png",
-    shadowUrl: "https://unpkg.com/leaflet@1.9.4/dist/images/marker-shadow.png",
+    iconRetinaUrl: 'https://unpkg.com/leaflet@1.9.4/dist/images/marker-icon-2x.png',
+    iconUrl: 'https://unpkg.com/leaflet@1.9.4/dist/images/marker-icon.png',
+    shadowUrl: 'https://unpkg.com/leaflet@1.9.4/dist/images/marker-shadow.png',
   });
 }
 
@@ -41,20 +41,15 @@ export function ObservationMap({ filters, selectedObservationId, onMarkerSelect,
 
   return (
     <div className="relative h-full w-full">
-      <MapContainer
-        center={DEFAULT_CENTER}
-        zoom={DEFAULT_ZOOM}
-        className="h-full w-full"
-        zoomControl={true}
-      >
+      <MapContainer center={DEFAULT_CENTER} zoom={DEFAULT_ZOOM} className="h-full w-full" zoomControl={true}>
         <TileLayer
           attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
           url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
         />
-        
+
         <MapBoundsTracker onBoundsChange={setBbox} />
         {onMapClick && <MapClickHandler onMapClick={onMapClick} />}
-        
+
         {markers.map((marker) => (
           <Marker
             key={marker.id}
@@ -83,12 +78,7 @@ export function ObservationMap({ filters, selectedObservationId, onMarkerSelect,
           </Marker>
         ))}
 
-        {selectedObservationId && (
-          <MapCenterOnSelected
-            markers={markers}
-            selectedId={selectedObservationId}
-          />
-        )}
+        {selectedObservationId && <MapCenterOnSelected markers={markers} selectedId={selectedObservationId} />}
       </MapContainer>
 
       {isLoading && (
@@ -153,7 +143,7 @@ function MapCenterOnSelected({
   markers,
   selectedId,
 }: {
-  markers: Array<{ id: string; lat: number; lng: number }>;
+  markers: { id: string; lat: number; lng: number }[];
   selectedId: string;
 }) {
   const map = useMap();

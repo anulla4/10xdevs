@@ -133,18 +133,21 @@ Zaimplementowano pełny widok Panel zgodnie z planem implementacji (`panel-view-
 ## Zaimplementowane Funkcjonalności
 
 ### 1. Routing i Autoryzacja
+
 - ✅ Strona `/panel` z ochroną trasy
 - ✅ Sprawdzanie sesji Supabase
 - ✅ Redirect do `/auth/login` przy braku sesji
 - ✅ Przekazywanie userId do komponentu
 
 ### 2. Layout Responsywny
+
 - ✅ Desktop: grid 2-kolumnowy (Lista | Mapa)
 - ✅ Mobile: zakładki Lista/Mapa
 - ✅ Detekcja viewport (breakpoint 1024px)
 - ✅ Przełączanie widoków na mobile
 
 ### 3. Filtry i Wyszukiwanie
+
 - ✅ Input wyszukiwania z debounce 300ms
 - ✅ Sortowanie (data obserwacji, nazwa, data utworzenia)
 - ✅ Kolejność (rosnąco/malejąco)
@@ -153,6 +156,7 @@ Zaimplementowano pełny widok Panel zgodnie z planem implementacji (`panel-view-
 - ✅ Reset strony do 1 przy zmianie filtrów
 
 ### 4. Lista Obserwacji
+
 - ✅ Paginacja (Poprzednia/Następna)
 - ✅ Licznik wyników
 - ✅ Stany: loading, error, empty
@@ -161,6 +165,7 @@ Zaimplementowano pełny widok Panel zgodnie z planem implementacji (`panel-view-
 - ✅ Hover states i accessibility
 
 ### 5. Mapa Leaflet
+
 - ✅ OpenStreetMap tiles
 - ✅ Markery z popup (nazwa + data)
 - ✅ Bbox tracking z debounce 300ms
@@ -170,6 +175,7 @@ Zaimplementowano pełny widok Panel zgodnie z planem implementacji (`panel-view-
 - ✅ Filtrowanie markerów (kategoria, ulubione)
 
 ### 6. Formularz CRUD
+
 - ✅ Tryb create i edit
 - ✅ Wszystkie pola zgodne z API
 - ✅ Walidacja po stronie klienta
@@ -180,13 +186,15 @@ Zaimplementowano pełny widok Panel zgodnie z planem implementacji (`panel-view-
 - ✅ Focus trap (Escape zamyka)
 
 ### 7. Modale
+
 - ✅ ObservationFormModal (create/edit)
 - ✅ ConfirmDeleteModal
 - ✅ Focus trap w obu modalach
 - ✅ Overlay z zamknięciem na klik tła
-- ✅ Accessibility (role, aria-*)
+- ✅ Accessibility (role, aria-\*)
 
 ### 8. TanStack Query
+
 - ✅ QueryClient z konfiguracją
 - ✅ useObservations - lista z paginacją
 - ✅ useMarkers - markery dla mapy
@@ -196,6 +204,7 @@ Zaimplementowano pełny widok Panel zgodnie z planem implementacji (`panel-view-
 - ✅ Optimistic updates dla delete
 
 ### 9. System Toastów
+
 - ✅ Komponenty Toast i ToastContainer
 - ✅ Hook useToast (success, error, info)
 - ✅ Auto-dismiss po 5 sekundach
@@ -204,6 +213,7 @@ Zaimplementowano pełny widok Panel zgodnie z planem implementacji (`panel-view-
 - ✅ Pozycjonowanie w prawym dolnym rogu
 
 ### 10. Obsługa Błędów
+
 - ✅ Error handling w formularzach
 - ✅ Wyświetlanie błędów w toastach
 - ✅ Błędy per pole w formularzu
@@ -215,6 +225,7 @@ Zaimplementowano pełny widok Panel zgodnie z planem implementacji (`panel-view-
 ## Integracja z API
 
 ### Endpointy
+
 - `GET /api/observations` - lista z paginacją, filtrowaniem, sortowaniem
 - `GET /api/observations/map` - markery dla mapy (bbox, category_id, favorite)
 - `GET /api/categories` - lista kategorii
@@ -223,12 +234,15 @@ Zaimplementowano pełny widok Panel zgodnie z planem implementacji (`panel-view-
 - `DELETE /api/observations/:id` - usunięcie obserwacji
 
 ### Nagłówki
+
 - `X-Total-Count` - liczba wyników (dla paginacji)
 - `X-Page` - aktualna strona
 - `X-Limit` - limit na stronę
 
 ### Walidacja
+
 Zgodna z `api-plan.md`:
+
 - name: 1-100 znaków
 - description: max 500 znaków
 - category_id: wymagane (UUID)
@@ -243,6 +257,7 @@ Zgodna z `api-plan.md`:
 ## Zarządzanie Stanem
 
 ### TanStack Query
+
 - **Queries:**
   - `['observations', filters]` - lista obserwacji
   - `['markers', {bbox, category_id, favorite}]` - markery mapy
@@ -254,6 +269,7 @@ Zgodna z `api-plan.md`:
   - deleteObservation → optimistic removal + invalidacja
 
 ### Lokalny Stan
+
 - `selectedObservationId` - wspólny dla listy i mapy
 - `modalState` - kontrola modali (none/create/edit/delete)
 - `filters` - filtry listy (synchronizowane z URL)
@@ -261,6 +277,7 @@ Zgodna z `api-plan.md`:
 - `activeTab` - aktywna zakładka na mobile (list/map)
 
 ### URL State
+
 Query params: `page`, `limit`, `q`, `sort`, `order`, `category_id`, `favorite`
 
 ---
@@ -268,11 +285,13 @@ Query params: `page`, `limit`, `q`, `sort`, `order`, `category_id`, `favorite`
 ## Responsywność
 
 ### Desktop (≥1024px)
+
 - Grid 2-kolumnowy: Lista | Mapa
 - Oba widoki widoczne jednocześnie
 - Synchronizacja zaznaczenia lista↔mapa
 
 ### Mobile (<1024px)
+
 - Zakładki: Lista / Mapa
 - Przełączanie między widokami
 - Pełna szerokość ekranu dla każdego widoku
@@ -282,6 +301,7 @@ Query params: `page`, `limit`, `q`, `sort`, `order`, `category_id`, `favorite`
 ## Accessibility (A11y)
 
 ### ARIA
+
 - `role="dialog"` dla modali
 - `role="alert"` dla toastów
 - `aria-modal="true"` dla modali
@@ -292,6 +312,7 @@ Query params: `page`, `limit`, `q`, `sort`, `order`, `category_id`, `favorite`
 - `aria-invalid` dla pól z błędami
 
 ### Keyboard Navigation
+
 - Focus trap w modalach
 - Escape zamyka modale
 - Tab order zachowany
@@ -315,16 +336,20 @@ Query params: `page`, `limit`, `q`, `sort`, `order`, `category_id`, `favorite`
 ## Uwagi Techniczne
 
 ### Błędy Lintowania
+
 Występują drobne błędy formatowania:
+
 - Cudzysłowy (single vs double quotes)
 - Brakujące średniki
 - To kwestia konfiguracji ESLint/Prettier
 
 Błędy "Cannot find module":
+
 - Prawdopodobnie cache TypeScript
 - Znikną po restarcie serwera dev
 
 ### Optymalizacje
+
 - Debounce 300ms dla wyszukiwania i bbox
 - staleTime dla kategorii (24h)
 - Optimistic updates dla delete
@@ -335,6 +360,7 @@ Błędy "Cannot find module":
 ## Testowanie
 
 ### Do Przetestowania
+
 1. **Auth Guard**
    - Dostęp bez logowania → redirect
    - Dostęp po zalogowaniu → widok panel
@@ -377,12 +403,14 @@ Błędy "Cannot find module":
 ## Zgodność z Wymaganiami
 
 ### Plan Implementacji ✅
+
 - Wszystkie 11 kroków zrealizowane
 - Struktura komponentów zgodna z planem
 - Typy zgodne z definicjami
 - Integracja API zgodna z endpointami
 
 ### Zasady Projektu (.windsurfrules) ✅
+
 - Astro dla statycznych części
 - React dla interaktywności
 - Tailwind dla stylowania
@@ -393,6 +421,7 @@ Błędy "Cannot find module":
 - Services w src/lib (używane przez API)
 
 ### Typy (types.ts) ✅
+
 - Używanie ObservationDto, CategoryDto
 - ObservationCreateCommand, ObservationUpdateCommand
 - GeoPointDto dla lokalizacji
@@ -403,6 +432,7 @@ Błędy "Cannot find module":
 ## Pliki Konfiguracyjne
 
 ### Wymagane Zależności (package.json)
+
 ```json
 {
   "dependencies": {
@@ -415,6 +445,7 @@ Błędy "Cannot find module":
 ```
 
 ### Import CSS (w Layout.astro lub globalnie)
+
 ```css
 @import 'leaflet/dist/leaflet.css';
 ```
@@ -424,6 +455,7 @@ Błędy "Cannot find module":
 ## Następne Kroki (Opcjonalne)
 
 ### Potencjalne Ulepszenia
+
 1. **Dodanie przycisk "Dodaj" w toolbar** - otwiera formularz create
 2. **Klik na mapie** - otwiera formularz z prefilled lokalizacją
 3. **Szczegóły obserwacji** - modal/strona z pełnymi informacjami
@@ -436,6 +468,7 @@ Błędy "Cannot find module":
 10. **Testy E2E** - Playwright/Cypress
 
 ### Performance
+
 - React.memo dla ObservationListItem
 - Virtualizacja listy (react-window) dla dużych zbiorów
 - Lazy loading obrazków (jeśli będą dodane)

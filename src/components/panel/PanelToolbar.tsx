@@ -1,27 +1,27 @@
-import { useState, useEffect } from "react";
-import { Search, SlidersHorizontal, Plus } from "lucide-react";
-import { useDebounce } from "../hooks/useDebounce";
-import type { ObservationListFilters } from "./types";
+import { useState, useEffect } from 'react';
+import { Search, SlidersHorizontal, Plus } from 'lucide-react';
+import { useDebounce } from '../hooks/useDebounce';
+import type { ObservationListFilters } from './types';
 
-type PanelToolbarProps = {
+interface PanelToolbarProps {
   value: ObservationListFilters;
   onChange: (filters: ObservationListFilters) => void;
   onAddObservation?: () => void;
-};
+}
 
 const SORT_OPTIONS = [
-  { value: "observation_date", label: "Data obserwacji" },
-  { value: "name", label: "Nazwa" },
-  { value: "created_at", label: "Data utworzenia" },
+  { value: 'observation_date', label: 'Data obserwacji' },
+  { value: 'name', label: 'Nazwa' },
+  { value: 'created_at', label: 'Data utworzenia' },
 ] as const;
 
 const ORDER_OPTIONS = [
-  { value: "asc", label: "Rosnąco" },
-  { value: "desc", label: "Malejąco" },
+  { value: 'asc', label: 'Rosnąco' },
+  { value: 'desc', label: 'Malejąco' },
 ] as const;
 
 export function PanelToolbar({ value, onChange, onAddObservation }: PanelToolbarProps) {
-  const [searchInput, setSearchInput] = useState(value.q || "");
+  const [searchInput, setSearchInput] = useState(value.q || '');
   const debouncedSearch = useDebounce(searchInput, 300);
 
   // Update filters when debounced search changes
@@ -41,7 +41,7 @@ export function PanelToolbar({ value, onChange, onAddObservation }: PanelToolbar
   };
 
   const handleSortChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
-    const newSort = e.target.value as ObservationListFilters["sort"];
+    const newSort = e.target.value as ObservationListFilters['sort'];
     onChange({
       ...value,
       sort: newSort,
@@ -50,7 +50,7 @@ export function PanelToolbar({ value, onChange, onAddObservation }: PanelToolbar
   };
 
   const handleOrderChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
-    const newOrder = e.target.value as ObservationListFilters["order"];
+    const newOrder = e.target.value as ObservationListFilters['order'];
     onChange({
       ...value,
       order: newOrder,

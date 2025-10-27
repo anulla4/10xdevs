@@ -1,7 +1,7 @@
 ---
-import "leaflet/dist/leaflet.css";
-import "../styles/global.css";
-import { Header } from "../components/layout/Header";
+import 'leaflet/dist/leaflet.css';
+import '../styles/global.css';
+import { Header } from '../components/layout/Header';
 
 interface Props {
   title?: string;
@@ -9,18 +9,14 @@ interface Props {
   requireAuth?: boolean;
 }
 
-const { 
-  title = "10x Astro Starter", 
-  showHeader = true,
-  requireAuth = false 
-} = Astro.props;
+const { title = '10x Astro Starter', showHeader = true, requireAuth = false } = Astro.props;
 
 /**
  * User State Verification
- * 
+ *
  * Authentication state is provided by middleware (src/middleware/index.ts)
  * which verifies the user session on every request.
- * 
+ *
  * Available user data:
  * - Astro.locals.user: { id: string, email?: string } | undefined
  * - Astro.locals.userId: string | undefined
@@ -30,7 +26,7 @@ const user = Astro.locals.user;
 
 // Optional: Additional auth check at layout level
 if (requireAuth && !isAuthenticated) {
-  return Astro.redirect("/auth/login");
+  return Astro.redirect('/auth/login');
 }
 ---
 

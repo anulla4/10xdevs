@@ -1,18 +1,23 @@
 import { renderHook, waitFor } from '@testing-library/react';
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
-import { useObservations, useCreateObservation, useDeleteObservation } from '../../src/components/hooks/useObservations';
+import {
+  useObservations,
+  useCreateObservation,
+  useDeleteObservation,
+} from '../../src/components/hooks/useObservations';
 import React from 'react';
 
 global.fetch = vi.fn();
 
-const createTestQueryClient = () => new QueryClient({
-  defaultOptions: {
-    queries: {
-      retry: false,
+const createTestQueryClient = () =>
+  new QueryClient({
+    defaultOptions: {
+      queries: {
+        retry: false,
+      },
     },
-  },
-});
+  });
 
 const createWrapper = () => {
   const queryClient = createTestQueryClient();
@@ -34,7 +39,9 @@ describe('useObservations', () => {
       headers: new Headers({ 'X-Total-Count': '1' }),
     });
 
-    const { result } = renderHook(() => useObservations({ page: 1, limit: 10, sort: 'name', order: 'asc' }), { wrapper: createWrapper() });
+    const { result } = renderHook(() => useObservations({ page: 1, limit: 10, sort: 'name', order: 'asc' }), {
+      wrapper: createWrapper(),
+    });
 
     await waitFor(() => expect(result.current.isSuccess).toBe(true));
 
@@ -50,7 +57,9 @@ describe('useObservations', () => {
       headers: new Headers({ 'X-Total-Count': '0' }),
     });
 
-    const { result } = renderHook(() => useObservations({ page: 1, limit: 10, sort: 'name', order: 'asc' }), { wrapper: createWrapper() });
+    const { result } = renderHook(() => useObservations({ page: 1, limit: 10, sort: 'name', order: 'asc' }), {
+      wrapper: createWrapper(),
+    });
 
     await waitFor(() => expect(result.current.isSuccess).toBe(true));
 
@@ -64,7 +73,9 @@ describe('useObservations', () => {
       json: () => Promise.resolve({ message: 'Failed to fetch' }),
     });
 
-    const { result } = renderHook(() => useObservations({ page: 1, limit: 10, sort: 'name', order: 'asc' }), { wrapper: createWrapper() });
+    const { result } = renderHook(() => useObservations({ page: 1, limit: 10, sort: 'name', order: 'asc' }), {
+      wrapper: createWrapper(),
+    });
 
     await waitFor(() => expect(result.current.isError).toBe(true));
 
@@ -79,11 +90,11 @@ describe('useCreateObservation', () => {
   });
 
   it('should create an observation on success', async () => {
-    const newObservationData = { 
-      name: 'New Observation', 
-      category_id: 'cat1', 
+    const newObservationData = {
+      name: 'New Observation',
+      category_id: 'cat1',
       observation_date: new Date().toISOString(),
-      location: { lat: 10, lng: 20 } 
+      location: { lat: 10, lng: 20 },
     };
     const createdObservation = { id: '2', ...newObservationData };
     (fetch as vi.Mock).mockResolvedValue({

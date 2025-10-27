@@ -1,14 +1,14 @@
-import { useState } from "react"
-import type { ChatResult } from "../../types"
-import { Button } from "../ui/button"
-import { Textarea } from "../ui/textarea"
-import { Label } from "../ui/label"
+import { useState } from 'react';
+import type { ChatResult } from '../../types';
+import { Button } from '../ui/button';
+import { Textarea } from '../ui/textarea';
+import { Label } from '../ui/label';
 
 interface AIChatBoxProps {
-  systemPrompt?: string
-  placeholder?: string
-  onResponse?: (response: string) => void
-  className?: string
+  systemPrompt?: string;
+  placeholder?: string;
+  onResponse?: (response: string) => void;
+  className?: string;
 }
 
 /**
@@ -16,57 +16,57 @@ interface AIChatBoxProps {
  * Non-streaming, displays full response after completion
  */
 export function AIChatBox({
-  systemPrompt = "Jesteś asystentem Nature Log. Odpowiadasz zwięźle i pomocnie.",
-  placeholder = "Zadaj pytanie...",
+  systemPrompt = 'Jesteś asystentem Nature Log. Odpowiadasz zwięźle i pomocnie.',
+  placeholder = 'Zadaj pytanie...',
   onResponse,
-  className = "",
+  className = '',
 }: AIChatBoxProps) {
-  const [prompt, setPrompt] = useState("")
-  const [response, setResponse] = useState("")
-  const [loading, setLoading] = useState(false)
-  const [error, setError] = useState<string | null>(null)
+  const [prompt, setPrompt] = useState('');
+  const [response, setResponse] = useState('');
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
 
   const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault()
+    e.preventDefault();
 
-    if (!prompt.trim()) return
+    if (!prompt.trim()) return;
 
-    setLoading(true)
-    setError(null)
-    setResponse("")
+    setLoading(true);
+    setError(null);
+    setResponse('');
 
     try {
-      const res = await fetch("/api/ai/chat", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
+      const res = await fetch('/api/ai/chat', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           system: systemPrompt,
           user: prompt,
         }),
-      })
+      });
 
       if (!res.ok) {
-        const errorData = await res.json()
-        throw new Error(errorData.error?.message ?? "Request failed")
+        const errorData = await res.json();
+        throw new Error(errorData.error?.message ?? 'Request failed');
       }
 
-      const data: ChatResult = await res.json()
-      setResponse(data.content)
-      onResponse?.(data.content)
+      const data: ChatResult = await res.json();
+      setResponse(data.content);
+      onResponse?.(data.content);
     } catch (err) {
-      const message = err instanceof Error ? err.message : "Unknown error"
-      setError(message)
-      console.error("AI chat error:", err)
+      const message = err instanceof Error ? err.message : 'Unknown error';
+      setError(message);
+      console.error('AI chat error:', err);
     } finally {
-      setLoading(false)
+      setLoading(false);
     }
-  }
+  };
 
   const handleClear = () => {
-    setPrompt("")
-    setResponse("")
-    setError(null)
-  }
+    setPrompt('');
+    setResponse('');
+    setError(null);
+  };
 
   return (
     <div className={`space-y-4 ${className}`}>
@@ -86,14 +86,9 @@ export function AIChatBox({
 
         <div className="flex gap-2">
           <Button type="submit" disabled={loading || !prompt.trim()}>
-            {loading ? "Przetwarzanie..." : "Wyślij"}
+            {loading ? 'Przetwarzanie...' : 'Wyślij'}
           </Button>
-          <Button
-            type="button"
-            variant="outline"
-            onClick={handleClear}
-            disabled={loading}
-          >
+          <Button type="button" variant="outline" onClick={handleClear} disabled={loading}>
             Wyczyść
           </Button>
         </div>
@@ -114,5 +109,5 @@ export function AIChatBox({
         </div>
       )}
     </div>
-  )
+  );
 }

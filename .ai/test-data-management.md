@@ -32,10 +32,12 @@
    - gps
 
 ### **Dane dodane podczas testów API:**
+
 - 1 obserwacja "Test Observation" (później usunięta)
 - Aktualizacje profilu test usera
 
 ### **Pliki testowe (do usunięcia):**
+
 ```
 test-new-obs.json
 test-obs-id.txt
@@ -53,32 +55,38 @@ test-update-profile.json
 ### **1. Test User z hardcoded ID**
 
 **Problem:**
+
 ```typescript
 // W endpointach używamy:
-const userId = "00000000-0000-0000-0000-000000000001";
+const userId = '00000000-0000-0000-0000-000000000001';
 ```
 
 **Wpływ na frontend:**
+
 - ❌ Frontend będzie widział dane test usera
 - ❌ Wszystkie operacje będą wykonywane jako test user
 - ❌ Nie będzie separacji danych między użytkownikami
 
 **Rozwiązanie:**
+
 - ✅ Implementacja JWT authentication
 - ✅ Wyciąganie `userId` z tokena zamiast hardcoded value
 
 ### **2. Dane testowe w produkcji**
 
 **Problem:**
+
 - Seed data zawiera przykładowe obserwacje
 - Mogą być widoczne na produkcji
 
 **Wpływ na frontend:**
+
 - ⚠️ Frontend zobaczy 5 przykładowych obserwacji
 - ⚠️ Może być mylące dla prawdziwych użytkowników
 - ⚠️ Test user może być używany przez wielu
 
 **Rozwiązanie:**
+
 - ✅ Różne seed files dla dev i production
 - ✅ Production: tylko kategorie i location_sources
 - ✅ Dev: pełne dane testowe
@@ -86,6 +94,7 @@ const userId = "00000000-0000-0000-0000-000000000001";
 ### **3. Kategorie są OK**
 
 **Status:** ✅ Nie ma problemu
+
 - Kategorie są częścią aplikacji (nie test data)
 - Powinny być w production
 - Frontend będzie ich potrzebował
@@ -93,6 +102,7 @@ const userId = "00000000-0000-0000-0000-000000000001";
 ### **4. Location Sources są OK**
 
 **Status:** ✅ Nie ma problemu
+
 - To stałe wartości aplikacji
 - Powinny być w production
 - Frontend będzie ich potrzebował
@@ -106,6 +116,7 @@ const userId = "00000000-0000-0000-0000-000000000001";
 #### **A. Rozdziel seed data na dev i production**
 
 **Utwórz:** `supabase/seed-dev.sql`
+
 ```sql
 -- Development seed data (wszystko)
 -- Test user + profile
@@ -113,6 +124,7 @@ const userId = "00000000-0000-0000-0000-000000000001";
 ```
 
 **Utwórz:** `supabase/seed-prod.sql`
+
 ```sql
 -- Production seed data (tylko essentials)
 -- Tylko kategorie (już są w migracji)
@@ -124,21 +136,23 @@ const userId = "00000000-0000-0000-0000-000000000001";
 #### **B. Usuń hardcoded user ID z endpointów**
 
 **Zmień:**
+
 ```typescript
 // PRZED (tymczasowe):
-const userId = "00000000-0000-0000-0000-000000000001";
+const userId = '00000000-0000-0000-0000-000000000001';
 
 // PO (docelowe):
 const userId = locals.userId; // z JWT token
 ```
 
 **Lub dodaj middleware:**
+
 ```typescript
 // src/middleware/auth.ts
 export function requireAuth(context: APIContext) {
-  const token = context.request.headers.get("Authorization");
+  const token = context.request.headers.get('Authorization');
   if (!token) throw new UnauthorizedError();
-  
+
   const decoded = verifyJWT(token);
   context.locals.userId = decoded.sub;
 }
@@ -157,19 +171,21 @@ rm test-obs-id.txt
 #### **D. Użyj test usera dla development**
 
 **Opcja 1: Tymczasowy bypass auth (dev only)**
+
 ```typescript
 // src/middleware/index.ts
 if (import.meta.env.DEV) {
   // Dev: użyj test usera
-  context.locals.userId = "00000000-0000-0000-0000-000000000001";
+  context.locals.userId = '00000000-0000-0000-0000-000000000001';
 } else {
   // Production: wymagaj JWT
-  const token = request.headers.get("Authorization");
+  const token = request.headers.get('Authorization');
   // ... verify JWT
 }
 ```
 
 **Opcja 2: Mock auth dla frontendu**
+
 ```typescript
 // Frontend może używać:
 headers: {
@@ -181,6 +197,7 @@ headers: {
 #### **E. Dodaj więcej test data dla UI development**
 
 **Dla lepszego testowania frontendu:**
+
 ```sql
 -- Dodaj więcej różnorodnych obserwacji:
 -- - Z różnymi kategoriami
@@ -244,17 +261,20 @@ supabase db push
 **Szczegóły:**
 
 #### ✅ **Dla development frontendu - POMOCNE:**
+
 - Masz gotowe dane do wyświetlenia
 - Możesz testować listy, szczegóły, edycję
 - Nie musisz ręcznie tworzyć danych
 - Test user działa jako "zalogowany użytkownik"
 
 #### ⚠️ **Dla production - TRZEBA WYCZYŚCIĆ:**
+
 - Test user nie powinien być w production
 - Przykładowe obserwacje nie powinny być widoczne
 - Ale kategorie i location_sources MUSZĄ być
 
 #### 💡 **Rekomendacja:**
+
 1. **Teraz:** Zostaw wszystko jak jest
 2. **Frontend dev:** Używaj test usera i danych
 3. **Przed production:** Wyczyść test data, dodaj JWT auth
@@ -275,7 +295,7 @@ rm test-*.json test-obs-id.txt
 ```typescript
 // src/pages/api/observations.ts
 // TODO: Replace with JWT user ID before production
-const userId = "00000000-0000-0000-0000-000000000001";
+const userId = '00000000-0000-0000-0000-000000000001';
 ```
 
 ### **3. Utwórz .gitignore entry:**
@@ -290,14 +310,14 @@ test-*.txt
 
 ## 📊 Podsumowanie
 
-| Dane | Status | Akcja |
-|------|--------|-------|
-| Kategorie (3) | ✅ OK | Zostaw - potrzebne w prod |
-| Location Sources (2) | ✅ OK | Zostaw - potrzebne w prod |
-| Test User | ⚠️ Dev OK, Prod NO | Wyczyść przed prod |
-| Obserwacje testowe (5) | ⚠️ Dev OK, Prod NO | Wyczyść przed prod |
-| Pliki test-*.json | ❌ Niepotrzebne | Usuń teraz |
-| Hardcoded user ID | ⚠️ Tymczasowe | Zamień na JWT przed prod |
+| Dane                   | Status             | Akcja                     |
+| ---------------------- | ------------------ | ------------------------- |
+| Kategorie (3)          | ✅ OK              | Zostaw - potrzebne w prod |
+| Location Sources (2)   | ✅ OK              | Zostaw - potrzebne w prod |
+| Test User              | ⚠️ Dev OK, Prod NO | Wyczyść przed prod        |
+| Obserwacje testowe (5) | ⚠️ Dev OK, Prod NO | Wyczyść przed prod        |
+| Pliki test-\*.json     | ❌ Niepotrzebne    | Usuń teraz                |
+| Hardcoded user ID      | ⚠️ Tymczasowe      | Zamień na JWT przed prod  |
 
 ---
 

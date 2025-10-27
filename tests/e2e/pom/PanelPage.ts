@@ -8,7 +8,8 @@ export class PanelPage {
   constructor(page: Page) {
     this.page = page;
     // Use fallback selector for dev server caching issues
-    this.addObservationButton = page.getByTestId('add-observation-button')
+    this.addObservationButton = page
+      .getByTestId('add-observation-button')
       .or(page.getByRole('button', { name: /dodaj obserwację/i }));
     this.logoutLink = page.getByRole('link', { name: /wyloguj/i });
   }

@@ -1,17 +1,17 @@
-import { useObservations } from "../hooks/useObservations";
-import { ObservationListItem } from "./ObservationListItem";
-import { mapObservationToListItem } from "./types";
-import type { ObservationListFilters } from "./types";
-import { Loader2, AlertCircle } from "lucide-react";
+import { useObservations } from '../hooks/useObservations';
+import { ObservationListItem } from './ObservationListItem';
+import { mapObservationToListItem } from './types';
+import type { ObservationListFilters } from './types';
+import { Loader2, AlertCircle } from 'lucide-react';
 
-type ObservationListProps = {
+interface ObservationListProps {
   filters: ObservationListFilters;
   selectedObservationId: string | null;
   onSelect: (id: string | null) => void;
   onPageChange: (page: number) => void;
   onEdit?: (id: string) => void;
   onDelete?: (id: string, name: string) => void;
-};
+}
 
 export function ObservationList({
   filters,
@@ -40,9 +40,7 @@ export function ObservationList({
         <div className="text-center">
           <AlertCircle className="mx-auto h-8 w-8 text-red-600" />
           <p className="mt-2 text-sm font-medium text-gray-900">Błąd ładowania danych</p>
-          <p className="mt-1 text-sm text-gray-600">
-            {error instanceof Error ? error.message : "Nieznany błąd"}
-          </p>
+          <p className="mt-1 text-sm text-gray-600">{error instanceof Error ? error.message : 'Nieznany błąd'}</p>
         </div>
       </div>
     );
@@ -55,8 +53,8 @@ export function ObservationList({
           <p className="text-sm font-medium text-gray-900">Brak obserwacji</p>
           <p className="mt-1 text-sm text-gray-600">
             {filters.q
-              ? "Nie znaleziono obserwacji spełniających kryteria wyszukiwania"
-              : "Dodaj swoją pierwszą obserwację"}
+              ? 'Nie znaleziono obserwacji spełniających kryteria wyszukiwania'
+              : 'Dodaj swoją pierwszą obserwację'}
           </p>
         </div>
       </div>

@@ -1,7 +1,9 @@
 ### 1. Tables
 
 #### `public.profiles`
+
 Stores public user data, extending the `auth.users` table.
+
 ```sql
 CREATE TABLE public.profiles (
   id UUID PRIMARY KEY REFERENCES auth.users(id) ON DELETE CASCADE,
@@ -14,7 +16,9 @@ COMMENT ON TABLE public.profiles IS 'Public user data linked to authentication.'
 ```
 
 #### `public.categories`
+
 A predefined dictionary of observation categories.
+
 ```sql
 CREATE TABLE public.categories (
   id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
@@ -22,7 +26,7 @@ CREATE TABLE public.categories (
   icon VARCHAR(40) NOT NULL,
   color CHAR(7) NOT NULL,
   sort_order SMALLINT NOT NULL,
-  
+
   CONSTRAINT categories_name_unique UNIQUE (name),
   CONSTRAINT categories_sort_order_unique UNIQUE (sort_order),
   CONSTRAINT categories_color_format CHECK (color ~ '^#[0-9a-fA-F]{6}$')
@@ -31,7 +35,9 @@ COMMENT ON TABLE public.categories IS 'Predefined observation categories (e.g., 
 ```
 
 #### `public.location_sources`
+
 A reference table for the source of location data, replacing a native `ENUM`.
+
 ```sql
 CREATE TABLE public.location_sources (
   source TEXT PRIMARY KEY
@@ -40,7 +46,9 @@ COMMENT ON TABLE public.location_sources IS 'Reference table for location source
 ```
 
 #### `public.observations`
+
 The central table for storing user observations.
+
 ```sql
 CREATE TABLE public.observations (
   id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
@@ -64,7 +72,9 @@ COMMENT ON TABLE public.observations IS 'User-submitted nature observations.';
 ```
 
 #### `internal.app_settings`
+
 A table for storing global application settings, protected in a separate schema.
+
 ```sql
 CREATE SCHEMA IF NOT EXISTS internal;
 CREATE TABLE internal.app_settings (
@@ -129,6 +139,7 @@ CREATE POLICY "Deny all access to app_settings" ON internal.app_settings FOR ALL
 
 - **Extensions**: The schema requires the following PostgreSQL extensions to be enabled: `postgis`, `pgcrypto`, and `pg_trgm`.
 - **Timestamp Automation**: A shared trigger function automatically updates the `updated_at` column on any row modification.
+
   ```sql
   CREATE OR REPLACE FUNCTION public.handle_updated_at()
   RETURNS TRIGGER AS $$
@@ -142,7 +153,9 @@ CREATE POLICY "Deny all access to app_settings" ON internal.app_settings FOR ALL
   CREATE TRIGGER on_observations_update BEFORE UPDATE ON public.observations FOR EACH ROW EXECUTE PROCEDURE public.handle_updated_at();
   CREATE TRIGGER on_app_settings_update BEFORE UPDATE ON internal.app_settings FOR EACH ROW EXECUTE PROCEDURE public.handle_updated_at();
   ```
+
 - **Slug Generation**: A trigger automatically generates a unique, URL-friendly `slug` for each new observation.
+
   ```sql
   CREATE OR REPLACE FUNCTION public.generate_observation_slug()
   RETURNS TRIGGER AS $$
@@ -160,6 +173,7 @@ CREATE POLICY "Deny all access to app_settings" ON internal.app_settings FOR ALL
 
   CREATE TRIGGER on_observation_insert_generate_slug BEFORE INSERT ON public.observations FOR EACH ROW EXECUTE PROCEDURE public.generate_observation_slug();
   ```
+
 - **Seed Data**:
   - The `public.location_sources` table should be seeded with initial values: `('manual')`, `('gps')`.
   - The `public.categories` table should be seeded with the initial set: `('Roślina', 'leaf', '#4ade80', 1)`, `('Zwierzę', 'paw', '#fb923c', 2)`, `('Skała', 'mountain', '#a8a29e', 3)`.

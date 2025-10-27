@@ -1,233 +1,231 @@
-import { describe, it, expect, vi, beforeEach, afterEach } from "vitest"
-import { OpenRouterService } from "../openrouter.service"
-import type { ChatRequest } from "../../../types"
-import { z } from "zod"
+import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
+import { OpenRouterService } from '../openrouter.service';
+import type { ChatRequest } from '../../../types';
+import { z } from 'zod';
 
 // Mock fetch globally
-const mockFetch = vi.fn()
-global.fetch = mockFetch as any
+const mockFetch = vi.fn();
+global.fetch = mockFetch as any;
 
-describe("OpenRouterService", () => {
-  let service: OpenRouterService
+describe('OpenRouterService', () => {
+  let service: OpenRouterService;
 
   beforeEach(() => {
-    service = new OpenRouterService("test-api-key", {
-      defaultModel: "openrouter/auto",
+    service = new OpenRouterService('test-api-key', {
+      defaultModel: 'openrouter/auto',
       timeoutMs: 5000,
       maxRetries: 1,
-    })
-    mockFetch.mockClear()
-  })
+    });
+    mockFetch.mockClear();
+  });
 
   afterEach(() => {
-    vi.clearAllMocks()
-  })
+    vi.clearAllMocks();
+  });
 
-  describe("constructor", () => {
-    it("should throw error if API key is missing", () => {
+  describe('constructor', () => {
+    it('should throw error if API key is missing', () => {
       expect(() => {
-        new OpenRouterService("", {
-          defaultModel: "openrouter/auto",
-        })
-      }).toThrow("OpenRouter API key is required")
-    })
+        new OpenRouterService('', {
+          defaultModel: 'openrouter/auto',
+        });
+      }).toThrow('OpenRouter API key is required');
+    });
 
-    it("should initialize with default values", () => {
-      const svc = new OpenRouterService("key", {
-        defaultModel: "test-model",
-      })
+    it('should initialize with default values', () => {
+      const svc = new OpenRouterService('key', {
+        defaultModel: 'test-model',
+      });
 
-      expect(svc).toBeDefined()
-    })
+      expect(svc).toBeDefined();
+    });
 
-    it("should accept custom configuration", () => {
-      const svc = new OpenRouterService("key", {
-        baseUrl: "https://custom.api",
-        defaultModel: "custom-model",
+    it('should accept custom configuration', () => {
+      const svc = new OpenRouterService('key', {
+        baseUrl: 'https://custom.api',
+        defaultModel: 'custom-model',
         defaultParams: { temperature: 0.5 },
-        appName: "Test App",
-        appUrl: "https://test.com",
+        appName: 'Test App',
+        appUrl: 'https://test.com',
         timeoutMs: 30000,
         maxRetries: 3,
-      })
+      });
 
-      expect(svc).toBeDefined()
-    })
-  })
+      expect(svc).toBeDefined();
+    });
+  });
 
-  describe("buildMessages", () => {
-    it("should build messages with system and user string", () => {
+  describe('buildMessages', () => {
+    it('should build messages with system and user string', () => {
       const request: ChatRequest = {
-        system: "You are a helpful assistant.",
-        user: "Hello, world!",
-      }
+        system: 'You are a helpful assistant.',
+        user: 'Hello, world!',
+      };
 
-      const messages = service.buildMessages(request)
+      const messages = service.buildMessages(request);
 
       expect(messages).toEqual([
-        { role: "system", content: "You are a helpful assistant." },
-        { role: "user", content: "Hello, world!" },
-      ])
-    })
+        { role: 'system', content: 'You are a helpful assistant.' },
+        { role: 'user', content: 'Hello, world!' },
+      ]);
+    });
 
-    it("should build messages with user string only", () => {
+    it('should build messages with user string only', () => {
       const request: ChatRequest = {
-        user: "Hello, world!",
-      }
+        user: 'Hello, world!',
+      };
 
-      const messages = service.buildMessages(request)
+      const messages = service.buildMessages(request);
 
-      expect(messages).toEqual([{ role: "user", content: "Hello, world!" }])
-    })
+      expect(messages).toEqual([{ role: 'user', content: 'Hello, world!' }]);
+    });
 
-    it("should build messages with message array", () => {
+    it('should build messages with message array', () => {
       const request: ChatRequest = {
         user: [
-          { role: "user", content: "First message" },
-          { role: "assistant", content: "Response" },
-          { role: "user", content: "Second message" },
+          { role: 'user', content: 'First message' },
+          { role: 'assistant', content: 'Response' },
+          { role: 'user', content: 'Second message' },
         ],
-      }
+      };
 
-      const messages = service.buildMessages(request)
+      const messages = service.buildMessages(request);
 
       expect(messages).toEqual([
-        { role: "user", content: "First message" },
-        { role: "assistant", content: "Response" },
-        { role: "user", content: "Second message" },
-      ])
-    })
+        { role: 'user', content: 'First message' },
+        { role: 'assistant', content: 'Response' },
+        { role: 'user', content: 'Second message' },
+      ]);
+    });
 
-    it("should combine system message with message array", () => {
+    it('should combine system message with message array', () => {
       const request: ChatRequest = {
-        system: "System prompt",
-        user: [{ role: "user", content: "User message" }],
-      }
+        system: 'System prompt',
+        user: [{ role: 'user', content: 'User message' }],
+      };
 
-      const messages = service.buildMessages(request)
+      const messages = service.buildMessages(request);
 
       expect(messages).toEqual([
-        { role: "system", content: "System prompt" },
-        { role: "user", content: "User message" },
-      ])
-    })
-  })
+        { role: 'system', content: 'System prompt' },
+        { role: 'user', content: 'User message' },
+      ]);
+    });
+  });
 
-  describe("generateChat", () => {
-    it("should generate chat completion successfully", async () => {
+  describe('generateChat', () => {
+    it('should generate chat completion successfully', async () => {
       const mockResponse = {
         choices: [
           {
             message: {
-              content: "Test response",
+              content: 'Test response',
             },
           },
         ],
-      }
+      };
 
       mockFetch.mockResolvedValueOnce({
         ok: true,
         json: async () => mockResponse,
-      })
+      });
 
       const result = await service.generateChat({
-        user: "Test prompt",
-      })
+        user: 'Test prompt',
+      });
 
-      expect(result.content).toBe("Test response")
-      expect(result.raw).toEqual(mockResponse)
-      expect(mockFetch).toHaveBeenCalledTimes(1)
-    })
+      expect(result.content).toBe('Test response');
+      expect(result.raw).toEqual(mockResponse);
+      expect(mockFetch).toHaveBeenCalledTimes(1);
+    });
 
-    it("should use custom model and parameters", async () => {
+    it('should use custom model and parameters', async () => {
       mockFetch.mockResolvedValueOnce({
         ok: true,
         json: async () => ({
-          choices: [{ message: { content: "Response" } }],
+          choices: [{ message: { content: 'Response' } }],
         }),
-      })
+      });
 
       await service.generateChat({
-        user: "Test",
-        model: "custom-model",
+        user: 'Test',
+        model: 'custom-model',
         params: {
           temperature: 0.7,
           max_tokens: 100,
         },
-      })
+      });
 
-      const callArgs = mockFetch.mock.calls[0]
-      const body = JSON.parse(callArgs[1].body)
+      const callArgs = mockFetch.mock.calls[0];
+      const body = JSON.parse(callArgs[1].body);
 
-      expect(body.model).toBe("custom-model")
-      expect(body.temperature).toBe(0.7)
-      expect(body.max_tokens).toBe(100)
-    })
+      expect(body.model).toBe('custom-model');
+      expect(body.temperature).toBe(0.7);
+      expect(body.max_tokens).toBe(100);
+    });
 
-    it("should include response_format when provided", async () => {
+    it('should include response_format when provided', async () => {
       mockFetch.mockResolvedValueOnce({
         ok: true,
         json: async () => ({
           choices: [{ message: { content: '{"key": "value"}' } }],
         }),
-      })
+      });
 
       await service.generateChat({
-        user: "Test",
+        user: 'Test',
         response_format: {
-          type: "json_schema",
+          type: 'json_schema',
           json_schema: {
-            name: "test_schema",
+            name: 'test_schema',
             strict: true,
-            schema: { type: "object" },
+            schema: { type: 'object' },
           },
         },
-      })
+      });
 
-      const callArgs = mockFetch.mock.calls[0]
-      const body = JSON.parse(callArgs[1].body)
+      const callArgs = mockFetch.mock.calls[0];
+      const body = JSON.parse(callArgs[1].body);
 
-      expect(body.response_format).toBeDefined()
-      expect(body.response_format.type).toBe("json_schema")
-    })
+      expect(body.response_format).toBeDefined();
+      expect(body.response_format.type).toBe('json_schema');
+    });
 
-    it("should handle API errors", async () => {
+    it('should handle API errors', async () => {
       mockFetch.mockResolvedValueOnce({
         ok: false,
         status: 400,
-        statusText: "Bad Request",
+        statusText: 'Bad Request',
         json: async () => ({
-          error: { message: "Invalid request" },
+          error: { message: 'Invalid request' },
         }),
-      })
+      });
 
-      await expect(service.generateChat({ user: "Test" })).rejects.toThrow(
-        "Invalid request"
-      )
-    })
+      await expect(service.generateChat({ user: 'Test' })).rejects.toThrow('Invalid request');
+    });
 
-    it("should retry on 429 rate limit", async () => {
+    it('should retry on 429 rate limit', async () => {
       mockFetch
         .mockResolvedValueOnce({
           ok: false,
           status: 429,
-          headers: new Map([["Retry-After", "1"]]),
+          headers: new Map([['Retry-After', '1']]),
           json: async () => ({}),
         })
         .mockResolvedValueOnce({
           ok: true,
           json: async () => ({
-            choices: [{ message: { content: "Success after retry" } }],
+            choices: [{ message: { content: 'Success after retry' } }],
           }),
-        })
+        });
 
-      const result = await service.generateChat({ user: "Test" })
+      const result = await service.generateChat({ user: 'Test' });
 
-      expect(result.content).toBe("Success after retry")
-      expect(mockFetch).toHaveBeenCalledTimes(2)
-    })
+      expect(result.content).toBe('Success after retry');
+      expect(mockFetch).toHaveBeenCalledTimes(2);
+    });
 
-    it("should retry on 5xx server errors", async () => {
+    it('should retry on 5xx server errors', async () => {
       mockFetch
         .mockResolvedValueOnce({
           ok: false,
@@ -237,38 +235,38 @@ describe("OpenRouterService", () => {
         .mockResolvedValueOnce({
           ok: true,
           json: async () => ({
-            choices: [{ message: { content: "Success after retry" } }],
+            choices: [{ message: { content: 'Success after retry' } }],
           }),
-        })
+        });
 
-      const result = await service.generateChat({ user: "Test" })
+      const result = await service.generateChat({ user: 'Test' });
 
-      expect(result.content).toBe("Success after retry")
-      expect(mockFetch).toHaveBeenCalledTimes(2)
-    })
+      expect(result.content).toBe('Success after retry');
+      expect(mockFetch).toHaveBeenCalledTimes(2);
+    });
 
-    it("should fail after max retries", async () => {
+    it('should fail after max retries', async () => {
       mockFetch.mockResolvedValue({
         ok: false,
         status: 503,
         json: async () => ({}),
-      })
+      });
 
-      await expect(service.generateChat({ user: "Test" })).rejects.toThrow()
+      await expect(service.generateChat({ user: 'Test' })).rejects.toThrow();
 
       // Initial + 1 retry (maxRetries: 1)
-      expect(mockFetch).toHaveBeenCalledTimes(2)
-    })
-  })
+      expect(mockFetch).toHaveBeenCalledTimes(2);
+    });
+  });
 
-  describe("validateStructured", () => {
-    it("should validate valid JSON against schema", () => {
+  describe('validateStructured', () => {
+    it('should validate valid JSON against schema', () => {
       const content = JSON.stringify({
         items: [
-          { name: "Item 1", value: 10 },
-          { name: "Item 2", value: 20 },
+          { name: 'Item 1', value: 10 },
+          { name: 'Item 2', value: 20 },
         ],
-      })
+      });
 
       const schema = z.object({
         items: z.array(
@@ -277,115 +275,109 @@ describe("OpenRouterService", () => {
             value: z.number(),
           })
         ),
-      })
+      });
 
-      const result = service.validateStructured(content, schema)
+      const result = service.validateStructured(content, schema);
 
-      expect(result.items).toHaveLength(2)
-      expect(result.items[0].name).toBe("Item 1")
-    })
+      expect(result.items).toHaveLength(2);
+      expect(result.items[0].name).toBe('Item 1');
+    });
 
-    it("should throw on invalid JSON", () => {
-      const content = "not valid json"
-      const schema = z.object({ key: z.string() })
-
-      expect(() => {
-        service.validateStructured(content, schema)
-      }).toThrow("Failed to parse JSON response")
-    })
-
-    it("should throw on schema validation failure", () => {
-      const content = JSON.stringify({ wrong: "structure" })
-      const schema = z.object({ expected: z.string() })
+    it('should throw on invalid JSON', () => {
+      const content = 'not valid json';
+      const schema = z.object({ key: z.string() });
 
       expect(() => {
-        service.validateStructured(content, schema)
-      }).toThrow("Response does not match expected schema")
-    })
-  })
+        service.validateStructured(content, schema);
+      }).toThrow('Failed to parse JSON response');
+    });
 
-  describe("withModel", () => {
-    it("should create new instance with different model", () => {
-      const newService = service.withModel("new-model")
+    it('should throw on schema validation failure', () => {
+      const content = JSON.stringify({ wrong: 'structure' });
+      const schema = z.object({ expected: z.string() });
 
-      expect(newService).not.toBe(service)
-      expect(newService).toBeInstanceOf(OpenRouterService)
-    })
+      expect(() => {
+        service.validateStructured(content, schema);
+      }).toThrow('Response does not match expected schema');
+    });
+  });
 
-    it("should create new instance with different params", () => {
+  describe('withModel', () => {
+    it('should create new instance with different model', () => {
+      const newService = service.withModel('new-model');
+
+      expect(newService).not.toBe(service);
+      expect(newService).toBeInstanceOf(OpenRouterService);
+    });
+
+    it('should create new instance with different params', () => {
       const newService = service.withModel(undefined, {
         temperature: 0.9,
         max_tokens: 500,
-      })
+      });
 
-      expect(newService).not.toBe(service)
-      expect(newService).toBeInstanceOf(OpenRouterService)
-    })
+      expect(newService).not.toBe(service);
+      expect(newService).toBeInstanceOf(OpenRouterService);
+    });
 
-    it("should preserve API key and base config", async () => {
-      const newService = service.withModel("new-model")
+    it('should preserve API key and base config', async () => {
+      const newService = service.withModel('new-model');
 
       mockFetch.mockResolvedValueOnce({
         ok: true,
         json: async () => ({
-          choices: [{ message: { content: "Response" } }],
+          choices: [{ message: { content: 'Response' } }],
         }),
-      })
+      });
 
-      await newService.generateChat({ user: "Test" })
+      await newService.generateChat({ user: 'Test' });
 
-      const callArgs = mockFetch.mock.calls[0]
-      const headers = callArgs[1].headers
+      const callArgs = mockFetch.mock.calls[0];
+      const headers = callArgs[1].headers;
 
-      expect(headers.Authorization).toBe("Bearer test-api-key")
-    })
-  })
+      expect(headers.Authorization).toBe('Bearer test-api-key');
+    });
+  });
 
-  describe("error handling", () => {
-    it("should map 401 to AuthenticationError", async () => {
+  describe('error handling', () => {
+    it('should map 401 to AuthenticationError', async () => {
       mockFetch.mockResolvedValueOnce({
         ok: false,
         status: 401,
         json: async () => ({}),
-      })
+      });
 
-      await expect(service.generateChat({ user: "Test" })).rejects.toMatchObject(
-        {
-          statusCode: 500,
-          code: "AuthenticationError",
-        }
-      )
-    })
+      await expect(service.generateChat({ user: 'Test' })).rejects.toMatchObject({
+        statusCode: 500,
+        code: 'AuthenticationError',
+      });
+    });
 
-    it("should map 404 to ModelNotFound", async () => {
+    it('should map 404 to ModelNotFound', async () => {
       mockFetch.mockResolvedValueOnce({
         ok: false,
         status: 404,
         json: async () => ({}),
-      })
+      });
 
-      await expect(service.generateChat({ user: "Test" })).rejects.toMatchObject(
-        {
-          statusCode: 404,
-          code: "ModelNotFound",
-        }
-      )
-    })
+      await expect(service.generateChat({ user: 'Test' })).rejects.toMatchObject({
+        statusCode: 404,
+        code: 'ModelNotFound',
+      });
+    });
 
-    it("should map 429 to RateLimitExceeded after retries", async () => {
+    it('should map 429 to RateLimitExceeded after retries', async () => {
       mockFetch.mockResolvedValue({
         ok: false,
         status: 429,
         headers: new Map(),
         json: async () => ({}),
-      })
+      });
 
-      await expect(service.generateChat({ user: "Test" })).rejects.toMatchObject(
-        {
-          statusCode: 429,
-          code: "RateLimitExceeded",
-        }
-      )
-    })
-  })
-})
+      await expect(service.generateChat({ user: 'Test' })).rejects.toMatchObject({
+        statusCode: 429,
+        code: 'RateLimitExceeded',
+      });
+    });
+  });
+});

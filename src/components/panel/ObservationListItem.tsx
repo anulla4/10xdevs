@@ -1,19 +1,19 @@
-import { Star, MapPin, Calendar, Edit2, Trash2 } from "lucide-react";
-import type { ObservationListItemVM } from "./types";
+import { Star, MapPin, Calendar, Edit2, Trash2 } from 'lucide-react';
+import type { ObservationListItemVM } from './types';
 
-type ObservationListItemProps = {
+interface ObservationListItemProps {
   item: ObservationListItemVM;
   selected: boolean;
   onClick: () => void;
   onEdit?: () => void;
   onDelete?: () => void;
-};
+}
 
 export function ObservationListItem({ item, selected, onClick, onEdit, onDelete }: ObservationListItemProps) {
   return (
     <div
       onClick={onClick}
-      className={`w-full px-4 py-3 text-left transition-colors hover:bg-gray-50 cursor-pointer ${selected ? "bg-blue-50 hover:bg-blue-100" : ""}`}
+      className={`w-full px-4 py-3 text-left transition-colors hover:bg-gray-50 cursor-pointer ${selected ? 'bg-blue-50 hover:bg-blue-100' : ''}`}
       role="button"
       tabIndex={0}
       aria-pressed={selected}

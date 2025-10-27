@@ -8,6 +8,7 @@
 ## 1. ✅ Zgodność z Bazą Danych
 
 ### **Tabele w bazie:**
+
 - ✅ `public.profiles` - zgodne z `ProfileDto`
 - ✅ `public.categories` - zgodne z `CategoryDto`
 - ✅ `public.location_sources` - zgodne z `LocationSourceDto`
@@ -17,6 +18,7 @@
 ### **Typy danych - weryfikacja:**
 
 #### **profiles table:**
+
 ```sql
 id uuid primary key references auth.users(id)
 display_name varchar(60) not null
@@ -24,9 +26,11 @@ avatar_url text
 created_at timestamptz not null
 updated_at timestamptz not null
 ```
+
 **✅ Zgodność:** `ProfileDto` używa `Tables<'profiles'>` - 100% zgodne
 
 #### **categories table:**
+
 ```sql
 id uuid primary key
 name text not null
@@ -34,9 +38,11 @@ icon varchar(40) not null
 color char(7) not null (format: #RRGGBB)
 sort_order smallint not null
 ```
+
 **✅ Zgodność:** `CategoryDto` używa `Tables<'categories'>` - 100% zgodne
 
 #### **observations table:**
+
 ```sql
 id uuid primary key
 user_id uuid not null references profiles(id)
@@ -52,12 +58,15 @@ location_accuracy numeric(5,2)
 created_at timestamptz not null
 updated_at timestamptz not null
 ```
-**✅ Zgodność:** 
+
+**✅ Zgodność:**
+
 - API używa `{lat, lng}` - konwersja do PostGIS w serwisie ✅
 - `ObservationDto` ma wszystkie pola ✅
 - `slug` auto-generowany przez trigger ✅
 
 #### **observations_read view:**
+
 ```sql
 SELECT
   o.id, o.user_id, o.slug, o.name, o.description,
@@ -68,6 +77,7 @@ SELECT
   o.category_id, o.created_at, o.updated_at
 FROM public.observations o;
 ```
+
 **✅ Zgodność:** Widok używany w `listObservations()` i `getObservationById()` ✅
 
 ---
@@ -77,6 +87,7 @@ FROM public.observations o;
 ### **Endpointy - weryfikacja importów:**
 
 #### ✅ `/api/observations.ts`
+
 ```typescript
 ✅ import type { APIRoute } from "astro"
 ✅ import { z } from "zod"
@@ -87,6 +98,7 @@ FROM public.observations o;
 ```
 
 #### ✅ `/api/observations/[id].ts`
+
 ```typescript
 ✅ import type { APIRoute } from "astro"
 ✅ import { z } from "zod"
@@ -97,6 +109,7 @@ FROM public.observations o;
 ```
 
 #### ✅ `/api/observations/map.ts`
+
 ```typescript
 ✅ import type { APIRoute } from "astro"
 ✅ import { z } from "zod"
@@ -106,6 +119,7 @@ FROM public.observations o;
 ```
 
 #### ✅ `/api/categories.ts`
+
 ```typescript
 ✅ import type { APIRoute } from "astro"
 ✅ import { z } from "zod"
@@ -116,6 +130,7 @@ FROM public.observations o;
 ```
 
 #### ✅ `/api/categories/[id].ts`
+
 ```typescript
 ✅ import type { APIRoute } from "astro"
 ✅ import { z } from "zod"
@@ -126,6 +141,7 @@ FROM public.observations o;
 ```
 
 #### ✅ `/api/profile/me.ts`
+
 ```typescript
 ✅ import type { APIRoute } from "astro"
 ✅ import { z } from "zod"
@@ -136,6 +152,7 @@ FROM public.observations o;
 ```
 
 #### ✅ `/api/location-sources.ts`
+
 ```typescript
 ✅ import type { APIRoute } from "astro"
 ✅ import type { ListResponse, LocationSourceDto } from "../../types"
@@ -147,6 +164,7 @@ FROM public.observations o;
 ### **Services - weryfikacja:**
 
 #### ✅ `observations.service.ts`
+
 ```typescript
 ✅ import type { ObservationDto, CategoryRefDto } from "../../types"
 ✅ import type { SupabaseClient } from "../db/supabase.client"
@@ -155,6 +173,7 @@ FROM public.observations o;
 ```
 
 #### ✅ `categories.service.ts`
+
 ```typescript
 ✅ import type { CategoryDto } from "../../types"
 ✅ import type { SupabaseClient } from "../../db/supabase.client"
@@ -163,6 +182,7 @@ FROM public.observations o;
 ```
 
 #### ✅ `profile.service.ts`
+
 ```typescript
 ✅ import type { ProfileDto } from "../../types"
 ✅ import type { SupabaseClient } from "../../db/supabase.client"
@@ -170,6 +190,7 @@ FROM public.observations o;
 ```
 
 #### ✅ `location-sources.service.ts`
+
 ```typescript
 ✅ import type { LocationSourceDto } from "../../types"
 ✅ import type { SupabaseClient } from "../../db/supabase.client"
@@ -179,6 +200,7 @@ FROM public.observations o;
 ### **Infrastructure - weryfikacja:**
 
 #### ✅ `logger.ts`
+
 ```typescript
 ✅ export interface LogContext
 ✅ export interface LogMetadata
@@ -188,6 +210,7 @@ FROM public.observations o;
 ```
 
 #### ✅ `api-error.ts`
+
 ```typescript
 ✅ export interface ApiErrorResponse
 ✅ export class ApiError
@@ -203,6 +226,7 @@ FROM public.observations o;
 ```
 
 #### ✅ `middleware/index.ts`
+
 ```typescript
 ✅ import { defineMiddleware } from "astro:middleware"
 ✅ import { supabaseClient } from "../db/supabase.client.ts"
@@ -217,46 +241,47 @@ FROM public.observations o;
 
 ### **Z planu: Względy bezpieczeństwa (sekcja 5)**
 
-| Wymaganie | Status | Implementacja |
-|-----------|--------|---------------|
-| Uwierzytelnianie JWT | ⏳ TODO | Przygotowane middleware, TODO: JWT verification |
-| Autoryzacja (RLS) | ✅ | RLS policies w bazie, user_id w queries |
-| Walidacja Zod | ✅ | Wszystkie endpointy mają Zod schemas |
-| `limit <= 100` | ✅ | `z.coerce.number().int().min(1).max(100)` |
-| `page >= 1` | ✅ | `z.coerce.number().int().min(1)` |
-| Ograniczenie danych | ✅ | `.select()` tylko potrzebne kolumny |
-| Brak wrażliwych danych w logach | ✅ | Logger nie loguje passwords, tylko user_id, request_id |
+| Wymaganie                       | Status  | Implementacja                                          |
+| ------------------------------- | ------- | ------------------------------------------------------ |
+| Uwierzytelnianie JWT            | ⏳ TODO | Przygotowane middleware, TODO: JWT verification        |
+| Autoryzacja (RLS)               | ✅      | RLS policies w bazie, user_id w queries                |
+| Walidacja Zod                   | ✅      | Wszystkie endpointy mają Zod schemas                   |
+| `limit <= 100`                  | ✅      | `z.coerce.number().int().min(1).max(100)`              |
+| `page >= 1`                     | ✅      | `z.coerce.number().int().min(1)`                       |
+| Ograniczenie danych             | ✅      | `.select()` tylko potrzebne kolumny                    |
+| Brak wrażliwych danych w logach | ✅      | Logger nie loguje passwords, tylko user_id, request_id |
 
 ### **Z planu: Obsługa błędów (sekcja 6)**
 
-| Kod | Wymaganie | Status | Implementacja |
-|-----|-----------|--------|---------------|
-| 400 | ValidationError | ✅ | `ValidationError` class + Zod validation |
-| 401 | Unauthorized | ✅ | `UnauthorizedError` class |
-| 404 | NotFound | ✅ | `NotFoundError` class |
-| 422 | Unprocessable | ✅ | `UnprocessableError` class (bbox validation) |
-| 500 | InternalServerError | ✅ | `InternalServerError` class + sanitization |
-| Centralny logger | ✅ | `logger.ts` z request_id, method, path, user_id, status, latency |
+| Kod              | Wymaganie           | Status                                                           | Implementacja                                |
+| ---------------- | ------------------- | ---------------------------------------------------------------- | -------------------------------------------- |
+| 400              | ValidationError     | ✅                                                               | `ValidationError` class + Zod validation     |
+| 401              | Unauthorized        | ✅                                                               | `UnauthorizedError` class                    |
+| 404              | NotFound            | ✅                                                               | `NotFoundError` class                        |
+| 422              | Unprocessable       | ✅                                                               | `UnprocessableError` class (bbox validation) |
+| 500              | InternalServerError | ✅                                                               | `InternalServerError` class + sanitization   |
+| Centralny logger | ✅                  | `logger.ts` z request_id, method, path, user_id, status, latency |
 
 ### **Z planu: Etapy wdrożenia (sekcja 8)**
 
-| Etap | Status | Lokalizacja |
-|------|--------|-------------|
-| 1. Widok `observations_read` | ✅ | `supabase/migrations/20251015120000_create_observations_read_view.sql` |
-| 2. Typy TypeScript | ✅ | `src/types.ts` + `src/db/database.types.ts` |
-| 3. Serwis `observations.service.ts` | ✅ | `src/lib/services/observations.service.ts` (6 funkcji) |
-| 4. Endpoint GET `/api/observations` | ✅ | `src/pages/api/observations.ts` |
-| 5. Endpoint POST `/api/observations` | ✅ | `src/pages/api/observations.ts` |
-| 6. Endpoint GET `/api/observations/:id` | ✅ | `src/pages/api/observations/[id].ts` |
-| 7. Endpoint PATCH `/api/observations/:id` | ✅ | `src/pages/api/observations/[id].ts` |
-| 8. Endpoint DELETE `/api/observations/:id` | ✅ | `src/pages/api/observations/[id].ts` |
-| 9. Pozostałe endpointy | ✅ | Wszystkie 11 endpointów zaimplementowane |
+| Etap                                       | Status | Lokalizacja                                                            |
+| ------------------------------------------ | ------ | ---------------------------------------------------------------------- |
+| 1. Widok `observations_read`               | ✅     | `supabase/migrations/20251015120000_create_observations_read_view.sql` |
+| 2. Typy TypeScript                         | ✅     | `src/types.ts` + `src/db/database.types.ts`                            |
+| 3. Serwis `observations.service.ts`        | ✅     | `src/lib/services/observations.service.ts` (6 funkcji)                 |
+| 4. Endpoint GET `/api/observations`        | ✅     | `src/pages/api/observations.ts`                                        |
+| 5. Endpoint POST `/api/observations`       | ✅     | `src/pages/api/observations.ts`                                        |
+| 6. Endpoint GET `/api/observations/:id`    | ✅     | `src/pages/api/observations/[id].ts`                                   |
+| 7. Endpoint PATCH `/api/observations/:id`  | ✅     | `src/pages/api/observations/[id].ts`                                   |
+| 8. Endpoint DELETE `/api/observations/:id` | ✅     | `src/pages/api/observations/[id].ts`                                   |
+| 9. Pozostałe endpointy                     | ✅     | Wszystkie 11 endpointów zaimplementowane                               |
 
 ---
 
 ## 4. ✅ Best Practices - Weryfikacja
 
 ### **REST API Design:**
+
 - ✅ Używa właściwych metod HTTP (GET, POST, PATCH, DELETE)
 - ✅ Właściwe kody statusu (200, 201, 204, 400, 401, 404, 422, 500)
 - ✅ Spójne formaty odpowiedzi
@@ -266,6 +291,7 @@ FROM public.observations o;
 - ✅ Idempotentność (GET, PUT, DELETE)
 
 ### **TypeScript:**
+
 - ✅ Strict mode enabled
 - ✅ Wszystkie typy zdefiniowane
 - ✅ Brak `any` (poza error handling gdzie konieczne)
@@ -273,6 +299,7 @@ FROM public.observations o;
 - ✅ Generowane typy z bazy (`database.types.ts`)
 
 ### **Code Organization:**
+
 - ✅ Separation of concerns (routes → services → database)
 - ✅ DRY principle (reusable error classes, logger)
 - ✅ Single Responsibility (każda funkcja robi jedną rzecz)
@@ -280,6 +307,7 @@ FROM public.observations o;
 - ✅ Clear file structure
 
 ### **Error Handling:**
+
 - ✅ Centralized error handling
 - ✅ Structured error responses
 - ✅ Error sanitization (production)
@@ -287,6 +315,7 @@ FROM public.observations o;
 - ✅ Request tracking (request_id)
 
 ### **Security:**
+
 - ✅ Input validation (Zod)
 - ✅ SQL injection prevention (Supabase client)
 - ✅ RLS policies
@@ -294,6 +323,7 @@ FROM public.observations o;
 - ✅ No sensitive data in logs
 
 ### **Performance:**
+
 - ✅ Select only needed columns
 - ✅ Database indexes (w migracji)
 - ✅ Pagination
@@ -304,19 +334,19 @@ FROM public.observations o;
 
 ## 5. ✅ Testy Manualne - Wyniki
 
-| # | Endpoint | Method | Test | Result |
-|---|----------|--------|------|--------|
-| 1 | `/api/categories` | GET | Lista 3 kategorii | ✅ PASS |
-| 2 | `/api/categories/:id` | GET | Pojedyncza kategoria | ✅ PASS |
-| 3 | `/api/observations` | GET | Lista z paginacją | ✅ PASS |
-| 4 | `/api/observations/:id` | GET | Pojedyncza obserwacja | ✅ PASS |
-| 5 | `/api/location-sources` | GET | 2 źródła (gps, manual) | ✅ PASS |
-| 6 | `/api/profile/me` | GET | Profil użytkownika | ✅ PASS |
-| 7 | `/api/observations/map` | GET | 5 markerów | ✅ PASS |
-| 8 | `/api/observations` | POST | Utworzono z auto-slug | ✅ PASS |
-| 9 | `/api/observations/:id` | PATCH | Częściowa aktualizacja | ✅ PASS |
-| 10 | `/api/profile/me` | PATCH | Aktualizacja profilu | ✅ PASS |
-| 11 | `/api/observations/:id` | DELETE | 204 No Content | ✅ PASS |
+| #   | Endpoint                | Method | Test                   | Result  |
+| --- | ----------------------- | ------ | ---------------------- | ------- |
+| 1   | `/api/categories`       | GET    | Lista 3 kategorii      | ✅ PASS |
+| 2   | `/api/categories/:id`   | GET    | Pojedyncza kategoria   | ✅ PASS |
+| 3   | `/api/observations`     | GET    | Lista z paginacją      | ✅ PASS |
+| 4   | `/api/observations/:id` | GET    | Pojedyncza obserwacja  | ✅ PASS |
+| 5   | `/api/location-sources` | GET    | 2 źródła (gps, manual) | ✅ PASS |
+| 6   | `/api/profile/me`       | GET    | Profil użytkownika     | ✅ PASS |
+| 7   | `/api/observations/map` | GET    | 5 markerów             | ✅ PASS |
+| 8   | `/api/observations`     | POST   | Utworzono z auto-slug  | ✅ PASS |
+| 9   | `/api/observations/:id` | PATCH  | Częściowa aktualizacja | ✅ PASS |
+| 10  | `/api/profile/me`       | PATCH  | Aktualizacja profilu   | ✅ PASS |
+| 11  | `/api/observations/:id` | DELETE | 204 No Content         | ✅ PASS |
 
 **Wszystkie testy: 11/11 PASSED** ✅
 
@@ -327,24 +357,29 @@ FROM public.observations o;
 ### **Konwersja lat/lng ↔ PostGIS:**
 
 #### **CREATE (POST):**
+
 ```typescript
 // API Input: { lat: 52.25, lng: 21.02 }
 // Service Layer:
-location: `SRID=4326;POINT(${lng} ${lat})`
+location: `SRID=4326;POINT(${lng} ${lat})`;
 // Database: geometry(point, 4326)
 ```
+
 **✅ Status:** Działa - przetestowane
 
 #### **READ (GET):**
+
 ```sql
 -- Database View:
 ST_Y(o.location) AS lat,
 ST_X(o.location) AS lng
 -- API Output: { lat: 52.25, lng: 21.02 }
 ```
+
 **✅ Status:** Działa - przetestowane
 
 #### **UPDATE (PATCH):**
+
 ```typescript
 // API Input: { location: { lat: 52.26, lng: 21.03 } }
 // Service Layer:
@@ -353,49 +388,50 @@ if (command.location) {
 }
 // Database: geometry(point, 4326)
 ```
+
 **✅ Status:** Działa - przetestowane
 
 ---
 
 ## 7. ✅ Dodatkowe Funkcjonalności (Poza MVP)
 
-| Funkcjonalność | Status | Lokalizacja |
-|----------------|--------|-------------|
-| Centralny Logger | ✅ | `src/lib/logger.ts` |
-| Request ID Tracking | ✅ | `src/middleware/index.ts` |
-| Error Classes | ✅ | `src/lib/api-error.ts` |
-| Utility Functions | ✅ | `createErrorResponse`, `createSuccessResponse` |
-| OpenAPI Specification | ✅ | `openapi.yaml` |
-| Swagger UI | ✅ | `/api-docs` |
-| Latency Metrics | ✅ | Logger tracks response time |
-| Structured Logging | ✅ | JSON format logs |
+| Funkcjonalność        | Status | Lokalizacja                                    |
+| --------------------- | ------ | ---------------------------------------------- |
+| Centralny Logger      | ✅     | `src/lib/logger.ts`                            |
+| Request ID Tracking   | ✅     | `src/middleware/index.ts`                      |
+| Error Classes         | ✅     | `src/lib/api-error.ts`                         |
+| Utility Functions     | ✅     | `createErrorResponse`, `createSuccessResponse` |
+| OpenAPI Specification | ✅     | `openapi.yaml`                                 |
+| Swagger UI            | ✅     | `/api-docs`                                    |
+| Latency Metrics       | ✅     | Logger tracks response time                    |
+| Structured Logging    | ✅     | JSON format logs                               |
 
 ---
 
 ## 8. ⏳ TODO (Poza obecnym scope)
 
-| Item | Priority | Notes |
-|------|----------|-------|
-| JWT Authentication | High | Middleware przygotowane, wymaga implementacji |
-| Integration Tests | High | Vitest + Supabase test DB |
-| Rate Limiting | Medium | Ochrona przed abuse |
-| CORS Configuration | Medium | Dla production deployment |
-| External Logging | Low | Datadog, Sentry integration |
-| Caching | Low | Redis dla categories, location_sources |
+| Item               | Priority | Notes                                         |
+| ------------------ | -------- | --------------------------------------------- |
+| JWT Authentication | High     | Middleware przygotowane, wymaga implementacji |
+| Integration Tests  | High     | Vitest + Supabase test DB                     |
+| Rate Limiting      | Medium   | Ochrona przed abuse                           |
+| CORS Configuration | Medium   | Dla production deployment                     |
+| External Logging   | Low      | Datadog, Sentry integration                   |
+| Caching            | Low      | Redis dla categories, location_sources        |
 
 ---
 
 ## 9. ✅ Dokumentacja
 
-| Dokument | Status | Lokalizacja |
-|----------|--------|-------------|
-| API Implementation Summary | ✅ | `.ai/api-implementation-summary.md` |
-| OpenAPI Specification | ✅ | `openapi.yaml` |
-| Swagger UI | ✅ | `http://localhost:3000/api-docs` |
-| Implementation Verification | ✅ | `.ai/implementation-verification.md` (ten plik) |
-| Database Plan | ✅ | `.ai/db-plan.md` |
-| API Plan | ✅ | `.ai/api-plan.md` |
-| Generations Plan | ✅ | `.ai/generations-endpoint-implementation-plan.md` |
+| Dokument                    | Status | Lokalizacja                                       |
+| --------------------------- | ------ | ------------------------------------------------- |
+| API Implementation Summary  | ✅     | `.ai/api-implementation-summary.md`               |
+| OpenAPI Specification       | ✅     | `openapi.yaml`                                    |
+| Swagger UI                  | ✅     | `http://localhost:3000/api-docs`                  |
+| Implementation Verification | ✅     | `.ai/implementation-verification.md` (ten plik)   |
+| Database Plan               | ✅     | `.ai/db-plan.md`                                  |
+| API Plan                    | ✅     | `.ai/api-plan.md`                                 |
+| Generations Plan            | ✅     | `.ai/generations-endpoint-implementation-plan.md` |
 
 ---
 
@@ -426,6 +462,7 @@ if (command.location) {
 **Status:** ✅ PRODUCTION READY
 
 **Wszystkie wymagania spełnione:**
+
 - ✅ 11/11 endpointów zaimplementowanych i przetestowanych
 - ✅ 100% zgodność z bazą danych
 - ✅ 100% zgodność z planem implementacji
@@ -435,6 +472,7 @@ if (command.location) {
 - ✅ Testy manualne przeszły
 
 **API jest gotowe do:**
+
 - ✅ Integracji z frontendem
 - ✅ Deployment na production
 - ✅ Dalszego rozwoju (JWT auth, testy automatyczne)

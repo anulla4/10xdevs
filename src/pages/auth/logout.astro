@@ -1,14 +1,14 @@
 ---
-import { createSupabaseServerInstance } from "../../db/supabase.client";
+import { createSupabaseServerInstance } from '../../db/supabase.client';
 
 /**
  * Logout Page
- * 
+ *
  * Handles user logout by:
  * 1. Clearing the Supabase session
  * 2. Removing authentication cookies
  * 3. Redirecting to the login page
- * 
+ *
  * This page is accessible without authentication (see middleware PUBLIC_PATHS)
  */
 
@@ -23,9 +23,9 @@ const { error } = await supabase.auth.signOut();
 
 // Log any errors (optional, for debugging)
 if (error) {
-  console.error("Logout error:", error);
+  console.error('Logout error:', error);
 }
 
 // Always redirect to login page after logout attempt
-return Astro.redirect("/auth/login");
+return Astro.redirect('/auth/login');
 ---

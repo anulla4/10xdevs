@@ -287,19 +287,19 @@ export const METHOD: APIRoute = async (context) => {
     userId: locals.userId,
     method: request.method,
     path: url.pathname,
-    userAgent: request.headers.get("user-agent") || undefined,
+    userAgent: request.headers.get('user-agent') || undefined,
   };
 
   try {
     const supabase = locals.supabase;
     if (!supabase) {
-      throw new UnauthorizedError("Missing auth context");
+      throw new UnauthorizedError('Missing auth context');
     }
 
     // Validation
     const parsed = Schema.safeParse(data);
     if (!parsed.success) {
-      const error = new ValidationError("Invalid data", parsed.error.flatten());
+      const error = new ValidationError('Invalid data', parsed.error.flatten());
       logger.logValidationError(logContext, error.details);
       throw error;
     }

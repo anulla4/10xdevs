@@ -20,7 +20,7 @@ export interface LogMetadata {
 
 class Logger {
   private formatLog(
-    level: "info" | "warn" | "error",
+    level: 'info' | 'warn' | 'error',
     message: string,
     context: LogContext,
     metadata?: LogMetadata
@@ -44,25 +44,25 @@ class Logger {
   }
 
   info(message: string, context: LogContext, metadata?: LogMetadata): void {
-    console.log(this.formatLog("info", message, context, metadata));
+    console.log(this.formatLog('info', message, context, metadata));
   }
 
   warn(message: string, context: LogContext, metadata?: LogMetadata): void {
-    console.warn(this.formatLog("warn", message, context, metadata));
+    console.warn(this.formatLog('warn', message, context, metadata));
   }
 
   error(message: string, context: LogContext, metadata?: LogMetadata): void {
-    console.error(this.formatLog("error", message, context, metadata));
+    console.error(this.formatLog('error', message, context, metadata));
   }
 
   /**
    * Log API request completion
    */
   logRequest(context: LogContext, metadata: LogMetadata): void {
-    const level = metadata.status && metadata.status >= 500 ? "error" : "info";
+    const level = metadata.status && metadata.status >= 500 ? 'error' : 'info';
     const message = `${context.method} ${context.path} - ${metadata.status}`;
 
-    if (level === "error") {
+    if (level === 'error') {
       this.error(message, context, metadata);
     } else {
       this.info(message, context, metadata);
@@ -72,11 +72,8 @@ class Logger {
   /**
    * Log validation errors
    */
-  logValidationError(
-    context: LogContext,
-    details: Record<string, any>
-  ): void {
-    this.warn("Validation error", context, {
+  logValidationError(context: LogContext, details: Record<string, any>): void {
+    this.warn('Validation error', context, {
       status: 400,
       details,
     });
@@ -86,7 +83,7 @@ class Logger {
    * Log unexpected errors
    */
   logUnexpectedError(context: LogContext, error: Error): void {
-    this.error("Unexpected error", context, {
+    this.error('Unexpected error', context, {
       status: 500,
       error,
       details: {

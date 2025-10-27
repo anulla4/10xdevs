@@ -1,16 +1,16 @@
-export const prerender = false
+export const prerender = false;
 
-import type { APIRoute } from "astro"
-import { z } from "zod"
-import type { ChatRequest, ChatResult } from "../../../types"
-import { OpenRouterService } from "../../../lib/services/openrouter.service"
-import { logger, type LogContext } from "../../../lib/logger"
+import type { APIRoute } from 'astro';
+import { z } from 'zod';
+import type { ChatRequest, ChatResult } from '../../../types';
+import { OpenRouterService } from '../../../lib/services/openrouter.service';
+import { logger, type LogContext } from '../../../lib/logger';
 import {
   ValidationError,
   InternalServerError,
   createErrorResponse,
   createSuccessResponse,
-} from "../../../lib/api-error"
+} from '../../../lib/api-error';
 
 // Zod schema for request body validation
 const ChatRequestSchema = z.object({
@@ -19,7 +19,7 @@ const ChatRequestSchema = z.object({
     z.string().min(1),
     z.array(
       z.object({
-        role: z.enum(["system", "user", "assistant", "tool"]),
+        role: z.enum(['system', 'user', 'assistant', 'tool']),
         content: z.string(),
       })
     ),
@@ -37,7 +37,7 @@ const ChatRequestSchema = z.object({
     .optional(),
   response_format: z
     .object({
-      type: z.literal("json_schema"),
+      type: z.literal('json_schema'),
       json_schema: z.object({
         name: z.string(),
         strict: z.literal(true),
@@ -45,11 +45,11 @@ const ChatRequestSchema = z.object({
       }),
     })
     .optional(),
-})
+});
 
 export const POST: APIRoute = async (context) => {
-  const startTime = Date.now()
-  const { locals, url, request } = context
+  const startTime = Date.now();
+  const { locals, url, request } = context;
 
   // Create log context
   const logContext: LogContext = {
@@ -57,78 +57,71 @@ export const POST: APIRoute = async (context) => {
     userId: locals.userId,
     method: request.method,
     path: url.pathname,
-    userAgent: request.headers.get("user-agent") || undefined,
-  }
+    userAgent: request.headers.get('user-agent') || undefined,
+  };
 
   try {
     // Check for API key in environment
-    const apiKey = import.meta.env.OPENROUTER_API_KEY
+    const apiKey = import.meta.env.OPENROUTER_API_KEY;
     if (!apiKey) {
-      logger.logUnexpectedError(
-        logContext,
-        new Error("OPENROUTER_API_KEY not configured")
-      )
-      throw new InternalServerError("AI service not configured")
+      logger.logUnexpectedError(logContext, new Error('OPENROUTER_API_KEY not configured'));
+      throw new InternalServerError('AI service not configured');
     }
 
     // Parse and validate request body
     const rawBody = await request.json().catch(() => {
-      throw new ValidationError("Invalid JSON body")
-    })
+      throw new ValidationError('Invalid JSON body');
+    });
 
-    const parsed = ChatRequestSchema.safeParse(rawBody)
+    const parsed = ChatRequestSchema.safeParse(rawBody);
     if (!parsed.success) {
-      const error = new ValidationError(
-        "Invalid request parameters",
-        parsed.error.flatten()
-      )
-      logger.logValidationError(logContext, error.details)
-      throw error
+      const error = new ValidationError('Invalid request parameters', parsed.error.flatten());
+      logger.logValidationError(logContext, error.details);
+      throw error;
     }
 
-    const chatRequest: ChatRequest = parsed.data
+    const chatRequest: ChatRequest = parsed.data;
 
     // Create OpenRouter service instance
     const service = new OpenRouterService(apiKey, {
-      defaultModel:
-        import.meta.env.OPENROUTER_DEFAULT_MODEL ?? "google/gemini-flash-1.5",
+      defaultModel: import.meta.env.OPENROUTER_DEFAULT_MODEL ?? 'google/gemini-flash-1.5',
       appUrl: import.meta.env.OPENROUTER_APP_URL,
-      appName: import.meta.env.OPENROUTER_APP_NAME ?? "Nature Log",
+      appName: import.meta.env.OPENROUTER_APP_NAME ?? 'Nature Log',
       timeoutMs: 60_000,
       maxRetries: 2,
-    })
+    });
 
     // Generate chat completion
-    const result: ChatResult = await service.generateChat(chatRequest)
+    const result: ChatResult = await service.generateChat(chatRequest);
 
     // Log successful request with model info
-    const latency = Date.now() - startTime
+    const latency = Date.now() - startTime;
     logger.logRequest(logContext, {
       status: 200,
       latency,
       details: {
-        model: chatRequest.model ?? service["defaultModel"],
+        model: chatRequest.model ?? service['defaultModel'],
         hasResponseFormat: !!chatRequest.response_format,
         temperature: chatRequest.params?.temperature,
       },
-    })
+    });
 
-    return createSuccessResponse(result)
+    return createSuccessResponse(result);
   } catch (err: any) {
-    const latency = Date.now() - startTime
+    const latency = Date.now() - startTime;
 
     if (err instanceof ValidationError || err instanceof InternalServerError) {
       logger.logRequest(logContext, {
         status: err.statusCode,
         latency,
         error: err,
-      })
-      return createErrorResponse(err)
+      });
+      return createErrorResponse(err);
     }
 
     // Unexpected error
-    logger.logUnexpectedError(logContext, err)
-    logger.logRequest(logContext, { status: 500, latency, error: err })
-    return createErrorResponse(err, true) // Sanitize error message
+    logger.logUnexpectedError(logContext, err);
+    logger.logRequest(logContext, { status: 500, latency, error: err });
+    return createErrorResponse(err, true); // Sanitize error message
   }
-}
+};

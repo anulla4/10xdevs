@@ -3,10 +3,10 @@ info:
   title: Nature Log API
   description: |
     REST API for Nature Log application - a platform for nature enthusiasts to record and browse observations of plants, animals, and places.
-    
+
     ## Authentication
     All endpoints require JWT authentication via `Authorization: Bearer <token>` header (except public endpoints).
-    
+
     ## Error Responses
     All errors follow a consistent format:
     ```json
@@ -18,7 +18,7 @@ info:
       }
     }
     ```
-    
+
     ## Request Tracking
     Each request receives a unique `X-Request-ID` header for debugging and support.
   version: 1.0.0
@@ -116,7 +116,7 @@ paths:
           $ref: '#/components/responses/ValidationError'
         '401':
           $ref: '#/components/responses/Unauthorized'
-    
+
     post:
       tags: [Observations]
       summary: Create observation
@@ -147,7 +147,7 @@ paths:
         schema:
           type: string
           format: uuid
-    
+
     get:
       tags: [Observations]
       summary: Get observation by ID
@@ -160,7 +160,7 @@ paths:
                 $ref: '#/components/schemas/Observation'
         '404':
           $ref: '#/components/responses/NotFound'
-    
+
     patch:
       tags: [Observations]
       summary: Update observation
@@ -182,7 +182,7 @@ paths:
           $ref: '#/components/responses/ValidationError'
         '404':
           $ref: '#/components/responses/NotFound'
-    
+
     delete:
       tags: [Observations]
       summary: Delete observation
@@ -333,7 +333,7 @@ paths:
                 $ref: '#/components/schemas/Profile'
         '404':
           $ref: '#/components/responses/NotFound'
-    
+
     patch:
       tags: [Profile]
       summary: Update current user profile
@@ -628,7 +628,7 @@ components:
               message: Invalid request body
               details:
                 fieldErrors:
-                  name: ["Required"]
+                  name: ['Required']
 
     Unauthorized:
       description: Unauthorized

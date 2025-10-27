@@ -1,5 +1,5 @@
-import { LogOut, User } from "lucide-react";
-import { Button } from "@/components/ui/button";
+import { LogOut, User } from 'lucide-react';
+import { Button } from '@/components/ui/button';
 
 interface HeaderProps {
   isAuthenticated: boolean;
@@ -13,7 +13,7 @@ export function Header({ isAuthenticated, user }: HeaderProps) {
         {/* Logo / Brand */}
         <div className="flex items-center gap-6">
           <a
-            href={isAuthenticated ? "/panel" : "/"}
+            href={isAuthenticated ? '/panel' : '/'}
             className="flex items-center gap-2 font-semibold text-lg hover:opacity-80 transition-opacity"
           >
             <span className="text-2xl">🌿</span>
@@ -50,7 +50,9 @@ export function Header({ isAuthenticated, user }: HeaderProps) {
             <>
               {/* Login button */}
               <Button variant="ghost" size="sm" asChild>
-                <a href="/auth/login" data-test-id="nav-login">Zaloguj się</a>
+                <a href="/auth/login" data-test-id="nav-login">
+                  Zaloguj się
+                </a>
               </Button>
 
               {/* Register button */}

@@ -1,20 +1,11 @@
 export const prerender = false;
 
-import type { APIRoute } from "astro";
-import { z } from "zod";
-import type { ListResponse, ObservationDto } from "../../types";
-import {
-  listObservations,
-  ListParamsSchema,
-  createObservation,
-} from "../../lib/services/observations.service";
-import { logger, type LogContext } from "../../lib/logger";
-import {
-  UnauthorizedError,
-  ValidationError,
-  createErrorResponse,
-  createSuccessResponse,
-} from "../../lib/api-error";
+import type { APIRoute } from 'astro';
+import { z } from 'zod';
+import type { ListResponse, ObservationDto } from '../../types';
+import { listObservations, ListParamsSchema, createObservation } from '../../lib/services/observations.service';
+import { logger, type LogContext } from '../../lib/logger';
+import { UnauthorizedError, ValidationError, createErrorResponse, createSuccessResponse } from '../../lib/api-error';
 
 // Schema for POST request body
 const CreateObservationSchema = z.object({
@@ -29,14 +20,17 @@ const CreateObservationSchema = z.object({
   location_source: z.string().nullable().optional(),
   location_accuracy: z.number().min(0).max(999.99).nullable().optional(),
   is_favorite: z.boolean().optional(),
-})
+});
 
 const QuerySchema = z
   .object({
     page: z.coerce.number().int().min(1).default(1),
     limit: z.coerce.number().int().min(1).max(100).default(20),
     q: z.string().trim().min(1).optional(),
-    favorite: z.enum(['true', 'false']).transform((v) => v === 'true').optional(),
+    favorite: z
+      .enum(['true', 'false'])
+      .transform((v) => v === 'true')
+      .optional(),
     category_id: z.string().uuid().optional(),
     sort: z.enum(['observation_date', 'name', 'created_at']).default('observation_date'),
     order: z.enum(['asc', 'desc']).optional(),
@@ -44,7 +38,7 @@ const QuerySchema = z
   .transform((v) => ({
     ...v,
     order: v.order ?? (v.sort === 'observation_date' ? 'desc' : 'asc'),
-  }))
+  }));
 
 export const GET: APIRoute = async (context) => {
   const startTime = Date.now();
@@ -55,22 +49,19 @@ export const GET: APIRoute = async (context) => {
     userId: locals.userId,
     method: request.method,
     path: url.pathname,
-    userAgent: request.headers.get("user-agent") || undefined,
+    userAgent: request.headers.get('user-agent') || undefined,
   };
 
   try {
     const supabase = locals.supabase;
     const userId = locals.userId;
     if (!supabase || !userId) {
-      throw new UnauthorizedError("Missing auth context");
+      throw new UnauthorizedError('Missing auth context');
     }
 
     const parsed = QuerySchema.safeParse(Object.fromEntries(url.searchParams));
     if (!parsed.success) {
-      const error = new ValidationError(
-        "Invalid query parameters",
-        parsed.error.flatten()
-      );
+      const error = new ValidationError('Invalid query parameters', parsed.error.flatten());
       logger.logValidationError(logContext, error.details);
       throw error;
     }
@@ -83,9 +74,9 @@ export const GET: APIRoute = async (context) => {
     logger.logRequest(logContext, { status: 200, latency });
 
     return createSuccessResponse(body, 200, {
-      "X-Total-Count": String(total),
-      "X-Page": String(params.page),
-      "X-Limit": String(params.limit),
+      'X-Total-Count': String(total),
+      'X-Page': String(params.page),
+      'X-Limit': String(params.limit),
     });
   } catch (err: any) {
     const latency = Date.now() - startTime;
@@ -114,14 +105,14 @@ export const POST: APIRoute = async (context) => {
     userId: locals.userId,
     method: request.method,
     path: url.pathname,
-    userAgent: request.headers.get("user-agent") || undefined,
+    userAgent: request.headers.get('user-agent') || undefined,
   };
 
   try {
     const supabase = locals.supabase;
     const userId = locals.userId;
     if (!supabase || !userId) {
-      throw new UnauthorizedError("Missing auth context");
+      throw new UnauthorizedError('Missing auth context');
     }
 
     // Parse request body
@@ -129,16 +120,13 @@ export const POST: APIRoute = async (context) => {
     try {
       body = await request.json();
     } catch {
-      throw new ValidationError("Invalid JSON body");
+      throw new ValidationError('Invalid JSON body');
     }
 
     // Validate request body
     const parsed = CreateObservationSchema.safeParse(body);
     if (!parsed.success) {
-      const error = new ValidationError(
-        "Invalid request body",
-        parsed.error.flatten()
-      );
+      const error = new ValidationError('Invalid request body', parsed.error.flatten());
       logger.logValidationError(logContext, error.details);
       throw error;
     }

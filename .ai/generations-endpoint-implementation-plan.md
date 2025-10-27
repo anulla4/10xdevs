@@ -1,6 +1,7 @@
 # API Endpoint Implementation Plan: GET /api/observations
 
 ## 1. Przegląd punktu końcowego
+
 - **Cel**: Zwraca listę obserwacji zalogowanego użytkownika z paginacją, filtrowaniem, wyszukiwaniem tekstowym oraz sortowaniem.
 - **Źródła danych**: Tabela `public.observations` z powiązaną kategorią z `public.categories` oraz referencją do `public.location_sources`.
 - **Uwagi**:
@@ -9,6 +10,7 @@
   - Zwracane są nagłówki: `X-Total-Count`, `X-Page`, `X-Limit`.
 
 ## 2. Szczegóły żądania
+
 - **Metoda HTTP**: GET
 - **Struktura URL**: `/api/observations`
 - **Parametry zapytania**:
@@ -23,6 +25,7 @@
     - `order`: `asc|desc` (dla `observation_date` domyślnie `desc`, w pozostałych `asc`)
 
 ## 3. Wykorzystywane typy
+
 - Z `src/types.ts`:
   - **`ObservationDto`**: odpowiedź pojedynczego elementu listy.
   - **`ListResponse<ObservationDto>`**: obiekt odpowiedzi listowej `{ items: ObservationDto[] }`.
@@ -30,8 +33,10 @@
   - **`CategoryRefDto`**, **`ObservationLocationDto`**, **`GeoPointDto`**.
 
 ## 3. Szczegóły odpowiedzi
+
 - **Status 200** z nagłówkami `X-Total-Count`, `X-Page`, `X-Limit`.
 - **Body**: `ListResponse<ObservationDto>`
+
 ```json
 {
   "items": [
@@ -50,12 +55,14 @@
   ]
 }
 ```
+
 - **Błędy**:
   - 400 dla niepoprawnych parametrów
   - 401 dla braku/nieprawidłowego JWT
   - 500 dla błędów serwera
 
 ## 4. Przepływ danych
+
 1. **Wejście**: Zapytanie HTTP trafia do `src/pages/api/observations.ts` (Astro server route).
 2. **Auth**: W middleware/route odczyt JWT, utworzenie Supabase clienta z kontekstu: `locals.supabase` (zgodnie z `.windsurfrules`).
 3. **Walidacja**: Zod waliduje i normalizuje query params (page/limit domyślne; sort/order domyślne zależne od pola).
@@ -72,6 +79,7 @@
 7. **Wyjście**: Route ustawia nagłówki paginacji i zwraca `200` + JSON.
 
 ## 5. Względy bezpieczeństwa
+
 - **Uwierzytelnianie**: Wymagany nagłówek `Authorization: Bearer <JWT>`; odrzucić 401 jeśli brak/invalid.
 - **Autoryzacja (RLS)**: Operacje odbywają się w kontekście użytkownika; DB polityki ograniczają do własnych rekordów (`db-plan.md`).
 - **Walidacja**: Twarda walidacja Zod (typy, zakresy, dozwolone wartości); `limit <= 100`, `page >= 1`.
@@ -79,12 +87,14 @@
 - **CORS/HTTPS**: Zgodnie z polityką deploy (Astro, DO). Konfiguracja CORS ograniczona do znanych domen frontu.
 
 ## 6. Obsługa błędów
+
 - **400**: nieprawidłowe parametry (np. `limit > 100`, zły `sort`, niepoprawne `favorite`). Zwrócić `{ error: { code: 'ValidationError', message, details } }`.
 - **401**: brak/nieprawidłowy JWT.
 - **500**: nieoczekiwany błąd Supabase/serwera (zachować ogólne komunikaty; szczegóły w logach).
 - Rekomendacja: centralny logger (request id, method, path, user id, status, latency). Ewentualna tabela błędów poza MVP.
 
 ## 8. Etapy wdrożenia
+
 1. **Schemat danych do odczytu**:
    - Utworzyć widok `public.observations_read`:
      ```sql
@@ -124,21 +134,26 @@
    - Pobierz `supabase` z `locals.supabase` (zgodnie z `.windsurfrules`).
    - Zod schema dla query params:
      ```ts
-     const QuerySchema = z.object({
-       page: z.coerce.number().int().min(1).default(1),
-       limit: z.coerce.number().int().min(1).max(100).default(20),
-       q: z.string().trim().min(1).optional(),
-       favorite: z.enum(['true','false']).transform(v => v === 'true').optional(),
-       category_id: z.string().uuid().optional(),
-       sort: z.enum(['observation_date','name','created_at']).default('observation_date'),
-       order: z.enum(['asc','desc']).optional()
-     }).transform(v => ({
-       ...v,
-       order: v.order ?? (v.sort === 'observation_date' ? 'desc' : 'asc')
-     }))
+     const QuerySchema = z
+       .object({
+         page: z.coerce.number().int().min(1).default(1),
+         limit: z.coerce.number().int().min(1).max(100).default(20),
+         q: z.string().trim().min(1).optional(),
+         favorite: z
+           .enum(['true', 'false'])
+           .transform((v) => v === 'true')
+           .optional(),
+         category_id: z.string().uuid().optional(),
+         sort: z.enum(['observation_date', 'name', 'created_at']).default('observation_date'),
+         order: z.enum(['asc', 'desc']).optional(),
+       })
+       .transform((v) => ({
+         ...v,
+         order: v.order ?? (v.sort === 'observation_date' ? 'desc' : 'asc'),
+       }));
      ```
    - Parsowanie, wywołanie serwisu, ustawienie nagłówków paginacji, zwrot `200` z `ListResponse<ObservationDto>`.
- 
+
 4. **Monitoring i logowanie**:
    - Logować: `request_id`, `user_id`, `method`, `path`, `status`, `latency`.
    - Błędy walidacyjne jako 400, błędy Supabase jako 500 z anonimowym komunikatem.

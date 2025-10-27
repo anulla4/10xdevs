@@ -1,13 +1,13 @@
-import { useState, useRef } from "react"
-import { Button } from "../ui/button"
-import { Textarea } from "../ui/textarea"
-import { Label } from "../ui/label"
+import { useState, useRef } from 'react';
+import { Button } from '../ui/button';
+import { Textarea } from '../ui/textarea';
+import { Label } from '../ui/label';
 
 interface AIStreamChatProps {
-  systemPrompt?: string
-  placeholder?: string
-  onComplete?: (fullResponse: string) => void
-  className?: string
+  systemPrompt?: string;
+  placeholder?: string;
+  onComplete?: (fullResponse: string) => void;
+  className?: string;
 }
 
 /**
@@ -16,103 +16,103 @@ interface AIStreamChatProps {
  * Requires streaming endpoint at /api/ai/chat-stream
  */
 export function AIStreamChat({
-  systemPrompt = "Jesteś asystentem Nature Log. Odpowiadasz zwięźle i pomocnie.",
-  placeholder = "Zadaj pytanie...",
+  systemPrompt = 'Jesteś asystentem Nature Log. Odpowiadasz zwięźle i pomocnie.',
+  placeholder = 'Zadaj pytanie...',
   onComplete,
-  className = "",
+  className = '',
 }: AIStreamChatProps) {
-  const [prompt, setPrompt] = useState("")
-  const [response, setResponse] = useState("")
-  const [loading, setLoading] = useState(false)
-  const [error, setError] = useState<string | null>(null)
-  const abortControllerRef = useRef<AbortController | null>(null)
+  const [prompt, setPrompt] = useState('');
+  const [response, setResponse] = useState('');
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+  const abortControllerRef = useRef<AbortController | null>(null);
 
   const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault()
+    e.preventDefault();
 
-    if (!prompt.trim()) return
+    if (!prompt.trim()) return;
 
-    setLoading(true)
-    setError(null)
-    setResponse("")
+    setLoading(true);
+    setError(null);
+    setResponse('');
 
     // Create abort controller for cancellation
-    abortControllerRef.current = new AbortController()
+    abortControllerRef.current = new AbortController();
 
     try {
-      const res = await fetch("/api/ai/chat-stream", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
+      const res = await fetch('/api/ai/chat-stream', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           system: systemPrompt,
           user: prompt,
         }),
         signal: abortControllerRef.current.signal,
-      })
+      });
 
       if (!res.ok) {
-        const errorData = await res.json()
-        throw new Error(errorData.error?.message ?? "Request failed")
+        const errorData = await res.json();
+        throw new Error(errorData.error?.message ?? 'Request failed');
       }
 
       if (!res.body) {
-        throw new Error("Response body is null")
+        throw new Error('Response body is null');
       }
 
       // Read stream
-      const reader = res.body.getReader()
-      const decoder = new TextDecoder()
-      let fullResponse = ""
+      const reader = res.body.getReader();
+      const decoder = new TextDecoder();
+      let fullResponse = '';
 
       while (true) {
-        const { done, value } = await reader.read()
-        if (done) break
+        const { done, value } = await reader.read();
+        if (done) break;
 
-        const text = decoder.decode(value)
-        const lines = text.split("\n")
+        const text = decoder.decode(value);
+        const lines = text.split('\n');
 
         for (const line of lines) {
-          if (line.startsWith("data: ")) {
+          if (line.startsWith('data: ')) {
             try {
-              const chunk = JSON.parse(line.slice(6))
+              const chunk = JSON.parse(line.slice(6));
               if (chunk.delta) {
-                fullResponse += chunk.delta
-                setResponse(fullResponse)
+                fullResponse += chunk.delta;
+                setResponse(fullResponse);
               }
               if (chunk.done) {
-                onComplete?.(fullResponse)
+                onComplete?.(fullResponse);
               }
             } catch {
               // Skip malformed JSON
-              continue
+              continue;
             }
           }
         }
       }
     } catch (err) {
-      if (err instanceof Error && err.name === "AbortError") {
-        setError("Żądanie zostało anulowane")
+      if (err instanceof Error && err.name === 'AbortError') {
+        setError('Żądanie zostało anulowane');
       } else {
-        const message = err instanceof Error ? err.message : "Unknown error"
-        setError(message)
-        console.error("AI stream error:", err)
+        const message = err instanceof Error ? err.message : 'Unknown error';
+        setError(message);
+        console.error('AI stream error:', err);
       }
     } finally {
-      setLoading(false)
-      abortControllerRef.current = null
+      setLoading(false);
+      abortControllerRef.current = null;
     }
-  }
+  };
 
   const handleCancel = () => {
-    abortControllerRef.current?.abort()
-    setLoading(false)
-  }
+    abortControllerRef.current?.abort();
+    setLoading(false);
+  };
 
   const handleClear = () => {
-    setPrompt("")
-    setResponse("")
-    setError(null)
-  }
+    setPrompt('');
+    setResponse('');
+    setError(null);
+  };
 
   return (
     <div className={`space-y-4 ${className}`}>
@@ -140,12 +140,7 @@ export function AIStreamChat({
               Wyślij (streaming)
             </Button>
           )}
-          <Button
-            type="button"
-            variant="outline"
-            onClick={handleClear}
-            disabled={loading}
-          >
+          <Button type="button" variant="outline" onClick={handleClear} disabled={loading}>
             Wyczyść
           </Button>
         </div>
@@ -159,12 +154,7 @@ export function AIStreamChat({
 
       {(response || loading) && (
         <div className="space-y-2">
-          <Label>
-            Odpowiedź AI{" "}
-            {loading && (
-              <span className="text-muted-foreground">(generowanie...)</span>
-            )}
-          </Label>
+          <Label>Odpowiedź AI {loading && <span className="text-muted-foreground">(generowanie...)</span>}</Label>
           <div className="rounded-md border bg-muted/50 p-4 text-sm min-h-[100px]">
             <pre className="whitespace-pre-wrap font-sans">
               {response}
@@ -174,5 +164,5 @@ export function AIStreamChat({
         </div>
       )}
     </div>
-  )
+  );
 }

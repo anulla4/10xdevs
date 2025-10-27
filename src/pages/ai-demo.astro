@@ -1,16 +1,14 @@
 ---
-import Layout from "../layouts/Layout.astro";
-import { AIChatBox } from "../components/ai/AIChatBox";
-import { AIStreamChat } from "../components/ai/AIStreamChat";
+import Layout from '../layouts/Layout.astro';
+import { AIChatBox } from '../components/ai/AIChatBox';
+import { AIStreamChat } from '../components/ai/AIStreamChat';
 ---
 
 <Layout title="AI Demo - Nature Log">
   <div class="container mx-auto max-w-5xl px-4 py-8">
     <div class="mb-8">
       <h1 class="text-3xl font-bold mb-2">OpenRouter AI Demo</h1>
-      <p class="text-muted-foreground">
-        Przykłady integracji z OpenRouter API - czat blokowy i streaming
-      </p>
+      <p class="text-muted-foreground">Przykłady integracji z OpenRouter API - czat blokowy i streaming</p>
     </div>
 
     <div class="grid gap-8 md:grid-cols-2">
@@ -18,9 +16,7 @@ import { AIStreamChat } from "../components/ai/AIStreamChat";
       <div class="space-y-4">
         <div class="rounded-lg border bg-card p-6">
           <h2 class="text-xl font-semibold mb-4">Czat blokowy</h2>
-          <p class="text-sm text-muted-foreground mb-4">
-            Odpowiedź wyświetlana po zakończeniu generowania
-          </p>
+          <p class="text-sm text-muted-foreground mb-4">Odpowiedź wyświetlana po zakończeniu generowania</p>
           <AIChatBox
             client:load
             systemPrompt="Jesteś ekspertem od przyrody. Odpowiadaj zwięźle i konkretnie."
@@ -33,9 +29,7 @@ import { AIStreamChat } from "../components/ai/AIStreamChat";
       <div class="space-y-4">
         <div class="rounded-lg border bg-card p-6">
           <h2 class="text-xl font-semibold mb-4">Czat ze streamingiem</h2>
-          <p class="text-sm text-muted-foreground mb-4">
-            Odpowiedź wyświetlana na bieżąco (token po tokenie)
-          </p>
+          <p class="text-sm text-muted-foreground mb-4">Odpowiedź wyświetlana na bieżąco (token po tokenie)</p>
           <AIStreamChat
             client:load
             systemPrompt="Jesteś ekspertem od przyrody. Odpowiadaj zwięźle i konkretnie."
@@ -54,19 +48,14 @@ import { AIStreamChat } from "../components/ai/AIStreamChat";
         </li>
         <li>
           <strong>Endpoint blokowy:</strong>
-          <code class="text-xs bg-background px-1 py-0.5 rounded"
-            >/api/ai/chat</code
-          >
+          <code class="text-xs bg-background px-1 py-0.5 rounded">/api/ai/chat</code>
         </li>
         <li>
           <strong>Endpoint streaming:</strong>
-          <code class="text-xs bg-background px-1 py-0.5 rounded"
-            >/api/ai/chat-stream</code
-          >
+          <code class="text-xs bg-background px-1 py-0.5 rounded">/api/ai/chat-stream</code>
         </li>
         <li>
-          <strong>Koszty:</strong> ~$0.075 za 1M tokenów input, ~$0.30 za 1M tokenów
-          output
+          <strong>Koszty:</strong> ~$0.075 za 1M tokenów input, ~$0.30 za 1M tokenów output
         </li>
         <li>
           <strong>Timeout:</strong> 60 sekund
@@ -83,27 +72,19 @@ import { AIStreamChat } from "../components/ai/AIStreamChat";
       <div class="grid gap-3 md:grid-cols-2">
         <div class="rounded border bg-muted/30 p-3 text-sm">
           <strong>Identyfikacja:</strong>
-          <p class="text-muted-foreground mt-1">
-            "Zidentyfikuj gatunek ptaka: mały, żółty brzuch, czarna czapeczka"
-          </p>
+          <p class="text-muted-foreground mt-1">"Zidentyfikuj gatunek ptaka: mały, żółty brzuch, czarna czapeczka"</p>
         </div>
         <div class="rounded border bg-muted/30 p-3 text-sm">
           <strong>Opis siedliska:</strong>
-          <p class="text-muted-foreground mt-1">
-            "Opisz typowe siedlisko dzięcioła dużego w 3 zdaniach"
-          </p>
+          <p class="text-muted-foreground mt-1">"Opisz typowe siedlisko dzięcioła dużego w 3 zdaniach"</p>
         </div>
         <div class="rounded border bg-muted/30 p-3 text-sm">
           <strong>Sugestie obserwacji:</strong>
-          <p class="text-muted-foreground mt-1">
-            "Jakie gatunki motyli można spotkać w Polsce w czerwcu?"
-          </p>
+          <p class="text-muted-foreground mt-1">"Jakie gatunki motyli można spotkać w Polsce w czerwcu?"</p>
         </div>
         <div class="rounded border bg-muted/30 p-3 text-sm">
           <strong>Porady:</strong>
-          <p class="text-muted-foreground mt-1">
-            "Jak najlepiej fotografować ptaki w locie?"
-          </p>
+          <p class="text-muted-foreground mt-1">"Jak najlepiej fotografować ptaki w locie?"</p>
         </div>
       </div>
     </div>

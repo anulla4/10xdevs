@@ -1,25 +1,25 @@
-import { defineMiddleware } from "astro:middleware";
+import { defineMiddleware } from 'astro:middleware';
 
-import { createSupabaseServerInstance } from "../db/supabase.client.ts";
-import { generateRequestId } from "../lib/logger.ts";
+import { createSupabaseServerInstance } from '../db/supabase.client.ts';
+import { generateRequestId } from '../lib/logger.ts';
 
 // Public paths that don't require authentication
 const PUBLIC_PATHS = [
-  "/",
+  '/',
   // Auth pages
-  "/auth/login",
-  "/auth/register",
-  "/auth/reset-password",
-  "/auth/update-password",
-  "/auth/logout",
+  '/auth/login',
+  '/auth/register',
+  '/auth/reset-password',
+  '/auth/update-password',
+  '/auth/logout',
   // Auth API endpoints
-  "/api/auth/login",
-  "/api/auth/register",
-  "/api/auth/logout",
-  "/api/auth/reset-password",
-  "/api/auth/update-password",
+  '/api/auth/login',
+  '/api/auth/register',
+  '/api/auth/logout',
+  '/api/auth/reset-password',
+  '/api/auth/update-password',
   // Public API endpoints
-  "/api/categories",
+  '/api/categories',
 ];
 
 export const onRequest = defineMiddleware(async (context, next) => {
@@ -55,8 +55,8 @@ export const onRequest = defineMiddleware(async (context, next) => {
     }
 
     // Check if path requires authentication
-    const isPublicPath = PUBLIC_PATHS.some((path) =>
-      context.url.pathname === path || context.url.pathname.startsWith(path)
+    const isPublicPath = PUBLIC_PATHS.some(
+      (path) => context.url.pathname === path || context.url.pathname.startsWith(path)
     );
 
     // Redirect to login if trying to access protected route without auth
@@ -68,12 +68,12 @@ export const onRequest = defineMiddleware(async (context, next) => {
     // Add request ID to response headers for debugging
     const response = next();
     response.then((res) => {
-      res.headers.set("X-Request-ID", requestId);
+      res.headers.set('X-Request-ID', requestId);
     });
 
     return response;
   } catch (error) {
-    console.error("Middleware error:", error);
+    console.error('Middleware error:', error);
     throw error;
   }
 });

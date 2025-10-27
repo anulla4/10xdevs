@@ -3,9 +3,11 @@
 ## 1. WPROWADZENIE
 
 ### 1.1 Cel dokumentu
+
 Niniejszy dokument opisuje szczegółową architekturę modułu rejestracji, logowania i odzyskiwania hasła użytkowników dla aplikacji Nature Log. Specyfikacja jest zgodna z wymaganiami z PRD oraz istniejącym stackiem technologicznym (Astro 5 SSR, React 19, Supabase Auth, TypeScript 5, Tailwind CSS 4).
 
 ### 1.2 Zakres funkcjonalny
+
 - Rejestracja użytkownika (e-mail + hasło)
 - Logowanie użytkownika
 - Wylogowanie
@@ -15,6 +17,7 @@ Niniejszy dokument opisuje szczegółową architekturę modułu rejestracji, log
 - Integracja z istniejącym panelem obserwacji
 
 ### 1.3 Kluczowe założenia
+
 - **Brak OAuth**: MVP nie wspiera logowania przez Google/GitHub
 - **Server-Side Rendering**: Astro 5 w trybie `output: "server"` z adapterem Node.js
 - **Supabase Auth**: Wykorzystanie wbudowanego systemu uwierzytelniania Supabase
@@ -30,6 +33,7 @@ Niniejszy dokument opisuje szczegółową architekturę modułu rejestracji, log
 #### 2.1.1 Nowe strony do utworzenia
 
 **`/src/pages/auth/register.astro`**
+
 - **Ścieżka URL**: `/auth/register`
 - **Tryb renderowania**: Server-Side Rendering (SSR)
 - **Odpowiedzialność**:
@@ -37,12 +41,13 @@ Niniejszy dokument opisuje szczegółową architekturę modułu rejestracji, log
   - Renderowanie layoutu z komponentem `RegisterForm` (React)
   - Obsługa query params: `?redirectTo=/panel` (przekazywany do formularza)
 - **Struktura**:
+
   ```typescript
   // Frontmatter (server-side)
   - Pobranie sesji z Astro.locals.supabase.auth.getSession()
   - Jeśli session istnieje → return Astro.redirect('/panel')
   - Odczyt query param 'redirectTo' z Astro.url.searchParams
-  
+
   // Template
   - Layout z tytułem "Rejestracja - Nature Log"
   - Komponent RegisterForm (client:load)
@@ -50,6 +55,7 @@ Niniejszy dokument opisuje szczegółową architekturę modułu rejestracji, log
   ```
 
 **`/src/pages/auth/login.astro`**
+
 - **Ścieżka URL**: `/auth/login`
 - **Tryb renderowania**: SSR
 - **Odpowiedzialność**:
@@ -57,12 +63,13 @@ Niniejszy dokument opisuje szczegółową architekturę modułu rejestracji, log
   - Renderowanie layoutu z komponentem `LoginForm` (React)
   - Obsługa query params: `?redirectTo=/panel&error=unauthorized`
 - **Struktura**:
+
   ```typescript
   // Frontmatter (server-side)
   - Pobranie sesji z Astro.locals.supabase.auth.getSession()
   - Jeśli session istnieje → return Astro.redirect('/panel')
   - Odczyt query params: 'redirectTo', 'error'
-  
+
   // Template
   - Layout z tytułem "Logowanie - Nature Log"
   - Komponent LoginForm (client:load) z props: redirectTo, error
@@ -71,16 +78,18 @@ Niniejszy dokument opisuje szczegółową architekturę modułu rejestracji, log
   ```
 
 **`/src/pages/auth/reset-password.astro`**
+
 - **Ścieżka URL**: `/auth/reset-password`
 - **Tryb renderowania**: SSR
 - **Odpowiedzialność**:
   - Renderowanie formularza do wysłania linku resetującego hasło
   - Nie wymaga zalogowania
 - **Struktura**:
+
   ```typescript
   // Frontmatter (server-side)
   - Brak logiki auth guard (dostępne dla niezalogowanych)
-  
+
   // Template
   - Layout z tytułem "Reset hasła - Nature Log"
   - Komponent ResetPasswordForm (client:load)
@@ -88,6 +97,7 @@ Niniejszy dokument opisuje szczegółową architekturę modułu rejestracji, log
   ```
 
 **`/src/pages/auth/update-password.astro`**
+
 - **Ścieżka URL**: `/auth/update-password`
 - **Tryb renderowania**: SSR
 - **Odpowiedzialność**:
@@ -95,12 +105,13 @@ Niniejszy dokument opisuje szczegółową architekturę modułu rejestracji, log
   - Walidacja tokenu resetującego (przekazanego w URL przez Supabase)
   - Obsługa wygaśnięcia tokenu (1h)
 - **Struktura**:
+
   ```typescript
   // Frontmatter (server-side)
   - Odczyt hash fragmentu z URL (Supabase przekazuje token w #access_token=...)
   - Weryfikacja czy token jest obecny
   - Jeśli brak tokenu → redirect do /auth/reset-password?error=invalid_token
-  
+
   // Template
   - Layout z tytułem "Ustaw nowe hasło - Nature Log"
   - Komponent UpdatePasswordForm (client:load)
@@ -108,18 +119,20 @@ Niniejszy dokument opisuje szczegółową architekturę modułu rejestracji, log
   ```
 
 **`/src/pages/auth/logout.astro`**
+
 - **Ścieżka URL**: `/auth/logout`
 - **Tryb renderowania**: SSR
 - **Odpowiedzialność**:
   - Wykonanie wylogowania po stronie serwera
   - Przekierowanie do strony głównej lub logowania
 - **Struktura**:
+
   ```typescript
   // Frontmatter (server-side)
   - Wywołanie Astro.locals.supabase.auth.signOut()
   - Usunięcie ciasteczek sesji
   - return Astro.redirect('/auth/login')
-  
+
   // Template
   - Brak (redirect natychmiastowy)
   ```
@@ -127,16 +140,18 @@ Niniejszy dokument opisuje szczegółową architekturę modułu rejestracji, log
 #### 2.1.2 Modyfikacje istniejących stron
 
 **`/src/pages/index.astro`**
+
 - **Obecny stan**: Renderuje `PanelPage` z mock user ID
 - **Wymagane zmiany**:
   - Zmiana na stronę powitalną (landing page) dla niezalogowanych użytkowników
   - Dla zalogowanych użytkowników → redirect do `/panel`
 - **Nowa struktura**:
+
   ```typescript
   // Frontmatter
   - Pobranie sesji z Astro.locals.supabase.auth.getSession()
   - Jeśli session istnieje → return Astro.redirect('/panel')
-  
+
   // Template
   - Layout z tytułem "Nature Log - Twoje obserwacje przyrody"
   - Komponent WelcomePage (nowy komponent React lub Astro)
@@ -145,18 +160,20 @@ Niniejszy dokument opisuje szczegółową architekturę modułu rejestracji, log
   ```
 
 **`/src/pages/panel.astro`**
+
 - **Obecny stan**: Zakomentowany kod z auth guard, używa mock user ID
 - **Wymagane zmiany**:
   - Odkomentowanie i aktywacja auth guard
   - Usunięcie mock user ID
   - Przekazanie rzeczywistego user ID do komponentu PanelPage
 - **Nowa struktura**:
+
   ```typescript
   // Frontmatter
   - Pobranie sesji z Astro.locals.supabase.auth.getSession()
   - Jeśli !session → return Astro.redirect('/auth/login?redirectTo=/panel')
   - Pobranie userId z session.user.id
-  
+
   // Template
   - Layout z tytułem "Panel - Nature Log"
   - Komponent PanelPage (client:only="react") z props: userId
@@ -168,11 +185,12 @@ Niniejszy dokument opisuje szczegółową architekturę modułu rejestracji, log
 #### 2.2.1 Nowe komponenty formularzy autentykacji
 
 **`/src/components/auth/RegisterForm.tsx`**
+
 - **Odpowiedzialność**: Formularz rejestracji z walidacją client-side
 - **Props**:
   ```typescript
   interface RegisterFormProps {
-    redirectTo?: string // domyślnie '/panel'
+    redirectTo?: string; // domyślnie '/panel'
   }
   ```
 - **Stan lokalny**:
@@ -208,12 +226,13 @@ Niniejszy dokument opisuje szczegółową architekturę modułu rejestracji, log
   - Link do `/auth/login` pod formularzem
 
 **`/src/components/auth/LoginForm.tsx`**
+
 - **Odpowiedzialność**: Formularz logowania
 - **Props**:
   ```typescript
   interface LoginFormProps {
-    redirectTo?: string // domyślnie '/panel'
-    error?: string // np. 'unauthorized' z query params
+    redirectTo?: string; // domyślnie '/panel'
+    error?: string; // np. 'unauthorized' z query params
   }
   ```
 - **Stan lokalny**:
@@ -241,6 +260,7 @@ Niniejszy dokument opisuje szczegółową architekturę modułu rejestracji, log
   - Linki: "Zapomniałeś hasła?" → `/auth/reset-password`, "Nie masz konta?" → `/auth/register`
 
 **`/src/components/auth/ResetPasswordForm.tsx`**
+
 - **Odpowiedzialność**: Formularz do wysłania linku resetującego hasło
 - **Props**: Brak
 - **Stan lokalny**:
@@ -265,6 +285,7 @@ Niniejszy dokument opisuje szczegółową architekturę modułu rejestracji, log
   - Link "Wróć do logowania" → `/auth/login`
 
 **`/src/components/auth/UpdatePasswordForm.tsx`**
+
 - **Odpowiedzialność**: Formularz do ustawienia nowego hasła
 - **Props**: Brak (token pobierany z URL hash)
 - **Stan lokalny**:
@@ -294,16 +315,18 @@ Niniejszy dokument opisuje szczegółową architekturę modułu rejestracji, log
 #### 2.2.2 Modyfikacje istniejących komponentów
 
 **`/src/layouts/Layout.astro`**
+
 - **Obecny stan**: Prosty layout bez nawigacji
 - **Wymagane zmiany**:
   - Dodanie nagłówka (header) z nawigacją
   - Wyświetlanie przycisków w zależności od stanu autentykacji
 - **Nowa struktura**:
+
   ```typescript
   // Frontmatter
   - Pobranie sesji z Astro.locals.supabase.auth.getSession()
   - Przekazanie stanu autentykacji do komponentu Header
-  
+
   // Template
   - <Header isAuthenticated={!!session} user={session?.user} />
   - <main><slot /></main>
@@ -311,12 +334,13 @@ Niniejszy dokument opisuje szczegółową architekturę modułu rejestracji, log
   ```
 
 **`/src/components/layout/Header.tsx`** (nowy komponent)
+
 - **Odpowiedzialność**: Nawigacja główna z przyciskami auth
 - **Props**:
   ```typescript
   interface HeaderProps {
-    isAuthenticated: boolean
-    user?: { email?: string }
+    isAuthenticated: boolean;
+    user?: { email?: string };
   }
   ```
 - **Renderowanie**:
@@ -334,6 +358,7 @@ Niniejszy dokument opisuje szczegółową architekturę modułu rejestracji, log
   - Responsive: na mobile hamburger menu (opcjonalnie w przyszłości)
 
 **`/src/components/panel/PanelPage.tsx`**
+
 - **Obecny stan**: Przyjmuje `userId` jako prop
 - **Wymagane zmiany**: Brak (komponent pozostaje bez zmian)
 - **Uwaga**: Komponent już jest przygotowany na rzeczywisty `userId` - wystarczy przekazać go z `panel.astro`
@@ -343,6 +368,7 @@ Niniejszy dokument opisuje szczegółową architekturę modułu rejestracji, log
 #### 2.3.1 Walidacja client-side (React)
 
 **Reguły walidacji**:
+
 1. **E-mail**:
    - Format: regex `/^[^\s@]+@[^\s@]+\.[^\s@]+$/`
    - Komunikat: "Podaj prawidłowy adres e-mail"
@@ -356,6 +382,7 @@ Niniejszy dokument opisuje szczegółową architekturę modułu rejestracji, log
    - Komunikat: "Hasła nie są zgodne"
 
 **Implementacja**:
+
 - Walidacja w czasie rzeczywistym (onChange) lub po blur
 - Wyświetlanie błędów inline pod polami (czerwony tekst)
 - Disabled submit button jeśli formularz nieprawidłowy
@@ -363,6 +390,7 @@ Niniejszy dokument opisuje szczegółową architekturę modułu rejestracji, log
 #### 2.3.2 Komunikaty błędów z API
 
 **Mapowanie błędów**:
+
 - **400 Bad Request**: "Nieprawidłowe dane. Sprawdź formularz."
 - **401 Unauthorized**: "Nieprawidłowy e-mail lub hasło"
 - **409 Conflict**: "E-mail jest już zarejestrowany"
@@ -370,6 +398,7 @@ Niniejszy dokument opisuje szczegółową architekturę modułu rejestracji, log
 - **Network Error**: "Brak połączenia z serwerem. Sprawdź połączenie internetowe."
 
 **Wyświetlanie**:
+
 - Alert box na górze formularza (czerwone tło, ikona błędu)
 - Auto-hide po 5 sekundach (opcjonalnie)
 - Możliwość ręcznego zamknięcia (X button)
@@ -377,6 +406,7 @@ Niniejszy dokument opisuje szczegółową architekturę modułu rejestracji, log
 ### 2.4 Scenariusze użytkownika (User Flows)
 
 #### 2.4.1 Rejestracja nowego użytkownika
+
 1. Użytkownik wchodzi na `/` → widzi landing page
 2. Klika "Zarejestruj się" → redirect do `/auth/register`
 3. Wypełnia formularz (e-mail, hasło, potwierdź hasło)
@@ -392,6 +422,7 @@ Niniejszy dokument opisuje szczegółową architekturę modułu rejestracji, log
 7. Header pokazuje "Wyloguj" i link do panelu
 
 #### 2.4.2 Logowanie istniejącego użytkownika
+
 1. Użytkownik wchodzi na `/` → widzi landing page
 2. Klika "Zaloguj się" → redirect do `/auth/login`
 3. Wypełnia formularz (e-mail, hasło)
@@ -405,6 +436,7 @@ Niniejszy dokument opisuje szczegółową architekturę modułu rejestracji, log
 7. Header pokazuje "Wyloguj" i link do panelu
 
 #### 2.4.3 Reset hasła
+
 1. Użytkownik na stronie `/auth/login` klika "Zapomniałeś hasła?"
 2. Redirect do `/auth/reset-password`
 3. Wypełnia formularz (e-mail)
@@ -424,6 +456,7 @@ Niniejszy dokument opisuje szczegółową architekturę modułu rejestracji, log
 11. Użytkownik loguje się nowym hasłem
 
 #### 2.4.4 Wylogowanie
+
 1. Zalogowany użytkownik klika "Wyloguj" w headerze
 2. Redirect do `/auth/logout`
 3. System:
@@ -433,6 +466,7 @@ Niniejszy dokument opisuje szczegółową architekturę modułu rejestracji, log
 4. Header pokazuje "Zaloguj się"
 
 #### 2.4.5 Usunięcie konta
+
 1. Zalogowany użytkownik wchodzi do `/panel` (lub dedykowana strona `/settings`)
 2. Klika "Usuń konto" (w przyszłości: w sekcji ustawień)
 3. System wyświetla modal z potwierdzeniem:
@@ -448,6 +482,7 @@ Niniejszy dokument opisuje szczegółową architekturę modułu rejestracji, log
    - Redirect do `/` z komunikatem "Konto zostało usunięte"
 
 #### 2.4.6 Ochrona zasobów (Auth Guard)
+
 1. Niezalogowany użytkownik próbuje wejść na `/panel`
 2. System:
    - Sprawdza sesję w `panel.astro` (frontmatter)
@@ -518,8 +553,11 @@ Niniejszy dokument opisuje szczegółową architekturę modułu rejestracji, log
 #### 3.2.1 Modyfikacja `/src/middleware/index.ts`
 
 **Zmiana**: Automatyczne wyciąganie `userId` z sesji Supabase:
+
 ```typescript
-const { data: { session } } = await supabaseClient.auth.getSession();
+const {
+  data: { session },
+} = await supabaseClient.auth.getSession();
 context.locals.userId = session?.user?.id;
 ```
 
@@ -528,11 +566,13 @@ context.locals.userId = session?.user?.id;
 #### 3.2.2 Auth guard helper `/src/lib/auth-guards.ts` (nowy)
 
 **Funkcje**:
+
 - `requireAuth(Astro, redirectTo?)` - wymaga zalogowania, inaczej redirect do `/auth/login`
 - `requireGuest(Astro)` - wymaga braku sesji, inaczej redirect do `/panel`
 - `getSession(Astro)` - pobiera sesję (opcjonalnie)
 
 **Użycie w stronach Astro**:
+
 ```typescript
 import { requireAuth } from '../lib/auth-guards';
 const session = await requireAuth(Astro, '/panel');
@@ -543,6 +583,7 @@ const session = await requireAuth(Astro, '/panel');
 **Pliki**: `/src/pages/api/observations.ts`, `/src/pages/api/observations/[id].ts`, `/src/pages/api/profile/me.ts`
 
 **Zmiany**:
+
 1. Usunięcie mock `userId`
 2. Użycie `Astro.locals.userId` z middleware
 3. Sprawdzenie autoryzacji: `if (!userId) return 401`
@@ -554,6 +595,7 @@ const session = await requireAuth(Astro, '/panel');
 **Plik**: `/src/lib/validation/auth.validation.ts` (nowy)
 
 **Funkcje**:
+
 - `validateEmail(email)` - sprawdza format e-mail
 - `validatePassword(password)` - min. 8 znaków, wielka/mała litera, cyfra
 - `validateRegisterInput(data)` - waliduje cały formularz rejestracji
@@ -565,13 +607,14 @@ const session = await requireAuth(Astro, '/panel');
 **Mechanizm**: Supabase używa HTTP-only cookies do przechowywania tokenów
 
 **Konfiguracja** w `/src/db/supabase.client.ts`:
+
 ```typescript
 export const supabaseClient = createClient(url, key, {
   auth: {
     autoRefreshToken: true,
     persistSession: true,
-    flowType: 'pkce' // Zalecane dla SSR
-  }
+    flowType: 'pkce', // Zalecane dla SSR
+  },
 });
 ```
 
@@ -584,6 +627,7 @@ export const supabaseClient = createClient(url, key, {
 ### 4.1 Integracja Supabase Auth z Astro
 
 **Architektura przepływu**:
+
 ```
 User → React Form → API Endpoint → Supabase Auth → Database
                                         ↓
@@ -595,6 +639,7 @@ User → React Form → API Endpoint → Supabase Auth → Database
 ```
 
 **Komponenty**:
+
 1. **Supabase Auth**: Zarządzanie użytkownikami, JWT, e-maile
 2. **Astro Middleware**: Wyciąganie sesji z cookies
 3. **Astro Pages**: Auth guards, renderowanie
@@ -608,9 +653,10 @@ User → React Form → API Endpoint → Supabase Auth → Database
 **Zgodność**: Po zalogowaniu Supabase client automatycznie dodaje JWT do requestów → RLS działa automatycznie
 
 **Przykład polityki** (już istniejąca):
+
 ```sql
-CREATE POLICY "allow_authenticated_select_own_observations" 
-ON observations FOR SELECT TO authenticated 
+CREATE POLICY "allow_authenticated_select_own_observations"
+ON observations FOR SELECT TO authenticated
 USING (auth.uid() = user_id);
 ```
 
@@ -619,6 +665,7 @@ USING (auth.uid() = user_id);
 ### 4.3 Konfiguracja Supabase
 
 **Supabase Dashboard → Authentication → Settings**:
+
 1. **Site URL**: `https://[DOMAIN]` lub `http://localhost:3000`
 2. **Redirect URLs**: `https://[DOMAIN]/auth/update-password`
 3. **Email Templates**: Dostosowanie treści (opcjonalnie)
@@ -626,6 +673,7 @@ USING (auth.uid() = user_id);
 5. **Session Settings**: JWT expiry 1h, refresh token 30 dni
 
 **Zmienne środowiskowe** (`.env`):
+
 ```env
 SUPABASE_URL=https://[PROJECT_ID].supabase.co
 SUPABASE_KEY=[ANON_KEY]
@@ -635,6 +683,7 @@ SUPABASE_SERVICE_ROLE_KEY=[SERVICE_ROLE_KEY] # Tylko dla admin ops
 ### 4.4 Bezpieczeństwo
 
 **Zabezpieczenia**:
+
 1. **Walidacja**: Client-side (UX) + Server-side (security)
 2. **Ochrona przed atakami**: SQL Injection (prepared statements), XSS (auto-escape), CSRF (SameSite cookies)
 3. **Hasła**: Hashowanie przez Supabase, wymuszanie silnych haseł
@@ -660,6 +709,7 @@ SUPABASE_SERVICE_ROLE_KEY=[SERVICE_ROLE_KEY] # Tylko dla admin ops
 **Plik**: `/supabase/migrations/[TIMESTAMP]_auto_create_profile.sql`
 
 **Treść**:
+
 ```sql
 CREATE OR REPLACE FUNCTION public.handle_new_user()
 RETURNS TRIGGER AS $$
@@ -687,6 +737,7 @@ EXECUTE FUNCTION public.handle_new_user();
 ### 6.1 Nowe pliki do utworzenia
 
 **Strony Astro** (5 plików):
+
 - `/src/pages/auth/register.astro`
 - `/src/pages/auth/login.astro`
 - `/src/pages/auth/reset-password.astro`
@@ -694,6 +745,7 @@ EXECUTE FUNCTION public.handle_new_user();
 - `/src/pages/auth/logout.astro`
 
 **Komponenty React** (5 plików):
+
 - `/src/components/auth/RegisterForm.tsx`
 - `/src/components/auth/LoginForm.tsx`
 - `/src/components/auth/ResetPasswordForm.tsx`
@@ -701,6 +753,7 @@ EXECUTE FUNCTION public.handle_new_user();
 - `/src/components/layout/Header.tsx`
 
 **API Endpoints** (5 plików):
+
 - `/src/pages/api/auth/register.ts`
 - `/src/pages/api/auth/login.ts`
 - `/src/pages/api/auth/reset-password.ts`
@@ -708,28 +761,35 @@ EXECUTE FUNCTION public.handle_new_user();
 - `/src/pages/api/auth/account.ts`
 
 **Utilities** (2 pliki):
+
 - `/src/lib/auth-guards.ts`
 - `/src/lib/validation/auth.validation.ts`
 
 **Migracje** (1 plik, opcjonalnie):
+
 - `/supabase/migrations/[TIMESTAMP]_auto_create_profile.sql`
 
 ### 6.2 Pliki do modyfikacji
 
 **Strony Astro**:
+
 - `/src/pages/index.astro` - zmiana na landing page z CTA
 - `/src/pages/panel.astro` - aktywacja auth guard
 
 **Layout**:
+
 - `/src/layouts/Layout.astro` - dodanie Header z nawigacją
 
 **Middleware**:
+
 - `/src/middleware/index.ts` - wyciąganie userId z sesji
 
 **Supabase Client**:
+
 - `/src/db/supabase.client.ts` - konfiguracja dla SSR
 
 **API Endpoints** (istniejące):
+
 - `/src/pages/api/observations.ts` - użycie rzeczywistego userId
 - `/src/pages/api/observations/[id].ts` - użycie rzeczywistego userId
 - `/src/pages/api/profile/me.ts` - użycie rzeczywistego userId
@@ -737,110 +797,89 @@ EXECUTE FUNCTION public.handle_new_user();
 ### 6.3 Kolejność implementacji (zalecana)
 
 **Faza 1: Infrastruktura** (backend)
+
 1. Modyfikacja `/src/middleware/index.ts` (userId z sesji)
 2. Utworzenie `/src/lib/auth-guards.ts`
 3. Utworzenie `/src/lib/validation/auth.validation.ts`
 4. Konfiguracja Supabase (dashboard + `.env`)
 5. Migracja bazodanowa (trigger, opcjonalnie)
 
-**Faza 2: API Endpoints**
-6. `/src/pages/api/auth/register.ts`
-7. `/src/pages/api/auth/login.ts`
-8. `/src/pages/api/auth/reset-password.ts`
-9. `/src/pages/api/auth/update-password.ts`
-10. `/src/pages/api/auth/account.ts`
+**Faza 2: API Endpoints** 6. `/src/pages/api/auth/register.ts` 7. `/src/pages/api/auth/login.ts` 8. `/src/pages/api/auth/reset-password.ts` 9. `/src/pages/api/auth/update-password.ts` 10. `/src/pages/api/auth/account.ts`
 
-**Faza 3: Komponenty UI**
-11. `/src/components/auth/RegisterForm.tsx`
-12. `/src/components/auth/LoginForm.tsx`
-13. `/src/components/auth/ResetPasswordForm.tsx`
-14. `/src/components/auth/UpdatePasswordForm.tsx`
-15. `/src/components/layout/Header.tsx`
+**Faza 3: Komponenty UI** 11. `/src/components/auth/RegisterForm.tsx` 12. `/src/components/auth/LoginForm.tsx` 13. `/src/components/auth/ResetPasswordForm.tsx` 14. `/src/components/auth/UpdatePasswordForm.tsx` 15. `/src/components/layout/Header.tsx`
 
-**Faza 4: Strony Astro**
-16. `/src/pages/auth/register.astro`
-17. `/src/pages/auth/login.astro`
-18. `/src/pages/auth/reset-password.astro`
-19. `/src/pages/auth/update-password.astro`
-20. `/src/pages/auth/logout.astro`
-21. Modyfikacja `/src/pages/index.astro`
-22. Modyfikacja `/src/pages/panel.astro`
-23. Modyfikacja `/src/layouts/Layout.astro`
+**Faza 4: Strony Astro** 16. `/src/pages/auth/register.astro` 17. `/src/pages/auth/login.astro` 18. `/src/pages/auth/reset-password.astro` 19. `/src/pages/auth/update-password.astro` 20. `/src/pages/auth/logout.astro` 21. Modyfikacja `/src/pages/index.astro` 22. Modyfikacja `/src/pages/panel.astro` 23. Modyfikacja `/src/layouts/Layout.astro`
 
-**Faza 5: Integracja z istniejącymi endpointami**
-24. Aktualizacja `/src/pages/api/observations.ts`
-25. Aktualizacja `/src/pages/api/observations/[id].ts`
-26. Aktualizacja `/src/pages/api/profile/me.ts`
+**Faza 5: Integracja z istniejącymi endpointami** 24. Aktualizacja `/src/pages/api/observations.ts` 25. Aktualizacja `/src/pages/api/observations/[id].ts` 26. Aktualizacja `/src/pages/api/profile/me.ts`
 
-**Faza 6: Testowanie**
-27. Testy manualne wszystkich scenariuszy
-28. Weryfikacja auth guards
-29. Weryfikacja RLS policies
-30. Testy end-to-end (opcjonalnie)
+**Faza 6: Testowanie** 27. Testy manualne wszystkich scenariuszy 28. Weryfikacja auth guards 29. Weryfikacja RLS policies 30. Testy end-to-end (opcjonalnie)
 
 ### 6.4 Kluczowe kontrakty i interfejsy
 
 **TypeScript Types** (do dodania w `/src/types.ts`):
+
 ```typescript
 // Auth DTOs
 export type AuthUser = {
-  id: string
-  email: string
-}
+  id: string;
+  email: string;
+};
 
 export type AuthSession = {
-  access_token: string
-  refresh_token: string
-  expires_in: number
-  user: AuthUser
-}
+  access_token: string;
+  refresh_token: string;
+  expires_in: number;
+  user: AuthUser;
+};
 
 export type RegisterRequest = {
-  email: string
-  password: string
-}
+  email: string;
+  password: string;
+};
 
 export type LoginRequest = {
-  email: string
-  password: string
-}
+  email: string;
+  password: string;
+};
 
 export type ResetPasswordRequest = {
-  email: string
-}
+  email: string;
+};
 
 export type UpdatePasswordRequest = {
-  password: string
-}
+  password: string;
+};
 
 export type DeleteAccountRequest = {
-  password: string
-}
+  password: string;
+};
 ```
 
 **Props Interfaces**:
+
 ```typescript
 // RegisterForm
 interface RegisterFormProps {
-  redirectTo?: string
+  redirectTo?: string;
 }
 
 // LoginForm
 interface LoginFormProps {
-  redirectTo?: string
-  error?: string
+  redirectTo?: string;
+  error?: string;
 }
 
 // Header
 interface HeaderProps {
-  isAuthenticated: boolean
-  user?: { email?: string }
+  isAuthenticated: boolean;
+  user?: { email?: string };
 }
 ```
 
 ### 6.5 Zgodność z istniejącym kodem
 
 **Zachowana funkcjonalność**:
+
 - Wszystkie istniejące endpointy API (`/api/observations`, `/api/categories`, `/api/profile`) działają bez zmian
 - Komponenty panelu (`PanelPage`, `ObservationList`, `ObservationMap`) działają bez zmian
 - Serwisy (`observations.service.ts`, `profile.service.ts`) działają bez zmian
@@ -848,6 +887,7 @@ interface HeaderProps {
 - RLS policies pozostają bez zmian
 
 **Dodane funkcjonalności**:
+
 - Autentykacja użytkowników (rejestracja, logowanie, reset hasła)
 - Auth guards dla chronionych stron
 - Header z nawigacją i przyciskami auth
@@ -905,6 +945,7 @@ interface HeaderProps {
 ### 7.4 Następne kroki (poza MVP)
 
 **Przyszłe usprawnienia**:
+
 - OAuth (Google, GitHub) - wymaga konfiguracji w Supabase
 - Rate limiting dla endpointów auth - ochrona przed brute force
 - Email verification - potwierdzenie e-maila po rejestracji
@@ -915,6 +956,7 @@ interface HeaderProps {
 - Remember me - opcja dłuższej sesji
 
 **Monitoring i analytics**:
+
 - Tracking rejestracji i logowań (metryki sukcesu z PRD)
 - Error tracking (Sentry, LogRocket)
 - Performance monitoring (Astro analytics)
