@@ -28,8 +28,8 @@ jobs:
       - name: Set npm registry
         run: npm config set registry https://registry.npmjs.org/
 
-      - name: Remove package-lock.json to force fresh dependency resolution
-        run: rm -f package-lock.json
+      - name: Replace private registry URLs in package-lock.json
+        run: sed -i 's|https://nexus\.s2\.novomatic-tech\.com/repository/nexus-npm-proxy/|https://registry.npmjs.org/|g' package-lock.json
 
       - name: Debug environment
         run: |
@@ -87,8 +87,8 @@ jobs:
       - name: Set npm registry
         run: npm config set registry https://registry.npmjs.org/
 
-      - name: Remove package-lock.json to force fresh dependency resolution
-        run: rm -f package-lock.json
+      - name: Replace private registry URLs in package-lock.json
+        run: sed -i 's|https://nexus\.s2\.novomatic-tech\.com/repository/nexus-npm-proxy/|https://registry.npmjs.org/|g' package-lock.json
 
       - name: Debug environment
         run: |
@@ -149,8 +149,8 @@ jobs:
       - name: Set npm registry
         run: npm config set registry https://registry.npmjs.org/
 
-      - name: Remove package-lock.json to force fresh dependency resolution
-        run: rm -f package-lock.json
+      - name: Replace private registry URLs in package-lock.json
+        run: sed -i 's|https://nexus\.s2\.novomatic-tech\.com/repository/nexus-npm-proxy/|https://registry.npmjs.org/|g' package-lock.json
 
       - name: Debug environment
         run: |
@@ -222,8 +222,8 @@ jobs:
       - name: Set npm registry
         run: npm config set registry https://registry.npmjs.org/
 
-      - name: Remove package-lock.json to force fresh dependency resolution
-        run: rm -f package-lock.json
+      - name: Replace private registry URLs in package-lock.json
+        run: sed -i 's|https://nexus\.s2\.novomatic-tech\.com/repository/nexus-npm-proxy/|https://registry.npmjs.org/|g' package-lock.json
 
       - name: Debug environment
         run: |

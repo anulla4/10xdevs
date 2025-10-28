@@ -17,9 +17,20 @@ const gitignorePath = path.resolve(__dirname, '.gitignore');
 
 const baseConfig = tseslint.config({
   extends: [eslint.configs.recommended, tseslint.configs.strict, tseslint.configs.stylistic],
+  languageOptions: {
+    globals: {
+      process: true,
+      Buffer: true,
+      __dirname: true,
+      __filename: true,
+    },
+  },
   rules: {
     'no-console': 'warn',
     'no-unused-vars': 'off',
+    '@typescript-eslint/no-unused-vars': 'warn',
+    '@typescript-eslint/no-explicit-any': 'warn',
+    '@typescript-eslint/no-non-null-assertion': 'warn',
   },
 });
 
