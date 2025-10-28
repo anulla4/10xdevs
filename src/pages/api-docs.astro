@@ -22,8 +22,12 @@
 
     <script src="https://unpkg.com/swagger-ui-dist@5.10.0/swagger-ui-bundle.js"></script>
     <script src="https://unpkg.com/swagger-ui-dist@5.10.0/swagger-ui-standalone-preset.js"></script>
-    <script>
+    {/* prettier-ignore */}
+    {/* eslint-disable */}
+    <script type="text/javascript">
+      // @ts-expect-error SwaggerUIBundle is loaded from external script
       window.onload = function () {
+        // @ts-expect-error window.ui is assigned dynamically
         window.ui = SwaggerUIBundle({
           url: '/openapi.yaml',
           dom_id: '#swagger-ui',
@@ -34,5 +38,6 @@
         });
       };
     </script>
+    {/* eslint-enable */}
   </body>
 </html>

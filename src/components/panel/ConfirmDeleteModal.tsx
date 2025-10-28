@@ -51,6 +51,7 @@ export function ConfirmDeleteModal({ observationId, observationName, onConfirm, 
             <div className="flex-1">
               <AlertDialogTitle>Usuń obserwację</AlertDialogTitle>
               <AlertDialogDescription className="mt-2">
+                {/* prettier-ignore */}
                 Czy na pewno chcesz usunąć obserwację{' '}
                 <span className="font-medium text-foreground">&ldquo;{observationName}&rdquo;</span>? Tej operacji nie można cofnąć.
               </AlertDialogDescription>
