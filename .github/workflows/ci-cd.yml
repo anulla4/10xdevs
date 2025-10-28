@@ -18,21 +18,30 @@ jobs:
         with:
           node-version: '22'
 
+      - name: Upgrade npm
+        run: npm install -g npm@11
+
       - name: Debug environment
         run: |
+          echo "=== Environment Debug ==="
           echo "Node version: $(node --version)"
           echo "NPM version: $(npm --version)"
+          echo "NPM location: $(which npm)"
+          echo "Node location: $(which node)"
+          echo "Current directory: $(pwd)"
           echo "Package.json exists: $(test -f package.json && echo 'yes' || echo 'no')"
           echo "Package-lock.json exists: $(test -f package-lock.json && echo 'yes' || echo 'no')"
+          echo "=== Directory listing ==="
           ls -la
 
       - name: Install dependencies
         run: |
-          npm install 2>&1 | tee npm-install.log
-          echo "Install exit code: $?"
+          set -x
+          npm install 2>&1 | tee npm-install.log || echo "npm install failed with exit code $?"
+          echo "Install completed"
 
-      - name: Upload npm logs on failure
-        if: failure()
+      - name: Upload npm logs
+        if: always()
         uses: actions/upload-artifact@v4
         with:
           name: npm-logs-lint
@@ -40,6 +49,7 @@ jobs:
             npm-install.log
             ~/.npm/_logs/
           retention-days: 7
+        continue-on-error: true
 
       - name: Run linter
         run: npm run lint
@@ -57,6 +67,9 @@ jobs:
         with:
           node-version: '22'
 
+      - name: Upgrade npm
+        run: npm install -g npm@11
+
       - name: Debug environment
         run: |
           echo "Node version: $(node --version)"
@@ -69,8 +82,8 @@ jobs:
           npm install 2>&1 | tee npm-install.log
           echo "Install exit code: $?"
 
-      - name: Upload npm logs on failure
-        if: failure()
+      - name: Upload npm logs
+        if: always()
         uses: actions/upload-artifact@v4
         with:
           name: npm-logs-unit-test
@@ -78,6 +91,7 @@ jobs:
             npm-install.log
             ~/.npm/_logs/
           retention-days: 7
+        continue-on-error: true
 
       - name: Run unit tests with coverage
         run: npm run test:unit -- --coverage --run
@@ -105,6 +119,9 @@ jobs:
         with:
           node-version: '22'
 
+      - name: Upgrade npm
+        run: npm install -g npm@11
+
       - name: Debug environment
         run: |
           echo "Node version: $(node --version)"
@@ -117,8 +134,8 @@ jobs:
           npm install 2>&1 | tee npm-install.log
           echo "Install exit code: $?"
 
-      - name: Upload npm logs on failure
-        if: failure()
+      - name: Upload npm logs
+        if: always()
         uses: actions/upload-artifact@v4
         with:
           name: npm-logs-e2e-test
@@ -126,6 +143,7 @@ jobs:
             npm-install.log
             ~/.npm/_logs/
           retention-days: 7
+        continue-on-error: true
 
       - name: Install Playwright browsers
         run: npx playwright install --with-deps chromium
@@ -164,6 +182,9 @@ jobs:
         with:
           node-version: '22'
 
+      - name: Upgrade npm
+        run: npm install -g npm@11
+
       - name: Debug environment
         run: |
           echo "Node version: $(node --version)"
@@ -176,8 +197,8 @@ jobs:
           npm install 2>&1 | tee npm-install.log
           echo "Install exit code: $?"
 
-      - name: Upload npm logs on failure
-        if: failure()
+      - name: Upload npm logs
+        if: always()
         uses: actions/upload-artifact@v4
         with:
           name: npm-logs-build
@@ -185,6 +206,7 @@ jobs:
             npm-install.log
             ~/.npm/_logs/
           retention-days: 7
+        continue-on-error: true
 
       - name: Build project
         run: npm run build
