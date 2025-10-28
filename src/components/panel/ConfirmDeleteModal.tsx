@@ -52,7 +52,8 @@ export function ConfirmDeleteModal({ observationId, observationName, onConfirm, 
               <AlertDialogTitle>Usuń obserwację</AlertDialogTitle>
               <AlertDialogDescription className="mt-2">
                 Czy na pewno chcesz usunąć obserwację{' '}
-                <span className="font-medium text-foreground">&ldquo;{observationName}&rdquo;</span>? Tej operacji nie można cofnąć.
+                <span className="font-medium text-foreground">&ldquo;{observationName}&rdquo;</span>? Tej operacji nie
+                można cofnąć.
               </AlertDialogDescription>
             </div>
           </div>
