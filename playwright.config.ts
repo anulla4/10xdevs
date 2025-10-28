@@ -46,10 +46,9 @@ export default defineConfig({
     baseURL: 'http://localhost:4321',
     trace: 'retain-on-failure',
     video: 'retain-on-failure',
-    headless: false,
+    headless: true,
     launchOptions: {
       slowMo: 1000,
-      devtools: true,
     },
   },
   projects: [
@@ -57,7 +56,7 @@ export default defineConfig({
       name: 'chromium',
       use: {
         ...devices['Desktop Chrome'],
-        headless: false,
+        headless: true,
         // Zwolnij testy żeby było widać co się dzieje
         launchOptions: {
           slowMo: 100,
