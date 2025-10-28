@@ -13,6 +13,9 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v4
 
+      - name: Remove custom .npmrc if exists
+        run: rm -f .npmrc
+
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
@@ -24,6 +27,9 @@ jobs:
 
       - name: Set npm registry
         run: npm config set registry https://registry.npmjs.org/
+
+      - name: Remove package-lock.json to force fresh dependency resolution
+        run: rm -f package-lock.json
 
       - name: Debug environment
         run: |
@@ -66,6 +72,9 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v4
 
+      - name: Remove custom .npmrc if exists
+        run: rm -f .npmrc
+
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
@@ -77,6 +86,9 @@ jobs:
 
       - name: Set npm registry
         run: npm config set registry https://registry.npmjs.org/
+
+      - name: Remove package-lock.json to force fresh dependency resolution
+        run: rm -f package-lock.json
 
       - name: Debug environment
         run: |
@@ -122,6 +134,9 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v4
 
+      - name: Remove custom .npmrc if exists
+        run: rm -f .npmrc
+
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
@@ -133,6 +148,9 @@ jobs:
 
       - name: Set npm registry
         run: npm config set registry https://registry.npmjs.org/
+
+      - name: Remove package-lock.json to force fresh dependency resolution
+        run: rm -f package-lock.json
 
       - name: Debug environment
         run: |
@@ -189,6 +207,9 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v4
 
+      - name: Remove custom .npmrc if exists
+        run: rm -f .npmrc
+
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
@@ -200,6 +221,9 @@ jobs:
 
       - name: Set npm registry
         run: npm config set registry https://registry.npmjs.org/
+
+      - name: Remove package-lock.json to force fresh dependency resolution
+        run: rm -f package-lock.json
 
       - name: Debug environment
         run: |
