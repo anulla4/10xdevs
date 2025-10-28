@@ -17,9 +17,13 @@ jobs:
         uses: actions/setup-node@v4
         with:
           node-version: '22'
+          cache: 'npm'
 
       - name: Upgrade npm
         run: npm install -g npm@11
+
+      - name: Set npm registry
+        run: npm config set registry https://registry.npmjs.org/
 
       - name: Debug environment
         run: |
@@ -66,9 +70,13 @@ jobs:
         uses: actions/setup-node@v4
         with:
           node-version: '22'
+          cache: 'npm'
 
       - name: Upgrade npm
         run: npm install -g npm@11
+
+      - name: Set npm registry
+        run: npm config set registry https://registry.npmjs.org/
 
       - name: Debug environment
         run: |
@@ -118,9 +126,13 @@ jobs:
         uses: actions/setup-node@v4
         with:
           node-version: '22'
+          cache: 'npm'
 
       - name: Upgrade npm
         run: npm install -g npm@11
+
+      - name: Set npm registry
+        run: npm config set registry https://registry.npmjs.org/
 
       - name: Debug environment
         run: |
@@ -181,9 +193,13 @@ jobs:
         uses: actions/setup-node@v4
         with:
           node-version: '22'
+          cache: 'npm'
 
       - name: Upgrade npm
         run: npm install -g npm@11
+
+      - name: Set npm registry
+        run: npm config set registry https://registry.npmjs.org/
 
       - name: Debug environment
         run: |
