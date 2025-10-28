@@ -16,12 +16,30 @@ jobs:
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
-          node-version: '22.4'
-          cache: 'npm'
+          node-version: '22'
+
+      - name: Debug environment
+        run: |
+          echo "Node version: $(node --version)"
+          echo "NPM version: $(npm --version)"
+          echo "Package.json exists: $(test -f package.json && echo 'yes' || echo 'no')"
+          echo "Package-lock.json exists: $(test -f package-lock.json && echo 'yes' || echo 'no')"
+          ls -la
 
       - name: Install dependencies
         run: |
-          npm ci || (rm -f package-lock.json && npm install --package-lock-only && npm ci)
+          npm install 2>&1 | tee npm-install.log
+          echo "Install exit code: $?"
+
+      - name: Upload npm logs on failure
+        if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: npm-logs-lint
+          path: |
+            npm-install.log
+            ~/.npm/_logs/
+          retention-days: 7
 
       - name: Run linter
         run: npm run lint
@@ -37,12 +55,29 @@ jobs:
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
-          node-version: '22.4'
-          cache: 'npm'
+          node-version: '22'
+
+      - name: Debug environment
+        run: |
+          echo "Node version: $(node --version)"
+          echo "NPM version: $(npm --version)"
+          echo "Package.json exists: $(test -f package.json && echo 'yes' || echo 'no')"
+          echo "Package-lock.json exists: $(test -f package-lock.json && echo 'yes' || echo 'no')"
 
       - name: Install dependencies
         run: |
-          npm ci || (rm -f package-lock.json && npm install --package-lock-only && npm ci)
+          npm install 2>&1 | tee npm-install.log
+          echo "Install exit code: $?"
+
+      - name: Upload npm logs on failure
+        if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: npm-logs-unit-test
+          path: |
+            npm-install.log
+            ~/.npm/_logs/
+          retention-days: 7
 
       - name: Run unit tests with coverage
         run: npm run test:unit -- --coverage --run
@@ -68,12 +103,29 @@ jobs:
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
-          node-version: '22.4'
-          cache: 'npm'
+          node-version: '22'
+
+      - name: Debug environment
+        run: |
+          echo "Node version: $(node --version)"
+          echo "NPM version: $(npm --version)"
+          echo "Package.json exists: $(test -f package.json && echo 'yes' || echo 'no')"
+          echo "Package-lock.json exists: $(test -f package-lock.json && echo 'yes' || echo 'no')"
 
       - name: Install dependencies
         run: |
-          npm ci || (rm -f package-lock.json && npm install --package-lock-only && npm ci)
+          npm install 2>&1 | tee npm-install.log
+          echo "Install exit code: $?"
+
+      - name: Upload npm logs on failure
+        if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: npm-logs-e2e-test
+          path: |
+            npm-install.log
+            ~/.npm/_logs/
+          retention-days: 7
 
       - name: Install Playwright browsers
         run: npx playwright install --with-deps chromium
@@ -110,12 +162,29 @@ jobs:
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
-          node-version: '22.4'
-          cache: 'npm'
+          node-version: '22'
+
+      - name: Debug environment
+        run: |
+          echo "Node version: $(node --version)"
+          echo "NPM version: $(npm --version)"
+          echo "Package.json exists: $(test -f package.json && echo 'yes' || echo 'no')"
+          echo "Package-lock.json exists: $(test -f package-lock.json && echo 'yes' || echo 'no')"
 
       - name: Install dependencies
         run: |
-          npm ci || (rm -f package-lock.json && npm install --package-lock-only && npm ci)
+          npm install 2>&1 | tee npm-install.log
+          echo "Install exit code: $?"
+
+      - name: Upload npm logs on failure
+        if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: npm-logs-build
+          path: |
+            npm-install.log
+            ~/.npm/_logs/
+          retention-days: 7
 
       - name: Build project
         run: npm run build
