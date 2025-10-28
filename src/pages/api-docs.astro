@@ -1,9 +1,5 @@
 ---
 // API Documentation page using Swagger UI
-define:vars={{
-  SwaggerUIBundle: 'any',
-  SwaggerUIStandalonePreset: 'any'
-}}
 ---
 
 <!doctype html>
@@ -27,7 +23,9 @@ define:vars={{
     <script src="https://unpkg.com/swagger-ui-dist@5.10.0/swagger-ui-standalone-preset.js"></script>
     {/* eslint-disable prettier/prettier */}
     <script is:inline>
+      // @ts-expect-error SwaggerUIBundle is loaded from external script
       window.onload = function () {
+        // @ts-expect-error window.ui is assigned dynamically
         window.ui = SwaggerUIBundle({
           url: '/openapi.yaml',
           dom_id: '#swagger-ui',

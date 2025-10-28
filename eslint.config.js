@@ -88,6 +88,7 @@ const testConfig = tseslint.config({
 
 export default tseslint.config(
   includeIgnoreFile(gitignorePath),
+  { ignores: ['src/pages/api-docs.astro'] },
   baseConfig,
   jsxA11yConfig,
   reactConfig,
